@@ -1,0 +1,13 @@
+{
+	"Id": "WOTR_WoljifRomanceMod",
+	"DisplayName": "WOTR_WoljifRomanceMod",
+	"Author": "littlefiredragon",
+	"Version": "0.0.1",
+	"ManagerVersion": "0.23.3",
+	"Requirements": [],
+	"AssemblyName": "WOTR_WoljifRomanceMod.dll",
+	"EntryMethod": "WOTR_WoljifRomanceMod.Main.Load",
+	"Repository": "https://raw.githubusercontent.com/littlefiredragon/WOTR_WoljifRomanceMod/main/WOTR_WoljifRomanceMod/Repository.json",
+	"HomePage": "https://www.nexusmods.com/pathfinderwrathoftherighteous/mods/##"
+}
+
