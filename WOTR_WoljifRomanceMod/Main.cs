@@ -1,18 +1,3 @@
-/*using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
-using UnityModManagerNet;
-using HarmonyLib;
-using Newtonsoft.Json.Linq;
-using JetBrains.Annotations;
-
-using Kingmaker.Blueprints;
-using Kingmaker.Blueprints.JsonSystem;
-using Kingmaker.DialogSystem.Blueprints;
-using Kingmaker.Localization;*/
-
 using HarmonyLib;
 using JetBrains.Annotations;
 using Kingmaker;
@@ -21,7 +6,6 @@ using System;
 using TabletopTweaks.Config;
 using TabletopTweaks.Utilities;
 using UnityModManagerNet;
-
 
 namespace WOTR_WoljifRomanceMod
 {

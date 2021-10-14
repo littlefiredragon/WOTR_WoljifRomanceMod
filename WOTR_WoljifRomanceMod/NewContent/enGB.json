@@ -1,0 +1,6 @@
+{
+    "NewDialogStrings": {
+        "testcue": "\"Good work, chief!\" {n}Woljif gives you two thumbs up.{/n}",
+        "testanswer": "\"Hey, I figured out how to modify dialogue trees!\""
+    }
+}

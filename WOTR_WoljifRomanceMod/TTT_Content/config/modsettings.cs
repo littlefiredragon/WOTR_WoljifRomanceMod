@@ -17,13 +17,13 @@ namespace TabletopTweaks.Config
             //LoadSettings("Fixes.json", ref Fixes);
             //LoadSettings("AddedContent.json", ref AddedContent);
             LoadSettings("Blueprints.json", ref Blueprints);
+            LoadSettings("enGB.json", ref WOTR_WoljifRomanceMod.DialogTools.NewDialogs);
         }
         private static void LoadSettings<T>(string fileName, ref T setting) where T : IUpdatableSettings
         {
             var assembly = Assembly.GetExecutingAssembly();
             string userConfigFolder = ModEntry.Path + "UserSettings";
             Directory.CreateDirectory(userConfigFolder);
-            //var resourcePath = $"TabletopTweaks.Config.{fileName}";
             var resourcePath = $"WOTR_WoljifRomanceMod.NewContent.{fileName}";
             var userPath = $"{userConfigFolder}{Path.DirectorySeparatorChar}{fileName}";
 

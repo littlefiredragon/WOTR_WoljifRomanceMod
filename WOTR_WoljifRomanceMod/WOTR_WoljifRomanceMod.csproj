@@ -61,6 +61,7 @@
 
 	<ItemGroup>
 	  <EmbeddedResource Include="NewContent\Blueprints.json" />
+	  <EmbeddedResource Include="NewContent\enGB.json" />
 	</ItemGroup>
 
 	<ItemGroup>
