@@ -134,11 +134,11 @@ namespace WOTR_WoljifRomanceMod
         }
 
         // Answers
-        public static Kingmaker.DialogSystem.Blueprints.BlueprintAnswer CreateAnswer(string name)
+        public static Kingmaker.DialogSystem.Blueprints.BlueprintAnswer CreateAnswer(string name, bool showonce = false)
         {
-            return CreateAnswer(name, name);
+            return CreateAnswer(name, name, showonce);
         }
-        public static Kingmaker.DialogSystem.Blueprints.BlueprintAnswer CreateAnswer(string name, string key)
+        public static Kingmaker.DialogSystem.Blueprints.BlueprintAnswer CreateAnswer(string name, string key, bool showonce = false)
         {
             var result = Helpers.CreateBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>(name, bp =>
             {
@@ -150,11 +150,12 @@ namespace WOTR_WoljifRomanceMod
                 bp.OnSelect = EmptyActionList;
                 bp.CharacterSelection = EmptyCharSelect;
                 bp.ShowCheck = EmptyShowCheck;
+                bp.ShowOnce = showonce;
             });
             return result;
         }
 
-        public static void AnswerAddNextCue(Kingmaker.DialogSystem.Blueprints.BlueprintAnswer answer, Kingmaker.DialogSystem.Blueprints.BlueprintCue cue, int position = -1)
+        public static void AnswerAddNextCue(Kingmaker.DialogSystem.Blueprints.BlueprintAnswer answer, Kingmaker.DialogSystem.Blueprints.BlueprintCueBase cue, int position = -1)
         {
             if (answer.NextCue == EmptyCueSelection)
             {//Make a brand new cue selection.
@@ -168,6 +169,53 @@ namespace WOTR_WoljifRomanceMod
             {
                 answer.NextCue.Cues.Insert(position, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintCueBaseReference>(cue));
             }
+        }
+
+        // AddCondition is intended for simple conditions without nested logic ("A and B and C" is fine, but "A and (B or C)" is too complex.
+        // For complex logic, it's best to build your entire logic tree with ConditionalTools and then use SetConditionChecker to plug it in.
+        public static void AnswerAddShowCondition(Kingmaker.DialogSystem.Blueprints.BlueprintAnswer answer, Kingmaker.ElementsSystem.Condition condition)
+        {
+            if (answer.ShowConditions == EmptyConditionChecker)
+            {//Make a brand new checker
+                answer.ShowConditions = ConditionalTools.CreateChecker();
+            }
+            ConditionalTools.CheckerAddCondition(answer.ShowConditions, condition);
+        }
+        public static void AnswerSetShowConditionChecker(Kingmaker.DialogSystem.Blueprints.BlueprintAnswer answer, Kingmaker.ElementsSystem.ConditionsChecker checker)
+        {
+            answer.ShowConditions = checker;
+        }
+        public static void AnswerAddSelectCondition(Kingmaker.DialogSystem.Blueprints.BlueprintAnswer answer, Kingmaker.ElementsSystem.Condition condition)
+        {
+            if (answer.SelectConditions == EmptyConditionChecker)
+            {//Make a brand new checker
+                answer.SelectConditions = ConditionalTools.CreateChecker();
+            }
+            ConditionalTools.CheckerAddCondition(answer.SelectConditions, condition);
+        }
+        public static void AnswerSetSelectConditionChecker(Kingmaker.DialogSystem.Blueprints.BlueprintAnswer answer, Kingmaker.ElementsSystem.ConditionsChecker checker)
+        {
+            answer.SelectConditions = checker;
+        }
+
+        // Skill checks
+        public static Kingmaker.DialogSystem.Blueprints.BlueprintCheck CreateCheck(string name, Kingmaker.EntitySystem.Stats.StatType type, int DC, Kingmaker.DialogSystem.Blueprints.BlueprintCue success, Kingmaker.DialogSystem.Blueprints.BlueprintCue failure, bool hidden = false)
+        {
+            return CreateCheck(name, type, DC, success, failure, DialogExperience.NoExperience, hidden);
+        }
+        public static Kingmaker.DialogSystem.Blueprints.BlueprintCheck CreateCheck(string name, Kingmaker.EntitySystem.Stats.StatType type, int DC, Kingmaker.DialogSystem.Blueprints.BlueprintCue success, Kingmaker.DialogSystem.Blueprints.BlueprintCue failure, Kingmaker.DialogSystem.DialogExperience exp, bool hidden = false)
+        {
+            var result = Helpers.CreateBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCheck>(name, bp =>
+            {
+                bp.Conditions = EmptyConditionChecker;
+                bp.Type = type;
+                bp.DC = DC;
+                bp.m_Success = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintCueBaseReference>(success);
+                bp.m_Fail = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintCueBaseReference>(failure);
+                bp.Hidden = hidden;
+                bp.Experience = exp;
+            });
+            return result;
         }
     }
 }

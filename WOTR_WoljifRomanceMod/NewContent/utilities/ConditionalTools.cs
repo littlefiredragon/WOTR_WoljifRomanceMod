@@ -22,7 +22,12 @@ namespace WOTR_WoljifRomanceMod
     {
         public static T CreateCondition<T>([NotNull] string name, Action<T> init = null) where T : Kingmaker.ElementsSystem.Condition, new()
         {
+            return CreateCondition<T>(name, false, init);
+        }
+        public static T CreateCondition<T>([NotNull] string name, bool Not, Action<T> init = null) where T : Kingmaker.ElementsSystem.Condition, new()
+        {
             var result = new T();
+            result.Not = Not;
             init?.Invoke(result);
             return result;
         }
@@ -30,10 +35,25 @@ namespace WOTR_WoljifRomanceMod
            to be public, though, so you can just do something like 
              var myconditional = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.PcRace>("isplayertiefling");
              myconditional.Race = Kingmaker.Blueprints.Race.Tiefling;
+           Alternatively, you can do it this way:
+             var myconditional = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.PcRace>("isplayertiefling", bp =>
+                 {bp.Race = Kingmaker.Blueprints.Race.Tiefling;});
         */
-        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.OrAndLogic CreateLogicCondition([NotNull] string name, Kingmaker.ElementsSystem.Operation op = Kingmaker.ElementsSystem.Operation.And, params Kingmaker.ElementsSystem.Condition[] conditions)
+        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.OrAndLogic CreateLogicCondition([NotNull] string name, bool Not, params Kingmaker.ElementsSystem.Condition[] conditions)
         {
-            var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.OrAndLogic>(name);
+            return CreateLogicCondition(name, Not, Kingmaker.ElementsSystem.Operation.And, conditions);
+        }
+        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.OrAndLogic CreateLogicCondition([NotNull] string name, params Kingmaker.ElementsSystem.Condition[] conditions)
+        {
+            return CreateLogicCondition(name, false, Kingmaker.ElementsSystem.Operation.And, conditions);
+        }
+        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.OrAndLogic CreateLogicCondition([NotNull] string name, Kingmaker.ElementsSystem.Operation op, params Kingmaker.ElementsSystem.Condition[] conditions)
+        {
+            return CreateLogicCondition(name, false, op, conditions);
+        }
+        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.OrAndLogic CreateLogicCondition([NotNull] string name, bool Not, Kingmaker.ElementsSystem.Operation op, params Kingmaker.ElementsSystem.Condition[] conditions)
+        {
+            var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.OrAndLogic>(name, Not);
             result.ConditionsChecker = CreateChecker(op);
             for (int i = 0; i < conditions.Length; i++)
             {

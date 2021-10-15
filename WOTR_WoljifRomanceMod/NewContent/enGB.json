@@ -10,6 +10,7 @@
         "TEST_a_complexconditionalcue": "\"Let's test advanced conditional cues. Am I both female and either tiefling or aasimar?\"",
         "TEST_a_trueconditionalanswer": "\"I can see this option because I'm a tiefling!\"",
         "TEST_a_falseconditionalanswer": "\"I shouldn't see this one because I'm not an aasimar.\"",
+        "TEST_a_unchoosableconditionalanswer": "\"I can see this option but can't take it because I'm not an elf.\"",
         "TEST_sf_failedskillcheck": "\"Looks like you didn't pull that one off, chief.\"",
         "TEST_sp_passedskillcheck": "\"Hey, you did it! Good work, chief!\"",
         "TEST_cw_trueconditionalcue": "{n}Woljif laughs.{/n} \"You're a tiefling like me!\"",
