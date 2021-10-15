@@ -1,6 +1,21 @@
 {
     "NewDialogStrings": {
-        "testcue": "\"Good work, chief!\" {n}Woljif gives you two thumbs up.{/n}",
-        "testanswer": "\"Hey, I figured out how to modify dialogue trees!\""
+        "TEST_a_helpmetest": "\"Hey, can you help me debug something?\"",
+        "TEST_cw_starttesting": "\"Sure, what do you need?\" {n}Woljif pauses, then adds,{/n} \"You are gonna pay me for beta testing this thing, right?\"",
+        "TEST_a_donetesting": "\"Alright, that's enough faffin' about.\"",
+        "TEST_cw_donetesting": "\"What else do you wanna talk about?\"",
+        "TEST_a_skillcheckhard": "\"Give me a hard skill check.\"",
+        "TEST_a_skillcheckeasy": "\"Give me an easy skill check.\"",
+        "TEST_a_conditionalcue": "\"Let's test conditional cues. What am I?\"",
+        "TEST_a_complexconditionalcue": "\"Let's test advanced conditional cues. Am I both female and either tiefling or aasimar?\"",
+        "TEST_a_trueconditionalanswer": "\"I can see this option because I'm a tiefling!\"",
+        "TEST_a_falseconditionalanswer": "\"I shouldn't see this one because I'm not an aasimar.\"",
+        "TEST_sf_failedskillcheck": "\"Looks like you didn't pull that one off, chief.\"",
+        "TEST_sp_passedskillcheck": "\"Hey, you did it! Good work, chief!\"",
+        "TEST_cw_trueconditionalcue": "{n}Woljif laughs.{/n} \"You're a tiefling like me!\"",
+        "TEST_cw_falseconditionalcue": "\"Well, you're no tiefling, if the game logic is to be believed.\"",
+        "TEST_cw_truecomplexconditionalcue": "\"Absolutely, and a gorgeous one at that!\"",
+        "TEST_cw_falsecomplexconditionalcue": "\"Game logic says no, chief.\"",
+        "TEST_cw_generic": "\"Alright, what's next?\""
     }
 }

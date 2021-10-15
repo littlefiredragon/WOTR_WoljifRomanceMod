@@ -96,6 +96,21 @@ namespace WOTR_WoljifRomanceMod
                 cue.Answers.Insert(position, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintAnswerBaseReference>(answerlist));
             }
         }
+        // CueAddCondition is intended for simple conditions without nested logic ("A and B and C" is fine, but "A and (B or C)" is too complex.
+        // For complex logic, it's best to build your entire logic tree with ConditionalTools and then use CueSetConditionChecker to plug it in.
+        public static void CueAddCondition(Kingmaker.DialogSystem.Blueprints.BlueprintCue cue, Kingmaker.ElementsSystem.Condition condition)
+        {
+            if (cue.Conditions == EmptyConditionChecker)
+            {//Make a brand new checker
+                cue.Conditions = ConditionalTools.CreateChecker();
+            }
+            ConditionalTools.CheckerAddCondition(cue.Conditions, condition);
+        }
+        public static void CueSetConditionChecker(Kingmaker.DialogSystem.Blueprints.BlueprintCue cue, Kingmaker.ElementsSystem.ConditionsChecker checker)
+        {
+            cue.Conditions = checker;
+        }
+
         // Answerslist
         public static Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList CreateAnswersList(string name)
         {
