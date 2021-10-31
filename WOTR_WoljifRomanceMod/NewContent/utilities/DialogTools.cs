@@ -8,6 +8,8 @@ using Newtonsoft.Json;
 using System.IO;
 using System.Collections.Generic;
 using Kingmaker.Utility;
+using JetBrains.Annotations;
+using System;
 
 namespace WOTR_WoljifRomanceMod
 {
@@ -49,6 +51,58 @@ namespace WOTR_WoljifRomanceMod
         public static readonly Kingmaker.DialogSystem.CharacterSelection EmptyCharSelect = new Kingmaker.DialogSystem.CharacterSelection();
 
         // Wrapper functions
+        // Dialog
+        public static Kingmaker.DialogSystem.Blueprints.BlueprintDialog CreateDialog(string name, Kingmaker.DialogSystem.Blueprints.BlueprintCue firstcue)
+        {
+            var result = Helpers.CreateBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>(name);
+            result.FirstCue = new Kingmaker.DialogSystem.CueSelection();
+            result.FirstCue.Cues.Add(Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintCueBaseReference>(firstcue));
+            result.Conditions = EmptyConditionChecker;
+            result.StartActions = EmptyActionList;
+            result.FinishActions = EmptyActionList;
+            result.ReplaceActions = EmptyActionList;
+            result.TurnPlayer = true;
+            result.TurnFirstSpeaker = true;
+            return result;
+        }
+        public static void DialogAddStartAction(Kingmaker.DialogSystem.Blueprints.BlueprintDialog dialog, Kingmaker.ElementsSystem.GameAction action)
+        {
+            if (dialog.StartActions == EmptyActionList)
+            {//Make a brand new action list
+                dialog.StartActions = new Kingmaker.ElementsSystem.ActionList();
+            }
+            var len = 0;
+            if (dialog.StartActions.Actions == null)
+            {
+                dialog.StartActions.Actions = new Kingmaker.ElementsSystem.GameAction[1];
+            }
+            else
+            {
+                len = dialog.StartActions.Actions.Length;
+                Array.Resize(ref dialog.StartActions.Actions, len + 1);
+            }
+            dialog.StartActions.Actions[len] = action;
+        }
+        public static void DialogAddFinishAction(Kingmaker.DialogSystem.Blueprints.BlueprintDialog dialog, Kingmaker.ElementsSystem.GameAction action)
+        {
+            if (dialog.FinishActions == EmptyActionList)
+            {//Make a brand new action list
+                dialog.FinishActions = new Kingmaker.ElementsSystem.ActionList();
+            }
+            var len = 0;
+            if (dialog.FinishActions.Actions == null)
+            {
+                dialog.FinishActions.Actions = new Kingmaker.ElementsSystem.GameAction[1];
+            }
+            else
+            {
+                len = dialog.FinishActions.Actions.Length;
+                Array.Resize(ref dialog.FinishActions.Actions, len + 1);
+            }
+            dialog.FinishActions.Actions[len] = action;
+        }
+
+
         // Cues
         public static Kingmaker.DialogSystem.Blueprints.BlueprintCue CreateCue(string name)
         {
@@ -109,6 +163,43 @@ namespace WOTR_WoljifRomanceMod
         public static void CueSetConditionChecker(Kingmaker.DialogSystem.Blueprints.BlueprintCue cue, Kingmaker.ElementsSystem.ConditionsChecker checker)
         {
             cue.Conditions = checker;
+        }
+
+        public static void CueAddOnShowAction(Kingmaker.DialogSystem.Blueprints.BlueprintCue cue, Kingmaker.ElementsSystem.GameAction action)
+        {
+            if (cue.OnShow == EmptyActionList)
+            {//Make a brand new action list
+                cue.OnShow = new Kingmaker.ElementsSystem.ActionList();
+            }
+            var len = 0;
+            if (cue.OnShow.Actions == null)
+            {
+                cue.OnShow.Actions = new Kingmaker.ElementsSystem.GameAction[1];
+            }
+            else
+            {
+                len = cue.OnShow.Actions.Length;
+                Array.Resize(ref cue.OnShow.Actions, len + 1);
+            }
+            cue.OnShow.Actions[len] = action;
+        }
+        public static void CueAddOnStopAction(Kingmaker.DialogSystem.Blueprints.BlueprintCue cue, Kingmaker.ElementsSystem.GameAction action)
+        {
+            if (cue.OnStop == EmptyActionList)
+            {//Make a brand new action list
+                cue.OnStop = new Kingmaker.ElementsSystem.ActionList();
+            }
+            var len = 0;
+            if (cue.OnStop.Actions == null)
+            {
+                cue.OnStop.Actions = new Kingmaker.ElementsSystem.GameAction[1];
+            }
+            else
+            {
+                len = cue.OnStop.Actions.Length;
+                Array.Resize(ref cue.OnStop.Actions, len + 1);
+            }
+            cue.OnStop.Actions[len] = action;
         }
 
         // Answerslist

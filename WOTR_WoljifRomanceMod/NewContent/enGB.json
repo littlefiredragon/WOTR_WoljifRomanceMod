@@ -17,6 +17,12 @@
         "TEST_cw_falseconditionalcue": "\"Well, you're no tiefling, if the game logic is to be believed.\"",
         "TEST_cw_truecomplexconditionalcue": "\"Absolutely, and a gorgeous one at that!\"",
         "TEST_cw_falsecomplexconditionalcue": "\"Game logic says no, chief.\"",
-        "TEST_cw_generic": "\"Alright, what's next?\""
+        "TEST_cw_generic": "\"Alright, what's next?\"",
+        "TEST_a_action": "\"How about triggering an action?\"",
+        "TEST_cw_action": "\"Sure, why not?\"",
+        "TEST_a_cutscene": "\"Let's try a cutscene.\"",
+        "TEST_cw_cutscene": "\"Here goes nothing.\"",
+        "TEST_cw_newdialog": "\"Hey, look at that, a new cutscene!\"",
+        "TEST_bark": "\"Testing!\""
     }
 }

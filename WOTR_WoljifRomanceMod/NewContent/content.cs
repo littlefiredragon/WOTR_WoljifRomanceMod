@@ -102,6 +102,60 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.AnswerAddNextCue(hardcheckanswer, hardcheck);
             DialogTools.ListAddAnswer(debuganswerlist, easycheckanswer, 5);
             DialogTools.ListAddAnswer(debuganswerlist, hardcheckanswer, 6);
+
+            //Actions
+            var actionanswer = DialogTools.CreateAnswer("TEST_a_action");
+            var actioncue = DialogTools.CreateCue("TEST_cw_action");
+            DialogTools.AnswerAddNextCue(actionanswer, actioncue);
+            DialogTools.CueAddAnswersList(actioncue, debuganswerlist);
+            var testaction = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.PlayCustomMusic>("testmusic", bp =>
+            {
+                bp.MusicEventStart = "MUS_MysteryTheme_Play";
+                bp.MusicEventStop = "MUS_MysteryTheme_Stop";
+            });
+            var stoptestaction = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.StopCustomMusic>("testmusicstop");
+            DialogTools.CueAddOnShowAction(actioncue, testaction);
+            DialogTools.CueAddOnStopAction(actioncue, stoptestaction);
+            DialogTools.ListAddAnswer(debuganswerlist, actionanswer, 7);
+
+            //Cutscenes
+            var cutsceneanswer = DialogTools.CreateAnswer("TEST_a_cutscene");
+            DialogTools.ListAddAnswer(debuganswerlist, cutsceneanswer, 8);
+            var cutscenecue = DialogTools.CreateCue("TEST_cw_cutscene");
+            DialogTools.AnswerAddNextCue(cutsceneanswer, cutscenecue);
+
+            var newcue = DialogTools.CreateCue("TEST_cw_newdialog");
+            var newdialog = DialogTools.CreateDialog("brandnewdialog", newcue);
+            var DialogCommand = CommandTools.StartDialogCommand(newdialog, Companions.Woljif);
+            //Cutscene
+             // Track 1
+                // Action: Lock Controls
+                // Endgate: empty gate
+             // Track 2
+                // Action: Delay
+                // Endgate: DialogGate
+                    // GateTrack
+                        //Action: start dialog
+                        //Endgate: the empty gate again
+            var LockCommand = CommandTools.LockControlCommand();
+            var emptyGate = CutsceneTools.CreateGate("emptygate");
+            var Track1 = CutsceneTools.CreateTrack(emptyGate, LockCommand);
+
+            var delayCommand = CommandTools.DelayCommand(1.0f);
+            var gateTrack = CutsceneTools.CreateTrack(emptyGate, DialogCommand);
+            var DialogGate = CutsceneTools.CreateGate("dialoggate", gateTrack);
+
+            var Track2 = CutsceneTools.CreateTrack(DialogGate, delayCommand);
+
+            Kingmaker.AreaLogic.Cutscenes.Track[] trackarray = { Track1, Track2 };
+            var customcutscene = CutsceneTools.CreateCutscene("testcustomcutscene", false, trackarray);
+            var playcutsceneaction = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.PlayCutscene>("playtestcutscene", bp =>
+            {
+                bp.m_Cutscene = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.CutsceneReference>(customcutscene);
+                bp.Owner = cutscenecue;
+                bp.Parameters = new Kingmaker.Designers.EventConditionActionSystem.NamedParameters.ParametrizedContextSetter();
+            });
+            DialogTools.CueAddOnStopAction(cutscenecue, playcutsceneaction);
         }
     }
 }

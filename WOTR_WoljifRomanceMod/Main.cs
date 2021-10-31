@@ -13,6 +13,7 @@ namespace WOTR_WoljifRomanceMod
     //public class Main
     {
         public static bool Enabled;
+        public static AreaWatcher LoadWatcher;
         static bool Load(UnityModManager.ModEntry modEntry)
         //internal static bool Load(UnityModManager.ModEntry modEntry)
         {
@@ -21,6 +22,8 @@ namespace WOTR_WoljifRomanceMod
             ModSettings.LoadAllSettings();
             harmony.PatchAll();
             PostPatchInitializer.Initialize();
+            LoadWatcher = new AreaWatcher();
+            Kingmaker.PubSubSystem.EventBus.Subscribe(LoadWatcher);
             return true;
         }
         static bool OnToggle(UnityModManager.ModEntry modEntry, bool value)
