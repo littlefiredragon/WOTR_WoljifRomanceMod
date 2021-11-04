@@ -21,8 +21,10 @@
         "TEST_a_action": "\"How about triggering an action?\"",
         "TEST_cw_action": "\"Sure, why not?\"",
         "TEST_a_cutscene": "\"Let's try a cutscene.\"",
-        "TEST_cw_cutscene": "\"Here goes nothing.\"",
+        "TEST_cw_cutscene": "\"Ahem...\"",
         "TEST_cw_newdialog": "\"Hey, look at that, a new cutscene!\"",
-        "TEST_bark": "\"Testing!\""
+        "TEST_bark": "\"Hey, everybody! Chief figured out basic cutscene features like barks!\"",
+        "TEST_a_cutscene2": "\"How about a complex cutscene with all the bells and whistles?\"",
+        "TEST_cw_cutscene2": "\"Let's give it a shot.\""
     }
 }

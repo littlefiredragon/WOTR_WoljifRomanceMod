@@ -69,8 +69,14 @@ namespace WOTR_WoljifRomanceMod
         public static Kingmaker.AreaLogic.Cutscenes.Commands.CommandBark BarkCommand(string name, string key, Companions target = Companions.None)
         {
             var result = GenericCommand<Kingmaker.AreaLogic.Cutscenes.Commands.CommandBark>("bark_"+name);
+            result.SharedText = new Kingmaker.Localization.SharedStringAsset();
             result.SharedText.String = new Kingmaker.Localization.LocalizedString { m_Key = key };
             result.Unit = getCompanionEvaluator(target);
+            result.BarkDurationByText = true;
+            result.AwaitFinish = true;
+            result.CommandDurationShift = 0.0f;
+            result.ControlsUnit = false;
+            result.IsSubText = false;
             return result;
         }
 

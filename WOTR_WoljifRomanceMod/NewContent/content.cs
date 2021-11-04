@@ -133,19 +133,24 @@ namespace WOTR_WoljifRomanceMod
                 // Endgate: empty gate
              // Track 2
                 // Action: Delay
-                // Endgate: DialogGate
-                    // GateTrack
-                        //Action: start dialog
-                        //Endgate: the empty gate again
+                // Endgate: BarkGate
+                    // BarkGateTrack
+                        //Action: Bark
+                        //Endgate: DialogGate
+                            // DialogGateTrack
+                                // Action: Dialog start
+                                // Endgate: empty gate again
             var LockCommand = CommandTools.LockControlCommand();
             var emptyGate = CutsceneTools.CreateGate("emptygate");
             var Track1 = CutsceneTools.CreateTrack(emptyGate, LockCommand);
 
             var delayCommand = CommandTools.DelayCommand(1.0f);
-            var gateTrack = CutsceneTools.CreateTrack(emptyGate, DialogCommand);
-            var DialogGate = CutsceneTools.CreateGate("dialoggate", gateTrack);
-
-            var Track2 = CutsceneTools.CreateTrack(DialogGate, delayCommand);
+            var barkcommand = CommandTools.BarkCommand("TEST_bark", Companions.Woljif);
+            var dialogGateTrack = CutsceneTools.CreateTrack(emptyGate, DialogCommand);
+            var dialoggate = CutsceneTools.CreateGate("dialoggate", dialogGateTrack);
+            var BarkGateTrack = CutsceneTools.CreateTrack(dialoggate, barkcommand);
+            var BarkGate = CutsceneTools.CreateGate("barkgate", BarkGateTrack);
+            var Track2 = CutsceneTools.CreateTrack(BarkGate, delayCommand);
 
             Kingmaker.AreaLogic.Cutscenes.Track[] trackarray = { Track1, Track2 };
             var customcutscene = CutsceneTools.CreateCutscene("testcustomcutscene", false, trackarray);
@@ -156,6 +161,9 @@ namespace WOTR_WoljifRomanceMod
                 bp.Parameters = new Kingmaker.Designers.EventConditionActionSystem.NamedParameters.ParametrizedContextSetter();
             });
             DialogTools.CueAddOnStopAction(cutscenecue, playcutsceneaction);
+
+            //Complex cutscene
+            // CUTSCENE CREATION HANDLED IN AREA WATCHER
         }
     }
 }

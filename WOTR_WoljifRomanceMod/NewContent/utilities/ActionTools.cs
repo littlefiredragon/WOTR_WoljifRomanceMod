@@ -19,7 +19,7 @@ namespace WOTR_WoljifRomanceMod
         public static T GenericAction<T>([NotNull] string name, Action<T> init = null) where T : Kingmaker.ElementsSystem.GameAction, new()
         {
             var result = (T) Kingmaker.ElementsSystem.Element.CreateInstance(typeof(T));
-            result.name = name;
+            //result.name = name;
             init?.Invoke(result);
             return result;
         }
