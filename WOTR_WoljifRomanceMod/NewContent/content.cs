@@ -19,6 +19,20 @@ namespace WOTR_WoljifRomanceMod
         {
             DialogTools.NewDialogs.LoadDialogIntoGame("enGB");
 
+            createDebugMenu();
+            createSimpleConditionalCue();
+            createComplexConditionalCue();
+            createConditionalAnswers();
+            createSkillChecks();
+            createActionTest();
+            createSimpleCutscene();
+            //Complex cutscene handled in areawatcher
+        }
+
+
+
+        static void createDebugMenu()
+        {
             var originalanswers = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("e41585da330233143b34ef64d7d62d69");
             var starttestcue = DialogTools.CreateCue("TEST_cw_starttesting");
             var endtestcue = DialogTools.CreateCue("TEST_cw_donetesting");
@@ -31,8 +45,11 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.ListAddAnswer(debuganswerlist, endtestanswer);
             DialogTools.CueAddAnswersList(starttestcue, debuganswerlist);
             DialogTools.CueAddAnswersList(endtestcue, originalanswers);
+        }
+        static void createSimpleConditionalCue()
+        {
+            var debuganswerlist = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("TEST_L_debugmenu");
 
-            // Simple conditional cue
             var simpleconditionalanswer = DialogTools.CreateAnswer("TEST_a_conditionalcue");
             var simpleconditionalcuetrue = DialogTools.CreateCue("TEST_cw_trueconditionalcue");
             var simpleconditionalcuefalse = DialogTools.CreateCue("TEST_cw_falseconditionalcue");
@@ -46,14 +63,17 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.ListAddAnswer(debuganswerlist, simpleconditionalanswer, 0);
             DialogTools.CueAddAnswersList(simpleconditionalcuetrue, debuganswerlist);
             DialogTools.CueAddAnswersList(simpleconditionalcuefalse, debuganswerlist);
+        }
+        static void createComplexConditionalCue()
+        {
+            var debuganswerlist = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("TEST_L_debugmenu");
 
-            // Complex conditional cue
             var complexconditionalanswer = DialogTools.CreateAnswer("TEST_a_complexconditionalcue");
             var complexconditionalcuetrue = DialogTools.CreateCue("TEST_cw_truecomplexconditionalcue");
             var complexconditionalcuefalse = DialogTools.CreateCue("TEST_cw_falsecomplexconditionalcue");
             // Build logic tree
             var complexlogic = ConditionalTools.CreateChecker();
-            ConditionalTools.CheckerAddCondition(complexlogic, 
+            ConditionalTools.CheckerAddCondition(complexlogic,
                 ConditionalTools.CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.PcFemale>("isplayerfemale"));
             ConditionalTools.CheckerAddCondition(complexlogic,
                 ConditionalTools.CreateLogicCondition("aasimarortiefling", Kingmaker.ElementsSystem.Operation.Or,
@@ -66,8 +86,12 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.CueAddAnswersList(complexconditionalcuefalse, debuganswerlist);
             DialogTools.CueAddAnswersList(complexconditionalcuetrue, debuganswerlist);
             DialogTools.ListAddAnswer(debuganswerlist, complexconditionalanswer, 1);
+        }
 
-            // Conditional answers
+        static void createConditionalAnswers()
+        {
+            var debuganswerlist = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("TEST_L_debugmenu");
+
             var genericcue = DialogTools.CreateCue("TEST_cw_generic");
             DialogTools.CueAddAnswersList(genericcue, debuganswerlist);
             var showcondanswertrue = DialogTools.CreateAnswer("TEST_a_trueconditionalanswer");
@@ -88,8 +112,12 @@ namespace WOTR_WoljifRomanceMod
                 ConditionalTools.CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.PcRace>("isplayerelf",
                         bp => { bp.Race = Kingmaker.Blueprints.Race.Elf; }));
             DialogTools.ListAddAnswer(debuganswerlist, unpickableanswer, 4);
+        }
 
-            //Skill checks
+        static void createSkillChecks()
+        {
+            var debuganswerlist = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("TEST_L_debugmenu");
+
             var easycheckanswer = DialogTools.CreateAnswer("TEST_a_skillcheckeasy");
             var hardcheckanswer = DialogTools.CreateAnswer("TEST_a_skillcheckhard");
             var failedcheckcue = DialogTools.CreateCue("TEST_sf_failedskillcheck");
@@ -102,8 +130,12 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.AnswerAddNextCue(hardcheckanswer, hardcheck);
             DialogTools.ListAddAnswer(debuganswerlist, easycheckanswer, 5);
             DialogTools.ListAddAnswer(debuganswerlist, hardcheckanswer, 6);
+        }
 
-            //Actions
+        static void createActionTest()
+        {
+            var debuganswerlist = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("TEST_L_debugmenu");
+
             var actionanswer = DialogTools.CreateAnswer("TEST_a_action");
             var actioncue = DialogTools.CreateCue("TEST_cw_action");
             DialogTools.AnswerAddNextCue(actionanswer, actioncue);
@@ -117,8 +149,12 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.CueAddOnShowAction(actioncue, testaction);
             DialogTools.CueAddOnStopAction(actioncue, stoptestaction);
             DialogTools.ListAddAnswer(debuganswerlist, actionanswer, 7);
+        }
 
-            //Cutscenes
+        static void createSimpleCutscene()
+        {
+            var debuganswerlist = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("TEST_L_debugmenu");
+
             var cutsceneanswer = DialogTools.CreateAnswer("TEST_a_cutscene");
             DialogTools.ListAddAnswer(debuganswerlist, cutsceneanswer, 8);
             var cutscenecue = DialogTools.CreateCue("TEST_cw_cutscene");
@@ -128,18 +164,18 @@ namespace WOTR_WoljifRomanceMod
             var newdialog = DialogTools.CreateDialog("brandnewdialog", newcue);
             var DialogCommand = CommandTools.StartDialogCommand(newdialog, Companions.Woljif);
             //Cutscene
-             // Track 1
-                // Action: Lock Controls
-                // Endgate: empty gate
-             // Track 2
-                // Action: Delay
-                // Endgate: BarkGate
-                    // BarkGateTrack
-                        //Action: Bark
-                        //Endgate: DialogGate
-                            // DialogGateTrack
-                                // Action: Dialog start
-                                // Endgate: empty gate again
+            // Track 1
+            // Action: Lock Controls
+            // Endgate: empty gate
+            // Track 2
+            // Action: Delay
+            // Endgate: BarkGate
+            // BarkGateTrack
+            //Action: Bark
+            //Endgate: DialogGate
+            // DialogGateTrack
+            // Action: Dialog start
+            // Endgate: empty gate again
             var LockCommand = CommandTools.LockControlCommand();
             var emptyGate = CutsceneTools.CreateGate("emptygate");
             var Track1 = CutsceneTools.CreateTrack(emptyGate, LockCommand);
@@ -161,9 +197,6 @@ namespace WOTR_WoljifRomanceMod
                 bp.Parameters = new Kingmaker.Designers.EventConditionActionSystem.NamedParameters.ParametrizedContextSetter();
             });
             DialogTools.CueAddOnStopAction(cutscenecue, playcutsceneaction);
-
-            //Complex cutscene
-            // CUTSCENE CREATION HANDLED IN AREA WATCHER
         }
     }
 }

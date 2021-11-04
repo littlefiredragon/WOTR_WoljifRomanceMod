@@ -15,6 +15,29 @@ namespace WOTR_WoljifRomanceMod
 {
     public static class CutsceneTools
     {
+        // LOCATORS
+        public static Kingmaker.Blueprints.EntityReference MakeLocator(string name, UnityEngine.Transform roottransform, float posx, float posy, float posz, float rotate = 0)
+        {
+            return MakeLocator(name, Guid.NewGuid().ToString(), roottransform, posx, posy, posz, rotate);
+        }
+            public static Kingmaker.Blueprints.EntityReference MakeLocator (string name, string guid, UnityEngine.Transform roottransform, float posx, float posy, float posz, float rotate = 0)
+        {
+            var obj = new UnityEngine.GameObject(name, typeof(UnityEngine.Transform));
+            var view = obj.AddComponent<Kingmaker.View.LocatorView>();
+            obj.transform.position = new UnityEngine.Vector3(posx, posy, posz);
+            view.transform.Rotate(0.0f, rotate, 0.0f);
+            obj.transform.SetParent(roottransform);
+            view.UniqueId = guid;
+            view.UpdateCachedRenderersAndColliders();
+            var data = view.CreateEntityData(true);
+            Game.Instance.LoadedAreaState.AddEntityData(data);
+            data.AttachView(view);
+            Kingmaker.Blueprints.EntityReference dataref = (Kingmaker.Blueprints.EntityReference)view.Data;
+            dataref.FindData();
+
+            return dataref;
+        }
+
         // CUTSCENE
         public static Kingmaker.AreaLogic.Cutscenes.Cutscene CreateCutscene([NotNull] string name, bool sleepless, params Kingmaker.AreaLogic.Cutscenes.Track[] tracks)
         {

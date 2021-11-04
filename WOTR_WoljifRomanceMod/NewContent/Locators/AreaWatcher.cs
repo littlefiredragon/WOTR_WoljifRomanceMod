@@ -23,46 +23,9 @@ namespace WOTR_WoljifRomanceMod
                     if (thing.UniqueId.Equals("87998f84-bbf9-43ae-8eeb-69b9dd40e736", StringComparison.OrdinalIgnoreCase))
                     {
                         var roottransform = thing.View.gameObject.transform.parent;
-                        // Test locator: stolen from seelah's horse.
-                        /*var horselocator = (Kingmaker.View.LocatorView)thing.View;
-                        Kingmaker.Blueprints.EntityReference horseref = (Kingmaker.Blueprints.EntityReference) horselocator.Data;
-                        horseref.FindData();*/
-                        var horseholdingstate = thing.View.Data.HoldingState;
 
-                        //obj.transform.position = new UnityEngine.Vector3(-22.8f, 39.9f, 1.0f);
-                        var obj = new UnityEngine.GameObject("testlocator1", typeof(UnityEngine.Transform));
-                        var view = obj.AddComponent<Kingmaker.View.LocatorView>();
-                        //obj.transform.position = new UnityEngine.Vector3(10.9f, 41.2f, 29.7f);
-                        obj.transform.position = new UnityEngine.Vector3(15.2f, 39.9f, 35.2f);
-                        //obj.transform.rotation = new UnityEngine.Quaternion(0.0f, 176.0f, 0.0f, 0.0f);
-                        obj.transform.rotation.Set(0.0f, 176.0f, 0.0f, 0.0f);
-                        //view.transform.rotation.eulerAngles.Set(0.0f, 222.5f, 0.0f);
-                        obj.transform.SetParent(roottransform);
-                        view.UniqueId = Guid.NewGuid().ToString();
-                        view.UpdateCachedRenderersAndColliders();
-                        var data = view.CreateEntityData(true);
-                        //data.HoldingState = horseholdingstate;
-                        Game.Instance.LoadedAreaState.AddEntityData(data);
-                        data.AttachView(view);
-
-                        Kingmaker.Blueprints.EntityReference dataref1 = (Kingmaker.Blueprints.EntityReference) view.Data;
-                        dataref1.FindData();
-
-                        var obj2 = new UnityEngine.GameObject("testlocator2", typeof(UnityEngine.Transform));
-                        var view2 = obj2.AddComponent<Kingmaker.View.LocatorView>();
-                        //obj2.transform.position = new UnityEngine.Vector3(8.2f, 41.2f, 28.7f);
-                        obj2.transform.position = new UnityEngine.Vector3(14.11f, 39.9f, 34.0f);
-                        //obj2.transform.rotation = new UnityEngine.Quaternion(0.0f, 138.67f, 0.0f, 0.0f);
-                        view2.transform.rotation.eulerAngles.Set(0.0f, 138.67f, 0.0f);
-                        obj2.transform.SetParent(roottransform);
-                        view2.UniqueId = Guid.NewGuid().ToString();
-                        view2.UpdateCachedRenderersAndColliders();
-                        var data2 = view2.CreateEntityData(true);
-                        Game.Instance.LoadedAreaState.AddEntityData(data2);
-                        data2.AttachView(view2);
-                        Kingmaker.Blueprints.EntityReference dataref2 = (Kingmaker.Blueprints.EntityReference) view2.Data;
-                        dataref2.FindData();
-
+                        var dataref1 = CutsceneTools.MakeLocator("testlocator1", roottransform, 15.2f, 39.9f, 35.2f, 269.5f);
+                        var dataref2 = CutsceneTools.MakeLocator("testlocator2", roottransform, 14.11f, 39.9f, 34.0f, 35.8f);
 
                         // TEST CUTSCENE CREATION
                         var debuganswerlist = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("TEST_L_debugmenu");
