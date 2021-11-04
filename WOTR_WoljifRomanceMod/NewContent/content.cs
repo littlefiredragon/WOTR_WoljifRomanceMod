@@ -140,12 +140,12 @@ namespace WOTR_WoljifRomanceMod
             var actioncue = DialogTools.CreateCue("TEST_cw_action");
             DialogTools.AnswerAddNextCue(actionanswer, actioncue);
             DialogTools.CueAddAnswersList(actioncue, debuganswerlist);
-            var testaction = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.PlayCustomMusic>("testmusic", bp =>
+            var testaction = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.PlayCustomMusic>(bp =>
             {
                 bp.MusicEventStart = "MUS_MysteryTheme_Play";
                 bp.MusicEventStop = "MUS_MysteryTheme_Stop";
             });
-            var stoptestaction = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.StopCustomMusic>("testmusicstop");
+            var stoptestaction = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.StopCustomMusic>();
             DialogTools.CueAddOnShowAction(actioncue, testaction);
             DialogTools.CueAddOnStopAction(actioncue, stoptestaction);
             DialogTools.ListAddAnswer(debuganswerlist, actionanswer, 7);
@@ -190,7 +190,7 @@ namespace WOTR_WoljifRomanceMod
 
             Kingmaker.AreaLogic.Cutscenes.Track[] trackarray = { Track1, Track2 };
             var customcutscene = CutsceneTools.CreateCutscene("testcustomcutscene", false, trackarray);
-            var playcutsceneaction = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.PlayCutscene>("playtestcutscene", bp =>
+            var playcutsceneaction = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.PlayCutscene>(bp =>
             {
                 bp.m_Cutscene = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.CutsceneReference>(customcutscene);
                 bp.Owner = cutscenecue;
@@ -234,29 +234,13 @@ namespace WOTR_WoljifRomanceMod
             var cameraGateTrack = CutsceneTools.CreateTrack(dialogGate, cameracommand);
             var cameragate = CutsceneTools.CreateGate("cameragate", cameraGateTrack);
             // Track B commands
-            var unhideWoljifAction = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.HideUnit>("unhidewoljif", bp =>
-            {
-                bp.Target = CommandTools.getCompanionEvaluator(Companions.Woljif);
-                bp.Unhide = true;
-            });
-            var moveWoljifAction = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit>("movewoljif", bp =>
-            {
-                bp.Unit = CommandTools.getCompanionEvaluator(Companions.Woljif);
-                bp.translocatePosition = locator1;
-                bp.m_CopyRotation = true;
-            });
+            var unhideWoljifAction = ActionTools.HideUnitAction(Companions.Woljif, true);
+            var moveWoljifAction = ActionTools.TranslocateAction(Companions.Woljif, locator1, true);
             Kingmaker.ElementsSystem.GameAction[] actionlist1 = { unhideWoljifAction, moveWoljifAction };
             var moveWoljifcommand = CommandTools.ActionCommand("movewoljifcommand", actionlist1);
+            unhideWoljifAction.Owner = moveWoljifcommand;
             moveWoljifAction.Owner = moveWoljifcommand;
-
-            var moveplayeraction = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit>("moveplayer", bp =>
-            {
-                bp.Unit = new Kingmaker.Designers.EventConditionActionSystem.Evaluators.PlayerCharacter();
-                bp.translocatePosition = locator2;
-                bp.m_CopyRotation = true;
-            });
-            var moveplayercommand = CommandTools.ActionCommand("moveplayercommand", moveplayeraction);
-            moveplayeraction.Owner = moveplayercommand;
+            var moveplayercommand = CommandTools.MoveActionCommand("moveplayercommand", Companions.Player, locator2, true);
             // Track B itself
             Kingmaker.AreaLogic.Cutscenes.CommandBase[] trackbcommands = { moveWoljifcommand, moveplayercommand };
             var TrackB = CutsceneTools.CreateTrack(cameragate, trackbcommands);
@@ -264,12 +248,7 @@ namespace WOTR_WoljifRomanceMod
             // make the cutscene
             Kingmaker.AreaLogic.Cutscenes.Track[] cutscenetracks = { TrackA, TrackB };
             var customcutscene = CutsceneTools.CreateCutscene("testcomplexcutscene", false, cutscenetracks);
-            var playcutsceneaction = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.PlayCutscene>("playcomplexcutscene", bp =>
-            {
-                bp.m_Cutscene = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.CutsceneReference>(customcutscene);
-                bp.Owner = cutscenecue2;
-                bp.Parameters = new Kingmaker.Designers.EventConditionActionSystem.NamedParameters.ParametrizedContextSetter();
-            });
+            var playcutsceneaction = ActionTools.PlayCutsceneAction(customcutscene, cutscenecue2);
             DialogTools.CueAddOnStopAction(cutscenecue2, playcutsceneaction);
         }
     }

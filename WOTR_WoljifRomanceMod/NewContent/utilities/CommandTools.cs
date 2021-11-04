@@ -15,13 +15,14 @@ namespace WOTR_WoljifRomanceMod
 {
     public enum Companions
     {
-        None = -1, Arueshalae, Camellia, Daeran, Ember, Greybor, Lann, Nenio, Regill, Seelah, Sosiel, Wenduag, Woljif
+        None = -1, Player, Arueshalae, Camellia, Daeran, Ember, Greybor, Lann, Nenio, Regill, Seelah, Sosiel, Wenduag, Woljif
     }
     public static class CommandTools
     {
         public static int numdelays = 0;
         public static int numlockcontrols = 0;
         public static int numcamfollows = 0;
+        public static int numunnamedmoves = 0;
         public static T GenericCommand<T>(string name, Action<T> init = null) where T : Kingmaker.AreaLogic.Cutscenes.CommandBase, new()
         {
             var result = Helpers.CreateBlueprint<T>(name);
@@ -109,6 +110,21 @@ namespace WOTR_WoljifRomanceMod
             return result;
         }
 
+        public static Kingmaker.AreaLogic.Cutscenes.CommandAction MoveActionCommand(Companions unit, Kingmaker.Blueprints.EntityReference position, bool setrotation = true)
+        {
+            var name = "translocate_" + numunnamedmoves.ToString();
+            numunnamedmoves++;
+            return MoveActionCommand(name, unit, position, setrotation);
+        }
+            public static Kingmaker.AreaLogic.Cutscenes.CommandAction MoveActionCommand(string name, Companions unit, Kingmaker.Blueprints.EntityReference position, bool setrotation = true)
+        {
+            var action = ActionTools.TranslocateAction(unit, position, setrotation);
+            var command = ActionCommand(name, action);
+            action.Owner = command;
+            return command;
+        }
+
+
         public static Kingmaker.Blueprints.BlueprintUnitReference GetCompanionReference(Companions companion)
         {
             var companionid = "";
@@ -151,6 +167,7 @@ namespace WOTR_WoljifRomanceMod
                     companionid = "766435873b1361c4287c351de194e5f9";
                     break;
                 case Companions.None:
+                case Companions.Player:
                     companionid = null;
                     break;
             }
@@ -163,10 +180,19 @@ namespace WOTR_WoljifRomanceMod
         }
         public static Kingmaker.ElementsSystem.UnitEvaluator getCompanionEvaluator (Companions companion)
         {
-            var result = new Kingmaker.Designers.EventConditionActionSystem.Evaluators.CompanionInParty();
-            result.IncludeDettached = true;
-            result.IncludeRemote = true;
-            result.m_Companion = GetCompanionReference(companion);
+            Kingmaker.ElementsSystem.UnitEvaluator result = null;
+            if (companion == Companions.Player)
+            {
+                result = new Kingmaker.Designers.EventConditionActionSystem.Evaluators.PlayerCharacter();
+            }
+            else
+            {
+                var companioneval = new Kingmaker.Designers.EventConditionActionSystem.Evaluators.CompanionInParty();
+                companioneval.IncludeDettached = true;
+                companioneval.IncludeRemote = true;
+                companioneval.m_Companion = GetCompanionReference(companion);
+                result = companioneval;
+            }
             return result;
         }
     }

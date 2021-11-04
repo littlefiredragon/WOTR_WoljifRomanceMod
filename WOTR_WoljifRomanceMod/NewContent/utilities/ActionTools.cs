@@ -16,26 +16,57 @@ namespace WOTR_WoljifRomanceMod
 {
     public static class ActionTools
     {
-        public static T GenericAction<T>([NotNull] string name, Action<T> init = null) where T : Kingmaker.ElementsSystem.GameAction, new()
+        public static T GenericAction<T>(Action<T> init = null) where T : Kingmaker.ElementsSystem.GameAction, new()
         {
-            var result = (T) Kingmaker.ElementsSystem.Element.CreateInstance(typeof(T));
-            //result.name = name;
+            var result = (T)Kingmaker.ElementsSystem.Element.CreateInstance(typeof(T));
             init?.Invoke(result);
             return result;
         }
 
-        //Creating a conditional action can take either a condition directly, for ease of creating simple checkers, or it can take a pre-constructed conditionchecker tree.
-        public static Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional ConditionalAction([NotNull] string name, Kingmaker.ElementsSystem.Condition condition)
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit TranslocateAction(Companions unit, Kingmaker.Blueprints.EntityReference position, bool setrotation = true)
         {
-            var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional>(name);
+            var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit>(bp =>
+            {
+                bp.Unit = CommandTools.getCompanionEvaluator(unit);
+                bp.translocatePosition = position;
+                bp.m_CopyRotation = setrotation;
+            });
+            return result;
+        }
+
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.HideUnit HideUnitAction(Companions unit, bool unhide = false)
+        {
+            var action = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.HideUnit>(bp =>
+            {
+                bp.Target = CommandTools.getCompanionEvaluator(unit);
+                bp.Unhide = unhide;
+            });
+            return action;
+        }
+
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.PlayCutscene PlayCutsceneAction(Kingmaker.AreaLogic.Cutscenes.Cutscene cutscene, SimpleBlueprint owner = null)
+        {
+            var action = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.PlayCutscene>(bp =>
+            {
+                bp.m_Cutscene = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.CutsceneReference>(cutscene);
+                bp.Owner = owner;
+                bp.Parameters = new Kingmaker.Designers.EventConditionActionSystem.NamedParameters.ParametrizedContextSetter();
+            });
+            return action;
+        }
+
+        //Creating a conditional action can take either a condition directly, for ease of creating simple checkers, or it can take a pre-constructed conditionchecker tree.
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional ConditionalAction(Kingmaker.ElementsSystem.Condition condition)
+        {
+            var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional>();
             result.ConditionsChecker = new Kingmaker.ElementsSystem.ConditionsChecker();
             result.IfTrue = DialogTools.EmptyActionList;
             result.IfFalse = DialogTools.EmptyActionList;
             return result;
         }
-        public static Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional ConditionalAction([NotNull] string name, Kingmaker.ElementsSystem.ConditionsChecker conditionchecker)
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional ConditionalAction(Kingmaker.ElementsSystem.ConditionsChecker conditionchecker)
         {
-            var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional>(name);
+            var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional>();
             result.ConditionsChecker = conditionchecker;
             result.IfTrue = DialogTools.EmptyActionList;
             result.IfFalse = DialogTools.EmptyActionList;
