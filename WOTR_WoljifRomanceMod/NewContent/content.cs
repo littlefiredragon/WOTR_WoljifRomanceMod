@@ -31,7 +31,7 @@ namespace WOTR_WoljifRomanceMod
 
 
 
-        static void createDebugMenu()
+        static public void createDebugMenu()
         {
             var originalanswers = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("e41585da330233143b34ef64d7d62d69");
             var starttestcue = DialogTools.CreateCue("TEST_cw_starttesting");
@@ -46,7 +46,7 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.CueAddAnswersList(starttestcue, debuganswerlist);
             DialogTools.CueAddAnswersList(endtestcue, originalanswers);
         }
-        static void createSimpleConditionalCue()
+        static public void createSimpleConditionalCue()
         {
             var debuganswerlist = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("TEST_L_debugmenu");
 
@@ -64,7 +64,7 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.CueAddAnswersList(simpleconditionalcuetrue, debuganswerlist);
             DialogTools.CueAddAnswersList(simpleconditionalcuefalse, debuganswerlist);
         }
-        static void createComplexConditionalCue()
+        static public void createComplexConditionalCue()
         {
             var debuganswerlist = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("TEST_L_debugmenu");
 
@@ -88,7 +88,7 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.ListAddAnswer(debuganswerlist, complexconditionalanswer, 1);
         }
 
-        static void createConditionalAnswers()
+        static public void createConditionalAnswers()
         {
             var debuganswerlist = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("TEST_L_debugmenu");
 
@@ -114,7 +114,7 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.ListAddAnswer(debuganswerlist, unpickableanswer, 4);
         }
 
-        static void createSkillChecks()
+        static public void createSkillChecks()
         {
             var debuganswerlist = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("TEST_L_debugmenu");
 
@@ -132,7 +132,7 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.ListAddAnswer(debuganswerlist, hardcheckanswer, 6);
         }
 
-        static void createActionTest()
+        static public void createActionTest()
         {
             var debuganswerlist = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("TEST_L_debugmenu");
 
@@ -151,7 +151,7 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.ListAddAnswer(debuganswerlist, actionanswer, 7);
         }
 
-        static void createSimpleCutscene()
+        static public void createSimpleCutscene()
         {
             var debuganswerlist = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("TEST_L_debugmenu");
 
@@ -197,6 +197,80 @@ namespace WOTR_WoljifRomanceMod
                 bp.Parameters = new Kingmaker.Designers.EventConditionActionSystem.NamedParameters.ParametrizedContextSetter();
             });
             DialogTools.CueAddOnStopAction(cutscenecue, playcutsceneaction);
+        }
+
+        static public void createComplexCutscene(Kingmaker.Blueprints.EntityReference locator1, Kingmaker.Blueprints.EntityReference locator2)
+        {
+            // TEST CUTSCENE CREATION
+            var debuganswerlist = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("TEST_L_debugmenu");
+            var newdialog = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>("brandnewdialog");
+            var cutsceneanswer2 = DialogTools.CreateAnswer("TEST_a_cutscene2");
+            DialogTools.ListAddAnswer(debuganswerlist, cutsceneanswer2, 9);
+            var cutscenecue2 = DialogTools.CreateCue("TEST_cw_cutscene2");
+            DialogTools.AnswerAddNextCue(cutsceneanswer2, cutscenecue2);
+
+            //cutscene
+            //  trackA
+            //    Command: Lockcontrol
+            //    Endgate: DialogGate
+            //        DialogGateTrack
+            //          Command: start dialog
+            //          Endgate: null
+            //  trackB
+            //    Command: move1, move2
+            //    Endgate: cameragate
+            //      CameraGateTrack
+            //        Command: camerafollow
+            //        Endgate: dialoggate
+
+            // Create track A
+            var lockcommand = CommandTools.LockControlCommand();
+            var startdialogcommand = CommandTools.StartDialogCommand(newdialog, Companions.Woljif);
+            var dialogGateTrack = CutsceneTools.CreateTrack(null, startdialogcommand);
+            var dialogGate = CutsceneTools.CreateGate("dialoggatecomp", dialogGateTrack);
+            var TrackA = CutsceneTools.CreateTrack(dialogGate, lockcommand);
+            // Create Track B
+            var cameracommand = CommandTools.CamFollowCommand(Companions.Woljif);
+            var cameraGateTrack = CutsceneTools.CreateTrack(dialogGate, cameracommand);
+            var cameragate = CutsceneTools.CreateGate("cameragate", cameraGateTrack);
+            // Track B commands
+            var unhideWoljifAction = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.HideUnit>("unhidewoljif", bp =>
+            {
+                bp.Target = CommandTools.getCompanionEvaluator(Companions.Woljif);
+                bp.Unhide = true;
+            });
+            var moveWoljifAction = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit>("movewoljif", bp =>
+            {
+                bp.Unit = CommandTools.getCompanionEvaluator(Companions.Woljif);
+                bp.translocatePosition = locator1;
+                bp.m_CopyRotation = true;
+            });
+            Kingmaker.ElementsSystem.GameAction[] actionlist1 = { unhideWoljifAction, moveWoljifAction };
+            var moveWoljifcommand = CommandTools.ActionCommand("movewoljifcommand", actionlist1);
+            moveWoljifAction.Owner = moveWoljifcommand;
+
+            var moveplayeraction = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit>("moveplayer", bp =>
+            {
+                bp.Unit = new Kingmaker.Designers.EventConditionActionSystem.Evaluators.PlayerCharacter();
+                bp.translocatePosition = locator2;
+                bp.m_CopyRotation = true;
+            });
+            var moveplayercommand = CommandTools.ActionCommand("moveplayercommand", moveplayeraction);
+            moveplayeraction.Owner = moveplayercommand;
+            // Track B itself
+            Kingmaker.AreaLogic.Cutscenes.CommandBase[] trackbcommands = { moveWoljifcommand, moveplayercommand };
+            var TrackB = CutsceneTools.CreateTrack(cameragate, trackbcommands);
+
+            // make the cutscene
+            Kingmaker.AreaLogic.Cutscenes.Track[] cutscenetracks = { TrackA, TrackB };
+            var customcutscene = CutsceneTools.CreateCutscene("testcomplexcutscene", false, cutscenetracks);
+            var playcutsceneaction = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.PlayCutscene>("playcomplexcutscene", bp =>
+            {
+                bp.m_Cutscene = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.CutsceneReference>(customcutscene);
+                bp.Owner = cutscenecue2;
+                bp.Parameters = new Kingmaker.Designers.EventConditionActionSystem.NamedParameters.ParametrizedContextSetter();
+            });
+            DialogTools.CueAddOnStopAction(cutscenecue2, playcutsceneaction);
         }
     }
 }
