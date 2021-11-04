@@ -37,8 +37,8 @@ namespace WOTR_WoljifRomanceMod
                 { // Steal the root transform from the Seelah's Horse locator.
                     var roottransform = thing.View.gameObject.transform.parent;
                     // Create the Locators whenever the scene is loaded, since they go away on unload.
-                    var dataref1 = CutsceneTools.MakeLocator("testlocator1", "30724c7a-18cf-41a2-a756-384a31b8dc1b", roottransform, 15.2f, 39.9f, 35.2f, 269.5f);
-                    var dataref2 = CutsceneTools.MakeLocator("testlocator2", "1eae72b4-6c5d-4254-80c5-a12acc5d0d1d", roottransform, 14.11f, 39.9f, 34.0f, 35.8f);
+                    var dataref1 = LocatorTools.MakeLocator("testlocator1", roottransform, 15.2f, 39.9f, 35.2f, 269.5f);
+                    var dataref2 = LocatorTools.MakeLocator("testlocator2", roottransform, 14.11f, 39.9f, 34.0f, 35.8f);
 
                 if (null == Resources.GetModBlueprint<Kingmaker.AreaLogic.Cutscenes.Cutscene>("testcomplexcutscene"))
                 { // Only create the rest of the stuff once.

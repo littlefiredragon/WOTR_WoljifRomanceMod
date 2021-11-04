@@ -19,7 +19,7 @@
 		<RepositoryUrl>https://github.com/littlefiredragon/WOTR_WoljifRomanceMod</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<Configurations>Debug;Release;Debug Install;Release Install</Configurations>
-		<Authors>Zappastuff</Authors>
+		<Authors>Paladingineer</Authors>
 		<Company />
 		<Product />
 		<Copyright>Copyright 2021</Copyright>
@@ -57,11 +57,13 @@
 
 	<ItemGroup>
 	  <None Remove="NewContent\Blueprints.json" />
+	  <None Remove="NewContent\Locators.json" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <EmbeddedResource Include="NewContent\Blueprints.json" />
 	  <EmbeddedResource Include="NewContent\enGB.json" />
+	  <EmbeddedResource Include="NewContent\Locators.json" />
 	</ItemGroup>
 
 	<ItemGroup>
