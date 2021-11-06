@@ -39,10 +39,12 @@ namespace WOTR_WoljifRomanceMod
                     // Create the Locators whenever the scene is loaded, since they go away on unload.
                     var dataref1 = LocatorTools.MakeLocator("testlocator1", roottransform, 15.2f, 39.9f, 35.2f, 269.5f);
                     var dataref2 = LocatorTools.MakeLocator("testlocator2", roottransform, 14.11f, 39.9f, 34.0f, 35.8f);
+                    var dataref3 = LocatorTools.MakeLocator("testlocator3", roottransform, 11.17f, 40.0f, 37.0f, 313.4f);
 
                 if (null == Resources.GetModBlueprint<Kingmaker.AreaLogic.Cutscenes.Cutscene>("testcomplexcutscene"))
                 { // Only create the rest of the stuff once.
-                    debugmenu.createComplexCutscene(dataref1, dataref2);
+                  //debugmenu.createComplexCutscene(dataref1, dataref2);
+                  debugmenu.createAlternateCutscene(dataref1, dataref2, dataref3);
                 }
                     break;
                 }

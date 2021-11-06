@@ -240,15 +240,110 @@ namespace WOTR_WoljifRomanceMod
             var moveWoljifcommand = CommandTools.ActionCommand("movewoljifcommand", actionlist1);
             unhideWoljifAction.Owner = moveWoljifcommand;
             moveWoljifAction.Owner = moveWoljifcommand;
-            var moveplayercommand = CommandTools.MoveActionCommand("moveplayercommand", Companions.Player, locator2, true);
+            var moveplayercommand = CommandTools.TranslocateCommand("moveplayercommand", Companions.Player, locator2, true);
             // Track B itself
             Kingmaker.AreaLogic.Cutscenes.CommandBase[] trackbcommands = { moveWoljifcommand, moveplayercommand };
             var TrackB = CutsceneTools.CreateTrack(cameragate, trackbcommands);
-
             // make the cutscene
             Kingmaker.AreaLogic.Cutscenes.Track[] cutscenetracks = { TrackA, TrackB };
             var customcutscene = CutsceneTools.CreateCutscene("testcomplexcutscene", false, cutscenetracks);
             var playcutsceneaction = ActionTools.PlayCutsceneAction(customcutscene, cutscenecue2);
+            DialogTools.CueAddOnStopAction(cutscenecue2, playcutsceneaction);
+        }
+
+        static public void createAlternateCutscene(Kingmaker.Blueprints.EntityReference locator1, Kingmaker.Blueprints.EntityReference locator2, Kingmaker.Blueprints.EntityReference locator3)
+        {
+            // Dialog Bits
+            var debuganswerlist = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("TEST_L_debugmenu");
+            var newdialog = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>("brandnewdialog");
+            var cutsceneanswer2 = DialogTools.CreateAnswer("TEST_a_cutscene2");
+            DialogTools.ListAddAnswer(debuganswerlist, cutsceneanswer2, 9);
+            var cutscenecue2 = DialogTools.CreateCue("TEST_cw_cutscene2");
+            DialogTools.AnswerAddNextCue(cutsceneanswer2, cutscenecue2);
+
+            /* STRUCTURE
+             * Cutscene
+             *   Track 0A
+             *     Commands: [LockControl]
+             *     EndGate: Gate 3
+             *   Track 0B
+             *     Commands: [Fadeout]
+             *     Endgate: Gate 1
+             *   Track 0C
+             *     Commands: [Delay, Action(Transport Player, Transport Woljif), Delay]
+             *     Endgate: Gate 1
+             *   Track 0D
+             *     Commands: [Camerafollowplayer]
+             *     Endgate: Gate 1
+             *     
+             *   Gate 1
+             *     Track 1A
+             *       Commands: [Move Woljif, delay]
+             *       Endgate: Gate 2
+             *     Track 1B
+             *       Commands: [Camera Follow]
+             *       Endgate: Gate 3
+             *   
+             *   Gate 2
+             *     Track 2A
+             *       Commands: [Turn Woljif to face player, Bark]
+             *       Endgate: Gate 3
+             *   
+             *   Gate 3
+             *     Track 3A
+             *       Commands: [Start Dialog]
+             *       Endgate: Null
+             */
+
+            // Build 3rd section
+            var startdialog_3A = CommandTools.StartDialogCommand(newdialog, Companions.Woljif);
+            var Track_3A = CutsceneTools.CreateTrack(null, startdialog_3A);
+            var Gate_3 = CutsceneTools.CreateGate("CutTestGate3", Track_3A);
+
+            // Build 2nd Section
+            var bark_2A = CommandTools.BarkCommand("CutTestBark2A", "TEST_bark2", Companions.Woljif);
+            var turn_2A = CommandTools.LookAtCommand("CutTestTurn2A", Companions.Woljif, Companions.Player);
+            Kingmaker.AreaLogic.Cutscenes.CommandBase[] commands_2A = { turn_2A, bark_2A };
+            var Track_2A = CutsceneTools.CreateTrack(Gate_3, commands_2A);
+            var Gate_2 = CutsceneTools.CreateGate("CutTestGate2", Track_2A);
+
+            // Build 1st section
+            var move_1A = CommandTools.WalkCommand("CutTestWalk1A", Companions.Woljif, locator3);
+            var delay_1A = CommandTools.DelayCommand(0.5f);
+            Kingmaker.AreaLogic.Cutscenes.CommandBase[] commands_1A = { move_1A, delay_1A };
+            var track_1A = CutsceneTools.CreateTrack(Gate_2, commands_1A);
+            var camera_1B = CommandTools.CamFollowCommand(Companions.Woljif);
+            var track_1B = CutsceneTools.CreateTrack(Gate_3, camera_1B);
+            Kingmaker.AreaLogic.Cutscenes.Track[] tracks_1 = { track_1A, track_1B };
+            var Gate_1 = CutsceneTools.CreateGate("CutTestGate1", tracks_1);
+
+            // Build 0th section
+            var lock_0A = CommandTools.LockControlCommand();
+            var track_0A = CutsceneTools.CreateTrack(Gate_3, lock_0A);
+            var fade_0B = CommandTools.FadeoutCommand();
+            var track_0B = CutsceneTools.CreateTrack(Gate_1, fade_0B);
+            var delay1_0C = CommandTools.DelayCommand(0.5f);
+            var movepc_0c = ActionTools.TranslocateAction(Companions.Player, locator1);
+            var movewj_0c = ActionTools.TranslocateAction(Companions.Woljif, locator2);
+            Kingmaker.ElementsSystem.GameAction[] actions_0c = { movepc_0c, movewj_0c };
+            var move_0c = CommandTools.ActionCommand("CutTestTeleport", actions_0c);
+            var delay2_0C = CommandTools.DelayCommand();
+            Kingmaker.AreaLogic.Cutscenes.CommandBase[] commands_0c = { delay1_0C, move_0c, delay2_0C };
+            var track_0c = CutsceneTools.CreateTrack(Gate_1, commands_0c);
+            var camera_0d = CommandTools.CamFollowCommand(Companions.Player);
+            var track_0d = CutsceneTools.CreateTrack(Gate_1, camera_0d);
+
+            // Build cutscene
+            Kingmaker.AreaLogic.Cutscenes.Track[] tracks0 = { track_0A, track_0B, track_0c, track_0d };
+            var complexcutscene = CutsceneTools.CreateCutscene("CutTestScene", false, tracks0);
+
+            // Attach to dialog
+            var playcutsceneaction = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.PlayCutscene>(bp =>
+            {
+                bp.m_Cutscene = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.CutsceneReference>(complexcutscene);
+                bp.Owner = cutscenecue2;
+                bp.Parameters = new Kingmaker.Designers.EventConditionActionSystem.NamedParameters.ParametrizedContextSetter();
+            });
             DialogTools.CueAddOnStopAction(cutscenecue2, playcutsceneaction);
         }
     }

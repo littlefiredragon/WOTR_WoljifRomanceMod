@@ -23,6 +23,7 @@ namespace WOTR_WoljifRomanceMod
         public static int numlockcontrols = 0;
         public static int numcamfollows = 0;
         public static int numunnamedmoves = 0;
+        public static int numfadeouts = 0;
         public static T GenericCommand<T>(string name, Action<T> init = null) where T : Kingmaker.AreaLogic.Cutscenes.CommandBase, new()
         {
             var result = Helpers.CreateBlueprint<T>(name);
@@ -110,18 +111,64 @@ namespace WOTR_WoljifRomanceMod
             return result;
         }
 
-        public static Kingmaker.AreaLogic.Cutscenes.CommandAction MoveActionCommand(Companions unit, Kingmaker.Blueprints.EntityReference position, bool setrotation = true)
+        public static Kingmaker.AreaLogic.Cutscenes.CommandAction TranslocateCommand(Companions unit, Kingmaker.Blueprints.EntityReference position, bool setrotation = true)
         {
             var name = "translocate_" + numunnamedmoves.ToString();
             numunnamedmoves++;
-            return MoveActionCommand(name, unit, position, setrotation);
+            return TranslocateCommand(name, unit, position, setrotation);
         }
-            public static Kingmaker.AreaLogic.Cutscenes.CommandAction MoveActionCommand(string name, Companions unit, Kingmaker.Blueprints.EntityReference position, bool setrotation = true)
+        public static Kingmaker.AreaLogic.Cutscenes.CommandAction TranslocateCommand(string name, Companions unit, Kingmaker.Blueprints.EntityReference position, bool setrotation = true)
         {
             var action = ActionTools.TranslocateAction(unit, position, setrotation);
             var command = ActionCommand(name, action);
             action.Owner = command;
             return command;
+        }
+
+        public static Kingmaker.AreaLogic.Cutscenes.Commands.CommandUnitLookAt LookAtCommand(string name, Companions unit, Companions lookedatunit)
+        {
+            var position = new Kingmaker.Designers.EventConditionActionSystem.Evaluators.UnitPosition { Unit = getCompanionEvaluator(lookedatunit) };
+            return LookAtCommand(name, unit, position);
+        }
+        public static Kingmaker.AreaLogic.Cutscenes.Commands.CommandUnitLookAt LookAtCommand(string name, Companions unit, Kingmaker.Blueprints.EntityReference location)
+        {
+            var position = new Kingmaker.Designers.EventConditionActionSystem.Evaluators.LocatorPosition { Locator = location };
+            return LookAtCommand(name, unit, position);
+        }
+        public static Kingmaker.AreaLogic.Cutscenes.Commands.CommandUnitLookAt LookAtCommand(string name, Companions unit, Kingmaker.ElementsSystem.PositionEvaluator position)
+        {
+            var result = GenericCommand<Kingmaker.AreaLogic.Cutscenes.Commands.CommandUnitLookAt>(name);
+            result.m_Position = position;
+            result.m_FreezeAfterTurn = true;
+            result.m_OnTurned = new Kingmaker.AreaLogic.Cutscenes.CommandBase.CommandSignalData();
+            result.m_OnTurned.Gate = null;
+            result.m_OnTurned.Name = "OnTurned";
+            result.m_Unit = getCompanionEvaluator(unit);
+            return result;
+        }
+
+        public static Kingmaker.AreaLogic.Cutscenes.Commands.CommandMoveUnit WalkCommand(string name, Companions unit, Kingmaker.Blueprints.EntityReference position, bool vanish = false)
+        {
+            var result = GenericCommand<Kingmaker.AreaLogic.Cutscenes.Commands.CommandMoveUnit>(name);
+            result.m_Timeout = 20.0f;
+            result.Unit = getCompanionEvaluator(unit);
+            result.DisableAvoidance = true;
+            result.RunAway = vanish;
+            result.Target = new Kingmaker.Designers.EventConditionActionSystem.Evaluators.LocatorPosition { Locator = position };
+            return result;
+        }
+
+        public static Kingmaker.AreaLogic.Cutscenes.Commands.CommandFadeout FadeoutCommand()
+        {
+            numfadeouts++;
+            string name = "fadeout_" + numfadeouts.ToString();
+            var result = GenericCommand<Kingmaker.AreaLogic.Cutscenes.Commands.CommandFadeout>(name);
+            result.m_Continuous = true;
+            result.m_Lifetime = 1.0f;
+            result.m_OnFaded = new Kingmaker.AreaLogic.Cutscenes.CommandBase.CommandSignalData();
+            result.m_OnFaded.Gate = null;
+            result.m_OnFaded.Name = "OnFaded";
+            return result;
         }
 
 
