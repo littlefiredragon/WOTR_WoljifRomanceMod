@@ -9,9 +9,10 @@ using TabletopTweaks.Utilities;
 using UnityModManagerNet;
 using TabletopTweaks.Extensions;
 
-
 namespace WOTR_WoljifRomanceMod
 {
+
+
     [HarmonyPatch(typeof(BlueprintsCache), "Init")]
     class debugmenu
     {
@@ -25,7 +26,8 @@ namespace WOTR_WoljifRomanceMod
             createConditionalAnswers();
             createSkillChecks();
             createActionTest();
-            createSimpleCutscene();
+            //createSimpleCutscene();
+            createEtudeTest();
             //Complex cutscene handled in areawatcher
         }
 
@@ -199,58 +201,6 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.CueAddOnStopAction(cutscenecue, playcutsceneaction);
         }
 
-        static public void createComplexCutscene(Kingmaker.Blueprints.EntityReference locator1, Kingmaker.Blueprints.EntityReference locator2)
-        {
-            // TEST CUTSCENE CREATION
-            var debuganswerlist = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("TEST_L_debugmenu");
-            var newdialog = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>("brandnewdialog");
-            var cutsceneanswer2 = DialogTools.CreateAnswer("TEST_a_cutscene2");
-            DialogTools.ListAddAnswer(debuganswerlist, cutsceneanswer2, 9);
-            var cutscenecue2 = DialogTools.CreateCue("TEST_cw_cutscene2");
-            DialogTools.AnswerAddNextCue(cutsceneanswer2, cutscenecue2);
-
-            //cutscene
-            //  trackA
-            //    Command: Lockcontrol
-            //    Endgate: DialogGate
-            //        DialogGateTrack
-            //          Command: start dialog
-            //          Endgate: null
-            //  trackB
-            //    Command: move1, move2
-            //    Endgate: cameragate
-            //      CameraGateTrack
-            //        Command: camerafollow
-            //        Endgate: dialoggate
-
-            // Create track A
-            var lockcommand = CommandTools.LockControlCommand();
-            var startdialogcommand = CommandTools.StartDialogCommand(newdialog, Companions.Woljif);
-            var dialogGateTrack = CutsceneTools.CreateTrack(null, startdialogcommand);
-            var dialogGate = CutsceneTools.CreateGate("dialoggatecomp", dialogGateTrack);
-            var TrackA = CutsceneTools.CreateTrack(dialogGate, lockcommand);
-            // Create Track B
-            var cameracommand = CommandTools.CamFollowCommand(Companions.Woljif);
-            var cameraGateTrack = CutsceneTools.CreateTrack(dialogGate, cameracommand);
-            var cameragate = CutsceneTools.CreateGate("cameragate", cameraGateTrack);
-            // Track B commands
-            var unhideWoljifAction = ActionTools.HideUnitAction(Companions.Woljif, true);
-            var moveWoljifAction = ActionTools.TranslocateAction(Companions.Woljif, locator1, true);
-            Kingmaker.ElementsSystem.GameAction[] actionlist1 = { unhideWoljifAction, moveWoljifAction };
-            var moveWoljifcommand = CommandTools.ActionCommand("movewoljifcommand", actionlist1);
-            unhideWoljifAction.Owner = moveWoljifcommand;
-            moveWoljifAction.Owner = moveWoljifcommand;
-            var moveplayercommand = CommandTools.TranslocateCommand("moveplayercommand", Companions.Player, locator2, true);
-            // Track B itself
-            Kingmaker.AreaLogic.Cutscenes.CommandBase[] trackbcommands = { moveWoljifcommand, moveplayercommand };
-            var TrackB = CutsceneTools.CreateTrack(cameragate, trackbcommands);
-            // make the cutscene
-            Kingmaker.AreaLogic.Cutscenes.Track[] cutscenetracks = { TrackA, TrackB };
-            var customcutscene = CutsceneTools.CreateCutscene("testcomplexcutscene", false, cutscenetracks);
-            var playcutsceneaction = ActionTools.PlayCutsceneAction(customcutscene, cutscenecue2);
-            DialogTools.CueAddOnStopAction(cutscenecue2, playcutsceneaction);
-        }
-
         static public void createAlternateCutscene(Kingmaker.Blueprints.EntityReference locator1, Kingmaker.Blueprints.EntityReference locator2, Kingmaker.Blueprints.EntityReference locator3)
         {
             // Dialog Bits
@@ -335,7 +285,7 @@ namespace WOTR_WoljifRomanceMod
 
             // Build cutscene
             Kingmaker.AreaLogic.Cutscenes.Track[] tracks0 = { track_0A, track_0B, track_0c, track_0d };
-            var complexcutscene = CutsceneTools.CreateCutscene("CutTestScene", false, tracks0);
+            var complexcutscene = CutsceneTools.CreateCutscene("testcomplexcutscene", false, tracks0);
 
             // Attach to dialog
             var playcutsceneaction = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.PlayCutscene>(bp =>
@@ -345,6 +295,129 @@ namespace WOTR_WoljifRomanceMod
                 bp.Parameters = new Kingmaker.Designers.EventConditionActionSystem.NamedParameters.ParametrizedContextSetter();
             });
             DialogTools.CueAddOnStopAction(cutscenecue2, playcutsceneaction);
+        }
+
+        static public void createEtudeTest()
+        {
+            //Create a single entry to a debug menu for etudes
+            var starttestcue = Resources.GetModBlueprint <Kingmaker.DialogSystem.Blueprints.BlueprintCue>("TEST_cw_starttesting");
+            var debuganswerlist = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("TEST_L_debugmenu");
+            var etudedebugmenuplz = DialogTools.CreateAnswer("TEST_a_etudemenu");
+            var etudedebugcue = DialogTools.CreateCue("TEST_cw_etudemenu");
+            DialogTools.AnswerAddNextCue(etudedebugmenuplz, etudedebugcue);
+            DialogTools.ListAddAnswer(debuganswerlist, etudedebugmenuplz, 8);
+
+            //Make the etude
+            var woljifcompanionetude = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("14a80c048c8ceed4a9c856d85bbf10da");
+            var testetude = EtudeTools.CreateEtude("TEST_Etude", woljifcompanionetude, false, false);
+            var testflag = EtudeTools.CreateFlag("TEST_Flag");
+            var actcondition = ConditionalTools.CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.FlagInRange>("TEST_flagcondition", bp =>
+            {
+                bp.m_Flag = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintUnlockableFlagReference>(testflag);
+                bp.MinValue = 1;
+                bp.MaxValue = 2;
+            });
+            EtudeTools.EtudeAddActivationCondition(testetude, actcondition);
+            actcondition.Owner = testetude;
+            
+
+            //Create the etude debug menu
+            var etudedebuglist = DialogTools.CreateAnswersList("EtudeDebugMenu");
+            DialogTools.CueAddAnswersList(etudedebugcue, etudedebuglist);
+
+            // What's the status?
+            var statusrequest = DialogTools.CreateAnswer("TEST_a_etudestatus");
+            DialogTools.ListAddAnswer(etudedebuglist, statusrequest);
+            // Start the Etude.
+            var startrequest = DialogTools.CreateAnswer("TEST_a_startetude");
+            var startcue = DialogTools.CreateCue("TEST_cw_startetude");
+            DialogTools.CueAddOnShowAction(startcue, ActionTools.StartEtudeAction(testetude));
+            DialogTools.AnswerAddNextCue(startrequest, startcue);
+            DialogTools.CueAddAnswersList(startcue, etudedebuglist);
+            DialogTools.ListAddAnswer(etudedebuglist, startrequest);
+            // Complete the Etude.
+            var endrequest = DialogTools.CreateAnswer("TEST_a_completeetude");
+            var endcue = DialogTools.CreateCue("TEST_cw_completeetude");
+            DialogTools.CueAddOnShowAction(endcue, ActionTools.CompleteEtudeAction(testetude));
+            DialogTools.AnswerAddNextCue(endrequest, endcue);
+            DialogTools.CueAddAnswersList(endcue, etudedebuglist);
+            DialogTools.ListAddAnswer(etudedebuglist, endrequest);
+
+
+            //Etude status cues
+            var statusNotStarted = DialogTools.CreateCue("TEST_cw_etudeisnotstarted");
+            DialogTools.CueAddCondition(statusNotStarted, ConditionalTools.CreateEtudeCondition("etudenotstarted", testetude, EtudeTools.EtudeStatus.NotStarted));
+            DialogTools.AnswerAddNextCue(statusrequest, statusNotStarted);
+            DialogTools.CueAddAnswersList(statusNotStarted, etudedebuglist);
+            var statusStarted = DialogTools.CreateCue("TEST_cw_etudeisstarted");
+            DialogTools.CueAddCondition(statusStarted, ConditionalTools.CreateEtudeCondition("etudestarted", testetude, EtudeTools.EtudeStatus.Started));
+            DialogTools.AnswerAddNextCue(statusrequest, statusStarted);
+            DialogTools.CueAddAnswersList(statusStarted, etudedebuglist);
+            var statusPlaying = DialogTools.CreateCue("TEST_cw_etudeisplaying");
+            DialogTools.CueAddCondition(statusPlaying, ConditionalTools.CreateEtudeCondition("etudeplaying", testetude, EtudeTools.EtudeStatus.Playing));
+            DialogTools.AnswerAddNextCue(statusrequest, statusPlaying);
+            DialogTools.CueAddAnswersList(statusPlaying, etudedebuglist);
+            var statusCompleting = DialogTools.CreateCue("TEST_cw_etudecompleting");
+            DialogTools.CueAddCondition(statusCompleting, ConditionalTools.CreateEtudeCondition("etudecompleting", testetude, EtudeTools.EtudeStatus.CompletionInProgress));
+            DialogTools.AnswerAddNextCue(statusrequest, statusCompleting);
+            DialogTools.CueAddAnswersList(statusCompleting, etudedebuglist);
+            var statusCompleted = DialogTools.CreateCue("TEST_cw_etudeiscomplete");
+            DialogTools.CueAddCondition(statusCompleted, ConditionalTools.CreateEtudeCondition("etudecompleted", testetude, EtudeTools.EtudeStatus.Completed));
+            DialogTools.AnswerAddNextCue(statusrequest, statusCompleted);
+            DialogTools.CueAddAnswersList(statusCompleted, etudedebuglist);
+            var statusYouBrokeIt = DialogTools.CreateCue("TEST_cw_statusplaceholder");
+            DialogTools.AnswerAddNextCue(statusrequest, statusYouBrokeIt);
+            DialogTools.CueAddAnswersList(statusYouBrokeIt, etudedebuglist);
+
+            // individual status questions
+            var statusNegative = DialogTools.CreateCue("TEST_cw_etudefallthrough");
+            DialogTools.CueAddAnswersList(statusNegative, etudedebuglist);
+            var asknotstarted = DialogTools.CreateAnswer("TEST_a_asknotstarted");
+            DialogTools.ListAddAnswer(etudedebuglist, asknotstarted);
+            DialogTools.AnswerAddNextCue(asknotstarted, statusNotStarted);
+            DialogTools.AnswerAddNextCue(asknotstarted, statusNegative);
+            var askstarted = DialogTools.CreateAnswer("TEST_a_askstarted");
+            DialogTools.ListAddAnswer(etudedebuglist, askstarted);
+            DialogTools.AnswerAddNextCue(askstarted, statusStarted);
+            DialogTools.AnswerAddNextCue(askstarted, statusNegative);
+            var askplaying = DialogTools.CreateAnswer("TEST_a_askplaying");
+            DialogTools.ListAddAnswer(etudedebuglist, askplaying);
+            DialogTools.AnswerAddNextCue(askplaying, statusPlaying);
+            DialogTools.AnswerAddNextCue(askplaying, statusNegative);
+            var askcompleting = DialogTools.CreateAnswer("TEST_a_askcompleting");
+            DialogTools.ListAddAnswer(etudedebuglist, askcompleting);
+            DialogTools.AnswerAddNextCue(askcompleting, statusCompleting);
+            DialogTools.AnswerAddNextCue(askcompleting, statusNegative);
+            var askcomplete = DialogTools.CreateAnswer("TEST_a_askcomplete");
+            DialogTools.ListAddAnswer(etudedebuglist, askcomplete);
+            DialogTools.AnswerAddNextCue(askcomplete, statusCompleted);
+            DialogTools.AnswerAddNextCue(askcomplete, statusNegative);
+
+            //update?
+            var askupdate = DialogTools.CreateAnswer("TEST_a_unlock");
+            DialogTools.ListAddAnswer(etudedebuglist, askupdate);
+            var cueupdate = DialogTools.CreateCue("TEST_cw_unlock");
+
+            var ieval = new Kingmaker.Designers.EventConditionActionSystem.Evaluators.IntConstant();
+            ieval.Value = 1;
+
+            DialogTools.CueAddOnShowAction(cueupdate, ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.UnlockFlag>( bp => 
+            { bp.m_flag = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintUnlockableFlagReference>(testflag); }));
+            DialogTools.CueAddOnShowAction(cueupdate, ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.IncrementFlagValue>(bp =>
+            { 
+                bp.m_Flag = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintUnlockableFlagReference>(testflag);
+                bp.Value = ieval;
+                bp.UnlockIfNot = true;
+            }));
+
+            DialogTools.CueAddOnShowAction(cueupdate, ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.UpdateEtudes>());
+            DialogTools.AnswerAddNextCue(askupdate, cueupdate);
+            DialogTools.CueAddAnswersList(cueupdate, etudedebuglist);
+
+            //End etude debugging
+            var donetesting = DialogTools.CreateAnswer("TEST_a_exitetudemenu");
+            DialogTools.AnswerAddNextCue(donetesting, starttestcue);
+            DialogTools.ListAddAnswer(etudedebuglist, donetesting);
         }
     }
 }

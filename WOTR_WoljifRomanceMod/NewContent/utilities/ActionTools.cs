@@ -55,6 +55,32 @@ namespace WOTR_WoljifRomanceMod
             return action;
         }
 
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.StartEtude StartEtudeAction(BlueprintEtudeReference etude)
+        {
+            var action = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.StartEtude>(bp =>
+            {
+                bp.Etude = etude;
+            });
+            return action;
+        }
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.StartEtude StartEtudeAction(Kingmaker.AreaLogic.Etudes.BlueprintEtude etude)
+        {
+            return StartEtudeAction(Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<BlueprintEtudeReference>(etude));
+        }
+
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.CompleteEtude CompleteEtudeAction(BlueprintEtudeReference etude)
+        {
+            var action = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.CompleteEtude>(bp =>
+            {
+                bp.Etude = etude;
+            });
+            return action;
+        }
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.CompleteEtude CompleteEtudeAction(Kingmaker.AreaLogic.Etudes.BlueprintEtude etude)
+        {
+            return CompleteEtudeAction(Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<BlueprintEtudeReference>(etude));
+        }
+
         //Creating a conditional action can take either a condition directly, for ease of creating simple checkers, or it can take a pre-constructed conditionchecker tree.
         public static Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional ConditionalAction(Kingmaker.ElementsSystem.Condition condition)
         {

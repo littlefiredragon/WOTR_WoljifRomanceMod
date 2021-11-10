@@ -26,11 +26,42 @@ namespace WOTR_WoljifRomanceMod
         }
         public static T CreateCondition<T>([NotNull] string name, bool Not, Action<T> init = null) where T : Kingmaker.ElementsSystem.Condition, new()
         {
-            var result = new T();
+            /*var result = new T();
             result.Not = Not;
             init?.Invoke(result);
+            return result;*/
+
+            var result = (T)Kingmaker.ElementsSystem.Element.CreateInstance(typeof(T));
+            init?.Invoke(result);
+            result.Not = Not;
             return result;
         }
+
+        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.EtudeStatus CreateEtudeCondition(string name, Kingmaker.AreaLogic.Etudes.BlueprintEtude etude, EtudeTools.EtudeStatus status, bool not=false)
+        {
+            var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.EtudeStatus>(name,not);
+            result.m_Etude = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintEtudeReference>(etude);
+            switch (status)
+            {
+                case EtudeTools.EtudeStatus.NotStarted:
+                    result.NotStarted = true;
+                    break;
+                case EtudeTools.EtudeStatus.Started:
+                    result.Started = true;
+                    break;
+                case EtudeTools.EtudeStatus.Playing:
+                    result.Playing = true;
+                    break;
+                case EtudeTools.EtudeStatus.CompletionInProgress:
+                    result.CompletionInProgress = true;
+                    break;
+                case EtudeTools.EtudeStatus.Completed:
+                    result.Completed = true;
+                    break;
+            }
+            return result;
+        }
+
         /* Because every condition is structured differently there's really no good way to make a wrapper to edit them. Their components tend
            to be public, though, so you can just do something like 
              var myconditional = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.PcRace>("isplayertiefling");
