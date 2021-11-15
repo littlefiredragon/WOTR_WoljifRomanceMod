@@ -16,10 +16,10 @@ namespace WOTR_WoljifRomanceMod
     {
         public void OnAreaDidLoad()
         {
-            if (Game.Instance.CurrentlyLoadedArea.AssetGuidThreadSafe.Equals("7a25c101fe6f7aa46b192db13373d03b", StringComparison.OrdinalIgnoreCase))
+            /*if (Game.Instance.CurrentlyLoadedArea.AssetGuidThreadSafe.Equals("7a25c101fe6f7aa46b192db13373d03b", StringComparison.OrdinalIgnoreCase))
             { 
                 AreaSpecificContent.createWarcampTestCutscene();
-            }
+            }*/
         }
         public void OnAreaBeginUnloading()
         {
@@ -29,7 +29,7 @@ namespace WOTR_WoljifRomanceMod
 
     class AreaSpecificContent
     {
-        static public void createWarcampTestCutscene()
+        /*static public void createWarcampTestCutscene()
         {
             foreach (Kingmaker.EntitySystem.EntityDataBase thing in Game.Instance.LoadedAreaState.AllEntityData)
             {
@@ -48,6 +48,6 @@ namespace WOTR_WoljifRomanceMod
                     break;
                 }
             }
-        }
+        }*/
     }
 }

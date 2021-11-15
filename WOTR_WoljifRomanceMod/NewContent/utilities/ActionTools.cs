@@ -23,6 +23,36 @@ namespace WOTR_WoljifRomanceMod
             return result;
         }
 
+        public static Kingmaker.ElementsSystem.ActionList MakeList(Kingmaker.ElementsSystem.GameAction action)
+        {
+            var result = new Kingmaker.ElementsSystem.ActionList();
+            Array.Resize(ref result.Actions, 1);
+            result.Actions[0] = action;
+            return result;
+        }
+        public static Kingmaker.ElementsSystem.ActionList MakeList(params Kingmaker.ElementsSystem.GameAction[] actions)
+        {
+            var result = new Kingmaker.ElementsSystem.ActionList();
+            var len = actions.Length;
+            Array.Resize(ref result.Actions, len);
+            for (int i = 0; i < len; i++)
+            {
+                result.Actions[i] = actions[i];
+            }
+            return result;
+        }
+
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.IncrementFlagValue IncrementFlagAction(Kingmaker.Blueprints.BlueprintUnlockableFlag flag, int amount = 1)
+        {
+            var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.IncrementFlagValue>(bp => 
+            { 
+                bp.m_Flag = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintUnlockableFlagReference>(flag);
+                bp.Value = new Kingmaker.Designers.EventConditionActionSystem.Evaluators.IntConstant { Value = amount };
+                bp.UnlockIfNot = true;
+            });
+            return result;
+        }
+
         public static Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit TranslocateAction(Companions unit, Kingmaker.Blueprints.EntityReference position, bool setrotation = true)
         {
             var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit>(bp =>

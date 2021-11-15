@@ -11,27 +11,16 @@ using TabletopTweaks.Extensions;
 
 namespace WOTR_WoljifRomanceMod
 {
-
-
     [HarmonyPatch(typeof(BlueprintsCache), "Init")]
-    class debugmenu
+    class WoljifRomanceMod
     {
         static void Postfix()
         {
             DialogTools.NewDialogs.LoadDialogIntoGame("enGB");
-
             createDebugMenu();
-            createSimpleConditionalCue();
-            createComplexConditionalCue();
-            createConditionalAnswers();
-            createSkillChecks();
-            createActionTest();
-            //createSimpleCutscene();
-            createEtudeTest();
-            //Complex cutscene handled in areawatcher
+            WRM_Structure.buildEtudes();
+            WRM_Act3.ModifyRerecruitScene();
         }
-
-
 
         static public void createDebugMenu()
         {
@@ -48,7 +37,8 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.CueAddAnswersList(starttestcue, debuganswerlist);
             DialogTools.CueAddAnswersList(endtestcue, originalanswers);
         }
-        static public void createSimpleConditionalCue()
+        //Archived Test Functions, kept around for structural reference for now.
+        /*static public void createSimpleConditionalCue()
         {
             var debuganswerlist = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("TEST_L_debugmenu");
 
@@ -211,39 +201,39 @@ namespace WOTR_WoljifRomanceMod
             var cutscenecue2 = DialogTools.CreateCue("TEST_cw_cutscene2");
             DialogTools.AnswerAddNextCue(cutsceneanswer2, cutscenecue2);
 
-            /* STRUCTURE
-             * Cutscene
-             *   Track 0A
-             *     Commands: [LockControl]
-             *     EndGate: Gate 3
-             *   Track 0B
-             *     Commands: [Fadeout]
-             *     Endgate: Gate 1
-             *   Track 0C
-             *     Commands: [Delay, Action(Transport Player, Transport Woljif), Delay]
-             *     Endgate: Gate 1
-             *   Track 0D
-             *     Commands: [Camerafollowplayer]
-             *     Endgate: Gate 1
-             *     
-             *   Gate 1
-             *     Track 1A
-             *       Commands: [Move Woljif, delay]
-             *       Endgate: Gate 2
-             *     Track 1B
-             *       Commands: [Camera Follow]
-             *       Endgate: Gate 3
-             *   
-             *   Gate 2
-             *     Track 2A
-             *       Commands: [Turn Woljif to face player, Bark]
-             *       Endgate: Gate 3
-             *   
-             *   Gate 3
-             *     Track 3A
-             *       Commands: [Start Dialog]
-             *       Endgate: Null
-             */
+            // STRUCTURE
+            // Cutscene
+            //   Track 0A
+            //     Commands: [LockControl]
+            //     EndGate: Gate 3
+            //   Track 0B
+            //     Commands: [Fadeout]
+            //     Endgate: Gate 1
+            //   Track 0C
+            //     Commands: [Delay, Action(Transport Player, Transport Woljif), Delay]
+            //     Endgate: Gate 1
+            //   Track 0D
+            //     Commands: [Camerafollowplayer]
+            //     Endgate: Gate 1
+            //     
+            //   Gate 1
+            //     Track 1A
+            //       Commands: [Move Woljif, delay]
+            //       Endgate: Gate 2
+            //     Track 1B
+            //       Commands: [Camera Follow]
+            //       Endgate: Gate 3
+            //   
+            //   Gate 2
+            //     Track 2A
+            //       Commands: [Turn Woljif to face player, Bark]
+            //       Endgate: Gate 3
+            //   
+            //   Gate 3
+            //     Track 3A
+            //       Commands: [Start Dialog]
+            //       Endgate: Null
+            //
 
             // Build 3rd section
             var startdialog_3A = CommandTools.StartDialogCommand(newdialog, Companions.Woljif);
@@ -418,6 +408,6 @@ namespace WOTR_WoljifRomanceMod
             var donetesting = DialogTools.CreateAnswer("TEST_a_exitetudemenu");
             DialogTools.AnswerAddNextCue(donetesting, starttestcue);
             DialogTools.ListAddAnswer(etudedebuglist, donetesting);
-        }
+        }*/
     }
 }

@@ -262,6 +262,25 @@ namespace WOTR_WoljifRomanceMod
             }
         }
 
+        public static void AnswerAddOnSelectAction(Kingmaker.DialogSystem.Blueprints.BlueprintAnswer answer, Kingmaker.ElementsSystem.GameAction action)
+        {
+            if (answer.OnSelect == EmptyActionList)
+            {//Make a brand new action list
+                answer.OnSelect = new Kingmaker.ElementsSystem.ActionList();
+            }
+            var len = 0;
+            if (answer.OnSelect.Actions == null)
+            {
+                answer.OnSelect.Actions = new Kingmaker.ElementsSystem.GameAction[1];
+            }
+            else
+            {
+                len = answer.OnSelect.Actions.Length;
+                Array.Resize(ref answer.OnSelect.Actions, len + 1);
+            }
+            answer.OnSelect.Actions[len] = action;
+        }
+
         // AddCondition is intended for simple conditions without nested logic ("A and B and C" is fine, but "A and (B or C)" is too complex.
         // For complex logic, it's best to build your entire logic tree with ConditionalTools and then use SetConditionChecker to plug it in.
         public static void AnswerAddShowCondition(Kingmaker.DialogSystem.Blueprints.BlueprintAnswer answer, Kingmaker.ElementsSystem.Condition condition)
