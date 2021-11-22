@@ -53,6 +53,24 @@ namespace WOTR_WoljifRomanceMod
             return result;
         }
 
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.TeleportParty TeleportAction(string exitposition, Kingmaker.ElementsSystem.ActionList afterTeleport = null)
+        {
+            var result = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.TeleportParty>(bp =>
+            {
+                bp.m_exitPositon = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintAreaEnterPointReference>(Resources.GetBlueprint<Kingmaker.Blueprints.Area.BlueprintAreaEnterPoint>(exitposition));
+                if (afterTeleport == null)
+                {
+                    bp.AfterTeleport = DialogTools.EmptyActionList;
+                }
+                else
+                {
+                    bp.AfterTeleport = afterTeleport;
+                    bp.AutoSaveMode = Kingmaker.EntitySystem.Persistence.AutoSaveMode.None;
+                }
+            });
+            return result;
+        }
+
         public static Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit TranslocateAction(Companions unit, Kingmaker.Blueprints.EntityReference position, bool setrotation = true)
         {
             var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit>(bp =>
@@ -84,6 +102,66 @@ namespace WOTR_WoljifRomanceMod
             });
             return action;
         }
+        public static void CutsceneActionAddParameter(Kingmaker.Designers.EventConditionActionSystem.Actions.PlayCutscene action, string name, string type, Kingmaker.ElementsSystem.Evaluator eval)
+        {
+            Kingmaker.Designers.EventConditionActionSystem.NamedParameters.ParametrizedContextSetter.ParameterType paramtype = Kingmaker.Designers.EventConditionActionSystem.NamedParameters.ParametrizedContextSetter.ParameterType.Float;
+            switch (type)
+            {
+                case "Unit":
+                case "unit":
+                    paramtype = Kingmaker.Designers.EventConditionActionSystem.NamedParameters.ParametrizedContextSetter.ParameterType.Unit;
+                    break;
+                case "Locator":
+                case "locator":
+                    paramtype = Kingmaker.Designers.EventConditionActionSystem.NamedParameters.ParametrizedContextSetter.ParameterType.Locator;
+                    break;
+                case "MapObject":
+                case "mapobject":
+                    paramtype = Kingmaker.Designers.EventConditionActionSystem.NamedParameters.ParametrizedContextSetter.ParameterType.MapObject;
+                    break;
+                case "Position":
+                case "position":
+                    paramtype = Kingmaker.Designers.EventConditionActionSystem.NamedParameters.ParametrizedContextSetter.ParameterType.Position;
+                    break;
+                case "Blueprint":
+                case "blueprint":
+                    paramtype = Kingmaker.Designers.EventConditionActionSystem.NamedParameters.ParametrizedContextSetter.ParameterType.Blueprint;
+                    break;
+                case "Float":
+                case "float":
+                    paramtype = Kingmaker.Designers.EventConditionActionSystem.NamedParameters.ParametrizedContextSetter.ParameterType.Float;
+                    break;
+            }
+            CutsceneActionAddParameter(action, name, paramtype, eval);
+        }
+            public static void CutsceneActionAddParameter(Kingmaker.Designers.EventConditionActionSystem.Actions.PlayCutscene action, string name, Kingmaker.Designers.EventConditionActionSystem.NamedParameters.ParametrizedContextSetter.ParameterType type, Kingmaker.ElementsSystem.Evaluator eval)
+        {
+            var parameter = new Kingmaker.Designers.EventConditionActionSystem.NamedParameters.ParametrizedContextSetter.ParameterEntry();
+            parameter.Name = name;
+            parameter.Type = type;
+            parameter.Evaluator = eval;
+
+            var len = 0;
+            if (action.Parameters.Parameters == null)
+            {
+                action.Parameters.Parameters = new Kingmaker.Designers.EventConditionActionSystem.NamedParameters.ParametrizedContextSetter.ParameterEntry[1];
+            }
+            else
+            {
+                len = action.Parameters.Parameters.Length;
+                Array.Resize(ref action.Parameters.Parameters, len + 1);
+            }
+            action.Parameters.Parameters[len] = parameter;
+        }
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.StopCutscene StopCutsceneAction(Kingmaker.AreaLogic.Cutscenes.Cutscene cutscene)
+        {
+            var action = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.StopCutscene>(bp =>
+            {
+                bp.m_Cutscene = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.CutsceneReference>(cutscene);
+            });
+            return action;
+        }
+
 
         public static Kingmaker.Designers.EventConditionActionSystem.Actions.StartEtude StartEtudeAction(BlueprintEtudeReference etude)
         {
@@ -109,6 +187,26 @@ namespace WOTR_WoljifRomanceMod
         public static Kingmaker.Designers.EventConditionActionSystem.Actions.CompleteEtude CompleteEtudeAction(Kingmaker.AreaLogic.Etudes.BlueprintEtude etude)
         {
             return CompleteEtudeAction(Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<BlueprintEtudeReference>(etude));
+        }
+
+        public static Kingmaker.Kingdom.Actions.KingdomActionStartEvent StartCommandRoomEventAction(Kingmaker.Kingdom.Blueprints.BlueprintKingdomEvent commandevent)
+        {
+            var action = GenericAction<Kingmaker.Kingdom.Actions.KingdomActionStartEvent>(bp =>
+            {
+                bp.m_Event = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<BlueprintKingdomEventBaseReference>(commandevent);
+                bp.m_Region = (BlueprintRegionReference)null;
+            });
+            return action;
+        }
+        public static Kingmaker.Kingdom.Actions.KingdomActionRemoveEvent EndCommandRoomEventAction(Kingmaker.Kingdom.Blueprints.BlueprintKingdomEvent commandevent)
+        {
+            var action = GenericAction<Kingmaker.Kingdom.Actions.KingdomActionRemoveEvent>(bp =>
+            {
+                bp.m_EventBlueprint = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<BlueprintKingdomEventBaseReference>(commandevent);
+                bp.CancelIfInProgress = true;
+                bp.AllIfMultiple = true;
+            });
+            return action;
         }
 
         //Creating a conditional action can take either a condition directly, for ease of creating simple checkers, or it can take a pre-constructed conditionchecker tree.

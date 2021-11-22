@@ -246,6 +246,31 @@ namespace WOTR_WoljifRomanceMod
             return result;
         }
 
+        public static void AnswerAlignmentShift(Kingmaker.DialogSystem.Blueprints.BlueprintAnswer answer, string direction, string descriptionkey)
+        {
+            Kingmaker.UnitLogic.Alignments.AlignmentShiftDirection dir = Kingmaker.UnitLogic.Alignments.AlignmentShiftDirection.TrueNeutral;
+            switch (direction)
+            {
+                case "Lawful":
+                case "lawful":
+                    dir = Kingmaker.UnitLogic.Alignments.AlignmentShiftDirection.Lawful;
+                    break;
+                case "Chaotic":
+                case "chaotic":
+                    dir = Kingmaker.UnitLogic.Alignments.AlignmentShiftDirection.Chaotic;
+                    break;
+                case "Good":
+                case "good":
+                    dir = Kingmaker.UnitLogic.Alignments.AlignmentShiftDirection.Good;
+                    break;
+                case "Evil":
+                case "evil":
+                    dir = Kingmaker.UnitLogic.Alignments.AlignmentShiftDirection.Evil;
+                    break;
+            }
+            answer.AlignmentShift = new Kingmaker.UnitLogic.Alignments.AlignmentShift { Direction = dir, Value = 1, Description = new Kingmaker.Localization.LocalizedString { m_Key = descriptionkey } };
+        }
+
         public static void AnswerAddNextCue(Kingmaker.DialogSystem.Blueprints.BlueprintAnswer answer, Kingmaker.DialogSystem.Blueprints.BlueprintCueBase cue, int position = -1)
         {
             if (answer.NextCue == EmptyCueSelection)

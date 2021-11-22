@@ -62,6 +62,13 @@ namespace WOTR_WoljifRomanceMod
             return result;
         }
 
+        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.AnotherEtudeOfGroupIsPlaying CreateEtudeGroupCondition(string name, Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup group, bool not = false)
+        {
+            var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.AnotherEtudeOfGroupIsPlaying>(name, not);
+            result.m_Group = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<BlueprintEtudeConflictingGroupReference>(group);
+            return result;
+        }
+
         /* Because every condition is structured differently there's really no good way to make a wrapper to edit them. Their components tend
            to be public, though, so you can just do something like 
              var myconditional = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.PcRace>("isplayertiefling");

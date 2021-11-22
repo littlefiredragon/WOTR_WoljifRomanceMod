@@ -93,6 +93,23 @@ namespace WOTR_WoljifRomanceMod
             return result;
         }
 
+        public static Kingmaker.AreaLogic.Cutscenes.Commands.CommandControlCamera CamMoveCommand(Kingmaker.Blueprints.EntityReference position)
+        {
+            numcamfollows++;
+            var name = "camMove_" + numcamfollows.ToString();
+            var result = GenericCommand<Kingmaker.AreaLogic.Cutscenes.Commands.CommandControlCamera>(name);
+            result.Move = true;
+            var locpos = (Kingmaker.Designers.EventConditionActionSystem.Evaluators.LocatorPosition)Kingmaker.ElementsSystem.Element.CreateInstance(typeof(Kingmaker.Designers.EventConditionActionSystem.Evaluators.LocatorPosition));
+            locpos.Locator = position;
+            result.MoveTarget = locpos;
+            result.Rotate = true;
+            var rotpos = (Kingmaker.Designers.EventConditionActionSystem.Evaluators.LocatorOrientation)Kingmaker.ElementsSystem.Element.CreateInstance(typeof(Kingmaker.Designers.EventConditionActionSystem.Evaluators.LocatorOrientation));
+            rotpos.Locator = position;
+            result.RotateTarget = rotpos;
+            result.TimingMode = Kingmaker.AreaLogic.Cutscenes.Commands.CommandControlCamera.TimingModeType.Snap;
+            return result;
+        }
+
         public static Kingmaker.AreaLogic.Cutscenes.CommandAction ActionCommand(string name, Kingmaker.ElementsSystem.ActionList actions)
         {
             var result = GenericCommand<Kingmaker.AreaLogic.Cutscenes.CommandAction>(name);
@@ -127,12 +144,12 @@ namespace WOTR_WoljifRomanceMod
 
         public static Kingmaker.AreaLogic.Cutscenes.Commands.CommandUnitLookAt LookAtCommand(string name, Companions unit, Companions lookedatunit)
         {
-            var position = new Kingmaker.Designers.EventConditionActionSystem.Evaluators.UnitPosition { Unit = getCompanionEvaluator(lookedatunit) };
+            var position = (Kingmaker.Designers.EventConditionActionSystem.Evaluators.UnitPosition)Kingmaker.ElementsSystem.Element.CreateInstance(typeof(Kingmaker.Designers.EventConditionActionSystem.Evaluators.UnitPosition));
             return LookAtCommand(name, unit, position);
         }
         public static Kingmaker.AreaLogic.Cutscenes.Commands.CommandUnitLookAt LookAtCommand(string name, Companions unit, Kingmaker.Blueprints.EntityReference location)
         {
-            var position = new Kingmaker.Designers.EventConditionActionSystem.Evaluators.LocatorPosition { Locator = location };
+            var position = (Kingmaker.Designers.EventConditionActionSystem.Evaluators.LocatorPosition)Kingmaker.ElementsSystem.Element.CreateInstance(typeof(Kingmaker.Designers.EventConditionActionSystem.Evaluators.LocatorPosition));
             return LookAtCommand(name, unit, position);
         }
         public static Kingmaker.AreaLogic.Cutscenes.Commands.CommandUnitLookAt LookAtCommand(string name, Companions unit, Kingmaker.ElementsSystem.PositionEvaluator position)
@@ -154,7 +171,9 @@ namespace WOTR_WoljifRomanceMod
             result.Unit = getCompanionEvaluator(unit);
             result.DisableAvoidance = true;
             result.RunAway = vanish;
-            result.Target = new Kingmaker.Designers.EventConditionActionSystem.Evaluators.LocatorPosition { Locator = position };
+            var locatorpos = (Kingmaker.Designers.EventConditionActionSystem.Evaluators.LocatorPosition)Kingmaker.ElementsSystem.Element.CreateInstance(typeof(Kingmaker.Designers.EventConditionActionSystem.Evaluators.LocatorPosition));
+            locatorpos.Locator = position;
+            result.Target = locatorpos;
             return result;
         }
 
@@ -169,6 +188,26 @@ namespace WOTR_WoljifRomanceMod
             result.m_OnFaded.Gate = null;
             result.m_OnFaded.Name = "OnFaded";
             return result;
+        }
+
+        public static Kingmaker.AreaLogic.Cutscenes.Commands.CommandUnitPlayCutsceneAnimation GenericAnimationCommand(string name, string commandid, Companions companion, bool lockrotation = false)
+        {
+            var newhandle = Kingmaker.ResourceManagement.BundledResourceHandle<Kingmaker.Visual.Animation.AnimationClipWrapper>.Request(commandid);
+            var newwrapperlink = new Kingmaker.ResourceLinks.AnimationClipWrapperLink { Handle = newhandle, AssetId = newhandle.m_AssetId };
+
+            var animation = CommandTools.GenericCommand<Kingmaker.AreaLogic.Cutscenes.Commands.CommandUnitPlayCutsceneAnimation>(name, bp =>
+            {
+                bp.m_Unit = CommandTools.getCompanionEvaluator(companion, bp);
+                bp.m_CutsceneClipWrapper = newwrapperlink;
+                bp.m_WaitForCurrentAnimation = false;
+                bp.AddToElementsList(bp.m_Unit);
+                bp.m_LockRotation = lockrotation;
+            });
+            return animation;
+        }
+        public static Kingmaker.AreaLogic.Cutscenes.Commands.CommandUnitPlayCutsceneAnimation SitIdleCommand(string name, Companions companion)
+        {
+            return GenericAnimationCommand(name, "586ac35db41cb6044ba218511a7bae6e", companion, true);
         }
 
 
@@ -225,21 +264,24 @@ namespace WOTR_WoljifRomanceMod
             }
             return result;
         }
-        public static Kingmaker.ElementsSystem.UnitEvaluator getCompanionEvaluator (Companions companion)
+        public static Kingmaker.ElementsSystem.UnitEvaluator getCompanionEvaluator (Companions companion, SimpleBlueprint owner = null)
         {
             Kingmaker.ElementsSystem.UnitEvaluator result = null;
             if (companion == Companions.Player)
             {
-                result = new Kingmaker.Designers.EventConditionActionSystem.Evaluators.PlayerCharacter();
+                //result = new Kingmaker.Designers.EventConditionActionSystem.Evaluators.PlayerCharacter();
+                result = (Kingmaker.Designers.EventConditionActionSystem.Evaluators.PlayerCharacter)Kingmaker.ElementsSystem.Element.CreateInstance(typeof(Kingmaker.Designers.EventConditionActionSystem.Evaluators.PlayerCharacter));
             }
             else
             {
-                var companioneval = new Kingmaker.Designers.EventConditionActionSystem.Evaluators.CompanionInParty();
+                //var companioneval = new Kingmaker.Designers.EventConditionActionSystem.Evaluators.CompanionInParty();
+                var companioneval = (Kingmaker.Designers.EventConditionActionSystem.Evaluators.CompanionInParty)Kingmaker.ElementsSystem.Element.CreateInstance(typeof(Kingmaker.Designers.EventConditionActionSystem.Evaluators.CompanionInParty));
                 companioneval.IncludeDettached = true;
                 companioneval.IncludeRemote = true;
                 companioneval.m_Companion = GetCompanionReference(companion);
                 result = companioneval;
             }
+            result.Owner = owner;
             return result;
         }
     }

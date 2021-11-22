@@ -91,6 +91,8 @@ namespace WOTR_WoljifRomanceMod
                 currentlen = etude.Components.Length;
                 Array.Resize(ref etude.Components, currentlen + 1);
             }
+            comp.OwnerBlueprint = etude;
+            comp.name = Guid.NewGuid().ToString();
             etude.Components[currentlen] = comp;
         }
         public static void EtudeAddOnPlayTrigger(Kingmaker.AreaLogic.Etudes.BlueprintEtude etude, Kingmaker.ElementsSystem.ActionList actionlist)
@@ -98,7 +100,6 @@ namespace WOTR_WoljifRomanceMod
             var comp = new Kingmaker.Designers.EventConditionActionSystem.Events.EtudePlayTrigger();
             comp.Conditions = DialogTools.EmptyConditionChecker;
             comp.Actions = actionlist;
-
             EtudeAddComponent(etude, comp);
         }
         public static void EtudeAddOnDeactivateTrigger(Kingmaker.AreaLogic.Etudes.BlueprintEtude etude, Kingmaker.ElementsSystem.ActionList actionlist)
@@ -106,20 +107,18 @@ namespace WOTR_WoljifRomanceMod
             var comp = new Kingmaker.Designers.EventConditionActionSystem.Events.DeactivateTrigger();
             comp.Conditions = DialogTools.EmptyConditionChecker;
             comp.Actions = actionlist;
-
             EtudeAddComponent(etude, comp);
         }
         public static void EtudeAddCompleteTrigger(Kingmaker.AreaLogic.Etudes.BlueprintEtude etude, Kingmaker.ElementsSystem.ActionList actionlist)
         {
             var comp = new Kingmaker.Designers.EventConditionActionSystem.Events.EtudeCompleteTrigger();
             comp.Actions = actionlist;
-
             EtudeAddComponent(etude, comp);
         }
 
-        public static void EtudeAddConflictingGroups(Kingmaker.AreaLogic.Etudes.BlueprintEtude etude, BlueprintEtudeConflictingGroupReference group)
+        public static void EtudeAddConflictingGroups(Kingmaker.AreaLogic.Etudes.BlueprintEtude etude, Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup group)
         {
-            etude.m_ConflictingGroups.Add(group);
+            etude.m_ConflictingGroups.Add(Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<BlueprintEtudeConflictingGroupReference>(group));
         }
 
         public static void EtudeAddActivationCondition(Kingmaker.AreaLogic.Etudes.BlueprintEtude etude, Kingmaker.ElementsSystem.Condition condition)
@@ -128,7 +127,16 @@ namespace WOTR_WoljifRomanceMod
             {//Make a brand new checker
                 etude.ActivationCondition = ConditionalTools.CreateChecker();
             }
+            condition.Owner = etude;
             ConditionalTools.CheckerAddCondition(etude.ActivationCondition, condition);
+        }
+
+        public static void EtudeAddDelayedAction(Kingmaker.AreaLogic.Etudes.BlueprintEtude etude, int days, Kingmaker.ElementsSystem.ActionList actionlist)
+        {
+            var comp = new Kingmaker.Designers.EventConditionActionSystem.Events.EtudeInvokeActionsDelayed();
+            comp.m_ActionList = actionlist;
+            comp.m_Days = days;
+            EtudeAddComponent(etude, comp);
         }
     }
 }

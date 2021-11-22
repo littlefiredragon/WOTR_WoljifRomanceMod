@@ -16,10 +16,10 @@ namespace WOTR_WoljifRomanceMod
     {
         public void OnAreaDidLoad()
         {
-            /*if (Game.Instance.CurrentlyLoadedArea.AssetGuidThreadSafe.Equals("7a25c101fe6f7aa46b192db13373d03b", StringComparison.OrdinalIgnoreCase))
+            if (Game.Instance.CurrentlyLoadedArea.AssetGuidThreadSafe.Equals("2570015799edf594daf2f076f2f975d8", StringComparison.OrdinalIgnoreCase))
             { 
-                AreaSpecificContent.createWarcampTestCutscene();
-            }*/
+                AreaSpecificContent.createTavernCutscene();
+            }
         }
         public void OnAreaBeginUnloading()
         {
@@ -29,6 +29,29 @@ namespace WOTR_WoljifRomanceMod
 
     class AreaSpecificContent
     {
+        static public void createTavernCutscene()
+        {
+            foreach (Kingmaker.EntitySystem.EntityDataBase thing in Game.Instance.LoadedAreaState.AllEntityData)
+            {
+                if (thing.UniqueId.Equals("0f725582-3a78-4eff-9a7c-477018aadeec", StringComparison.OrdinalIgnoreCase))
+                {   // Steal the root transform from PC_Loc locator.
+                    var roottransform = thing.View.gameObject.transform.parent;
+                    // Create the Locators whenever the scene is loaded, since they go away on unload.
+                    var Tavern_PlayerLoc = LocatorTools.MakeLocator("Tavern_PlayerLoc", roottransform, -46.40f, 49.005f, -150.35f, 277.30f);
+                    var Tavern_WoljifLoc = LocatorTools.MakeLocator("Tavern_WoljifLoc", roottransform, -48.22f, 49.005f, -150.33f, 99.20f);
+                    var Tavern_CameraLoc = LocatorTools.MakeLocator("Tavern_CameraLoc", roottransform, -46.88f, 49.19f, -150.19f, -34.06f);
+
+                    var Woljif_Exit = LocatorTools.MakeLocator("WoljifDefault", roottransform, -8.844f, 56.02f, 0.325f, 275.0469f);
+
+                    if (null == Resources.GetModBlueprint<Kingmaker.AreaLogic.Cutscenes.Cutscene>("WRM_TavernCutscene"))
+                    { // Only create the rest of the stuff once.
+                        WRM_Act3.CreateTavernCutscene(Tavern_PlayerLoc, Tavern_WoljifLoc, Tavern_CameraLoc, Woljif_Exit);
+                    }
+                    break;
+                }
+            }
+        }
+
         /*static public void createWarcampTestCutscene()
         {
             foreach (Kingmaker.EntitySystem.EntityDataBase thing in Game.Instance.LoadedAreaState.AllEntityData)

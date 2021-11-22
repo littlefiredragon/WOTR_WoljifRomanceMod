@@ -8,6 +8,9 @@ using TabletopTweaks.Config;
 using TabletopTweaks.Utilities;
 using UnityModManagerNet;
 using TabletopTweaks.Extensions;
+using System.Collections.Generic;
+
+using System.Linq;
 
 namespace WOTR_WoljifRomanceMod
 {
@@ -20,6 +23,7 @@ namespace WOTR_WoljifRomanceMod
             createDebugMenu();
             WRM_Structure.buildEtudes();
             WRM_Act3.ModifyRerecruitScene();
+            WRM_Act3.CreateTavernCommandRoomEvent();
         }
 
         static public void createDebugMenu()
