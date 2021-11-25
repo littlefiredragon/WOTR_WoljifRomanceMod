@@ -37,7 +37,41 @@ namespace WOTR_WoljifRomanceMod
             return result;
         }
 
-        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.EtudeStatus CreateEtudeCondition(string name, Kingmaker.AreaLogic.Etudes.BlueprintEtude etude, EtudeTools.EtudeStatus status, bool not=false)
+        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.EtudeStatus CreateEtudeCondition(string name, Kingmaker.AreaLogic.Etudes.BlueprintEtude etude, string status, bool not = false)
+        {
+            EtudeTools.EtudeStatus statevar = EtudeTools.EtudeStatus.NotStarted;
+            switch (status)
+            {
+                case "notstarted":
+                case "notStarted":
+                case "NotStarted":
+                    statevar = EtudeTools.EtudeStatus.NotStarted;
+                    break;
+                case "started":
+                case "Started":
+                    statevar = EtudeTools.EtudeStatus.Started;
+                    break;
+                case "playing":
+                case "Playing":
+                    statevar = EtudeTools.EtudeStatus.Playing;
+                    break;
+                case "CompletionInProgress":
+                case "completionInProgress":
+                case "completioninprogress":
+                case "completing":
+                case "Completing":
+                    statevar = EtudeTools.EtudeStatus.CompletionInProgress;
+                    break;
+                case "Completed":
+                case "completed":
+                case "Complete":
+                case "complete":
+                    statevar = EtudeTools.EtudeStatus.Completed;
+                    break;
+            }
+            return CreateEtudeCondition(name, etude, statevar, not);
+        }
+            public static Kingmaker.Designers.EventConditionActionSystem.Conditions.EtudeStatus CreateEtudeCondition(string name, Kingmaker.AreaLogic.Etudes.BlueprintEtude etude, EtudeTools.EtudeStatus status, bool not=false)
         {
             var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.EtudeStatus>(name,not);
             result.m_Etude = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintEtudeReference>(etude);
@@ -66,6 +100,76 @@ namespace WOTR_WoljifRomanceMod
         {
             var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.AnotherEtudeOfGroupIsPlaying>(name, not);
             result.m_Group = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<BlueprintEtudeConflictingGroupReference>(group);
+            return result;
+        }
+
+        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.QuestStatus CreateQuestStatusCondition(string name, string status, Kingmaker.Blueprints.Quests.BlueprintQuest Quest, bool not = false)
+        {
+            Kingmaker.AreaLogic.QuestSystem.QuestState statevar = Kingmaker.AreaLogic.QuestSystem.QuestState.None;
+            switch (status)
+            {
+                case "started":
+                case "Started":
+                    statevar = Kingmaker.AreaLogic.QuestSystem.QuestState.Started;
+                    break;
+                case "complete":
+                case "Complete":
+                case "completed":
+                case "Completed":
+                    statevar = Kingmaker.AreaLogic.QuestSystem.QuestState.Completed;
+                    break;
+                case "failed":
+                case "Failed":
+                    statevar = Kingmaker.AreaLogic.QuestSystem.QuestState.Failed;
+                    break;
+            }
+            return CreateQuestStatusCondition(name, statevar, Quest, not);
+        }
+        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.QuestStatus CreateQuestStatusCondition(string name, Kingmaker.AreaLogic.QuestSystem.QuestState status, Kingmaker.Blueprints.Quests.BlueprintQuest Quest, bool not = false)
+        {
+            var questref = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<BlueprintQuestReference>(Quest);
+            var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.QuestStatus>(name, not, bp =>
+            {
+                bp.m_Quest = questref;
+                bp.State = status;
+            });
+            return result;
+        }
+        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.CueSeen CreateCueSeenCondition(string name, Kingmaker.DialogSystem.Blueprints.BlueprintCue cue, bool currentonly = false)
+        {
+            var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.CueSeen>(name, bp =>
+                {
+                    bp.m_Cue = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintCueBaseReference>(cue);
+                    bp.CurrentDialog = currentonly;
+                });
+            return result;
+        }
+
+        public static Kingmaker.Assets.Designers.EventConditionActionSystem.Conditions.DialogSeen CreateDialogSeenCondition(string name, Kingmaker.DialogSystem.Blueprints.BlueprintDialog dialog, bool not = false)
+        {
+            var result = CreateCondition<Kingmaker.Assets.Designers.EventConditionActionSystem.Conditions.DialogSeen>(name, not, bp =>
+            {
+                bp.m_Dialog = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintDialogReference>(dialog);
+            });
+            return result;
+        }
+
+        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.CompanionInParty CreateCompanionInPartyCondition(string name, Companions companion, bool not = false)
+        {
+            var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.CompanionInParty>(name, not, bp => 
+            {
+                bp.m_companion = CommandTools.GetCompanionReference(companion);
+                bp.MatchWhenActive = true;
+            });
+            return result;
+        }
+
+        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.CurrentAreaIs CreateCurrentAreaIsCondition (string name, Kingmaker.Blueprints.Area.BlueprintArea area, bool not = false)
+        {
+            var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.CurrentAreaIs>(name, not, bp =>
+            {
+                bp.m_Area = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintAreaReference>(area);
+            });
             return result;
         }
 

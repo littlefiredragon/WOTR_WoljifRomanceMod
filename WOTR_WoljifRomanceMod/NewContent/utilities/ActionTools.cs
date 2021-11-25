@@ -71,7 +71,18 @@ namespace WOTR_WoljifRomanceMod
             return result;
         }
 
-        public static Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit TranslocateAction(Companions unit, Kingmaker.Blueprints.EntityReference position, bool setrotation = true)
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit TranslocateAction(Companions unit, FakeLocator position)
+        {
+            var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit>(bp =>
+            {
+                bp.Unit = CommandTools.getCompanionEvaluator(unit);
+                bp.translocatePositionEvaluator = position;
+                bp.m_CopyRotation = true;
+                bp.translocateOrientationEvaluator = position.GetRotation();
+            });
+            return result;
+        }
+        /*public static Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit TranslocateAction(Companions unit, Kingmaker.Blueprints.EntityReference position, bool setrotation = true)
         {
             var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit>(bp =>
             {
@@ -80,7 +91,7 @@ namespace WOTR_WoljifRomanceMod
                 bp.m_CopyRotation = setrotation;
             });
             return result;
-        }
+        }*/
 
         public static Kingmaker.Designers.EventConditionActionSystem.Actions.HideUnit HideUnitAction(Companions unit, bool unhide = false)
         {
@@ -205,6 +216,34 @@ namespace WOTR_WoljifRomanceMod
                 bp.m_EventBlueprint = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<BlueprintKingdomEventBaseReference>(commandevent);
                 bp.CancelIfInProgress = true;
                 bp.AllIfMultiple = true;
+            });
+            return action;
+        }
+
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.AddCampingEncounter AddCampEventAction(Kingmaker.RandomEncounters.Settings.BlueprintCampingEncounter Encounter)
+        {
+            var action = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.AddCampingEncounter>(bp =>
+            {
+                bp.m_Encounter = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<BlueprintCampingEncounterReference>(Encounter);
+            });
+            return action;
+        }
+
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.RemoveCampingEncounter RemoveCampEventAction(Kingmaker.RandomEncounters.Settings.BlueprintCampingEncounter Encounter)
+        {
+            var action = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.RemoveCampingEncounter>(bp =>
+            {
+                bp.m_Encounter = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<BlueprintCampingEncounterReference>(Encounter);
+            });
+            return action;
+        }
+
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.StartDialog StartDialogAction(Kingmaker.DialogSystem.Blueprints.BlueprintDialog dialog, Companions owner)
+        {
+            var action = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.StartDialog>(bp =>
+            {
+                bp.m_Dialogue = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<BlueprintDialogReference>(dialog);
+                bp.DialogueOwner = CommandTools.getCompanionEvaluator(owner);
             });
             return action;
         }

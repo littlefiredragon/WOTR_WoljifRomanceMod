@@ -93,7 +93,19 @@ namespace WOTR_WoljifRomanceMod
             return result;
         }
 
-        public static Kingmaker.AreaLogic.Cutscenes.Commands.CommandControlCamera CamMoveCommand(Kingmaker.Blueprints.EntityReference position)
+        public static Kingmaker.AreaLogic.Cutscenes.Commands.CommandControlCamera CamMoveCommand(FakeLocator position)
+        {
+            numcamfollows++;
+            var name = "camMove_" + numcamfollows.ToString();
+            var result = GenericCommand<Kingmaker.AreaLogic.Cutscenes.Commands.CommandControlCamera>(name);
+            result.Move = true;
+            result.MoveTarget = position;
+            result.Rotate = true;
+            result.RotateTarget = position.GetRotation();
+            result.TimingMode = Kingmaker.AreaLogic.Cutscenes.Commands.CommandControlCamera.TimingModeType.Snap;
+            return result;
+        }
+        /*public static Kingmaker.AreaLogic.Cutscenes.Commands.CommandControlCamera CamMoveCommand(Kingmaker.Blueprints.EntityReference position)
         {
             numcamfollows++;
             var name = "camMove_" + numcamfollows.ToString();
@@ -108,7 +120,7 @@ namespace WOTR_WoljifRomanceMod
             result.RotateTarget = rotpos;
             result.TimingMode = Kingmaker.AreaLogic.Cutscenes.Commands.CommandControlCamera.TimingModeType.Snap;
             return result;
-        }
+        }*/
 
         public static Kingmaker.AreaLogic.Cutscenes.CommandAction ActionCommand(string name, Kingmaker.ElementsSystem.ActionList actions)
         {
@@ -128,7 +140,23 @@ namespace WOTR_WoljifRomanceMod
             return result;
         }
 
-        public static Kingmaker.AreaLogic.Cutscenes.CommandAction TranslocateCommand(Companions unit, Kingmaker.Blueprints.EntityReference position, bool setrotation = true)
+        public static Kingmaker.AreaLogic.Cutscenes.CommandAction TranslocateCommand(string name, Companions unit, FakeLocator position)
+        {
+            var action = ActionTools.TranslocateAction(unit, position);
+            var command = ActionCommand(name, action);
+            action.Owner = command;
+            return command;
+        }
+        public static Kingmaker.AreaLogic.Cutscenes.CommandAction TranslocateCommand(Companions unit, FakeLocator position)
+        {
+            var name = "translocate_" + numunnamedmoves.ToString();
+            numunnamedmoves++;
+            var action = ActionTools.TranslocateAction(unit, position);
+            var command = ActionCommand(name, action);
+            action.Owner = command;
+            return command;
+        }
+        /*public static Kingmaker.AreaLogic.Cutscenes.CommandAction TranslocateCommand(Companions unit, Kingmaker.Blueprints.EntityReference position, bool setrotation = true)
         {
             var name = "translocate_" + numunnamedmoves.ToString();
             numunnamedmoves++;
@@ -140,9 +168,9 @@ namespace WOTR_WoljifRomanceMod
             var command = ActionCommand(name, action);
             action.Owner = command;
             return command;
-        }
+        }*/
 
-        public static Kingmaker.AreaLogic.Cutscenes.Commands.CommandUnitLookAt LookAtCommand(string name, Companions unit, Companions lookedatunit)
+        /*public static Kingmaker.AreaLogic.Cutscenes.Commands.CommandUnitLookAt LookAtCommand(string name, Companions unit, Companions lookedatunit)
         {
             var position = (Kingmaker.Designers.EventConditionActionSystem.Evaluators.UnitPosition)Kingmaker.ElementsSystem.Element.CreateInstance(typeof(Kingmaker.Designers.EventConditionActionSystem.Evaluators.UnitPosition));
             return LookAtCommand(name, unit, position);
@@ -162,9 +190,19 @@ namespace WOTR_WoljifRomanceMod
             result.m_OnTurned.Name = "OnTurned";
             result.m_Unit = getCompanionEvaluator(unit);
             return result;
-        }
+        }*/
 
-        public static Kingmaker.AreaLogic.Cutscenes.Commands.CommandMoveUnit WalkCommand(string name, Companions unit, Kingmaker.Blueprints.EntityReference position, bool vanish = false)
+        public static Kingmaker.AreaLogic.Cutscenes.Commands.CommandMoveUnit WalkCommand(string name, Companions unit, FakeLocator position, bool vanish = false)
+        {
+            var result = GenericCommand<Kingmaker.AreaLogic.Cutscenes.Commands.CommandMoveUnit>(name);
+            result.m_Timeout = 20.0f;
+            result.Unit = getCompanionEvaluator(unit);
+            result.DisableAvoidance = true;
+            result.RunAway = vanish;
+            result.Target = position;
+            return result;
+        }
+        /*public static Kingmaker.AreaLogic.Cutscenes.Commands.CommandMoveUnit WalkCommand(string name, Companions unit, Kingmaker.Blueprints.EntityReference position, bool vanish = false)
         {
             var result = GenericCommand<Kingmaker.AreaLogic.Cutscenes.Commands.CommandMoveUnit>(name);
             result.m_Timeout = 20.0f;
@@ -175,7 +213,7 @@ namespace WOTR_WoljifRomanceMod
             locatorpos.Locator = position;
             result.Target = locatorpos;
             return result;
-        }
+        }*/
 
         public static Kingmaker.AreaLogic.Cutscenes.Commands.CommandFadeout FadeoutCommand()
         {

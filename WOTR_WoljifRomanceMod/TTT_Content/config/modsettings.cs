@@ -18,7 +18,7 @@ namespace TabletopTweaks.Config
             //LoadSettings("AddedContent.json", ref AddedContent);
             LoadSettings("Blueprints.json", ref Blueprints);
             LoadSettings("enGB.json", ref WOTR_WoljifRomanceMod.DialogTools.NewDialogs);
-            LoadSettings("Locators.json", ref WOTR_WoljifRomanceMod.LocatorTools.LocatorIDs);
+            //LoadSettings("Locators.json", ref WOTR_WoljifRomanceMod.LocatorTools.LocatorIDs);
         }
         private static void LoadSettings<T>(string fileName, ref T setting) where T : IUpdatableSettings
         {

@@ -61,9 +61,9 @@ namespace WOTR_WoljifRomanceMod
             // Create the mechanics of the scene
             var NotificationEtude = EtudeTools.CreateEtude("WRM_TavernInvite_Notification", romancebase, false, false);
             var EventEtude = EtudeTools.CreateEtude("WRM_TavernInvite_Event", NotificationEtude, true, true);
-            var Notification = CommandRoomEventTools.CreateEvent("WRM_note_2a_Name", "WRM_note_2a_Desc");
-            CommandRoomEventTools.AddResolution(Notification, Kingmaker.Kingdom.Blueprints.EventResult.MarginType.Fail, "WRM_note_2a_Ignored");
-            CommandRoomEventTools.AddResolution(Notification, Kingmaker.Kingdom.Blueprints.EventResult.MarginType.Success, "WRM_note_2a_Complete");
+            var Notification = EventTools.CreateCommandRoomEvent("WRM_note_2a_Name", "WRM_note_2a_Desc");
+            EventTools.AddResolution(Notification, Kingmaker.Kingdom.Blueprints.EventResult.MarginType.Fail, "WRM_note_2a_Ignored");
+            EventTools.AddResolution(Notification, Kingmaker.Kingdom.Blueprints.EventResult.MarginType.Success, "WRM_note_2a_Complete");
 
             EtudeTools.EtudeAddOnPlayTrigger(NotificationEtude, ActionTools.MakeList(ActionTools.StartCommandRoomEventAction(Notification)));
             EtudeTools.EtudeAddOnDeactivateTrigger(NotificationEtude, ActionTools.MakeList(ActionTools.EndCommandRoomEventAction(Notification)));
@@ -95,38 +95,29 @@ namespace WOTR_WoljifRomanceMod
             EtudeTools.EtudeAddDelayedAction(TavernTimer, 2, ActionTools.MakeList(delayedactions));
             var rerecruitCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("af3b9e51747fda2478b5cf6d97c078fe");
             DialogTools.CueAddOnStopAction(rerecruitCue, ActionTools.StartEtudeAction(TavernTimer));
-
-            // Finally, we need to hook up the actual cutscene and teleportation to the OnStop of the "See you at the tavern" cue.
-            // Because this function is potentially called before the cutscene exists, but the command room scene won't play out
-            // until you go to Drezen and trigger the cutscene creation, hooking up the cue to the trigger is handled in the 
-            // cutscene creation function.
-
-            /*********** DEBUG STUFF ***********/
-            //var debuganswerlist = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("TEST_L_debugmenu");
-            //var taverntestanswer = DialogTools.CreateAnswer("TEST_a_startTavernEtude");
-            //var taverntestcue = DialogTools.CreateCue("TEST_cw_startTavernEtude");
-            //DialogTools.ListAddAnswer(debuganswerlist, taverntestanswer, 0);
-            //DialogTools.AnswerAddNextCue(taverntestanswer, taverntestcue);
-            //DialogTools.CueAddOnStopAction(taverntestcue, ActionTools.StartEtudeAction(EventEtude));
-            /***********************************/
         }
-        static public void CreateTavernCutscene(Kingmaker.Blueprints.EntityReference PCloc, Kingmaker.Blueprints.EntityReference WJloc, Kingmaker.Blueprints.EntityReference cameraloc, Kingmaker.Blueprints.EntityReference WJExitLoc)
+        static public void CreateTavernCutscene(/*Kingmaker.Blueprints.EntityReference PCloc, Kingmaker.Blueprints.EntityReference WJloc, Kingmaker.Blueprints.EntityReference cameraloc, Kingmaker.Blueprints.EntityReference WJExitLoc*/)
         {
+            //Kingmaker.Blueprints.EntityReference PLACEHOLDER_LOCATOR = null;
+
+            //var newhandle = Kingmaker.ResourceManagement.BundledResourceHandle<UnityEngine.SceneManagement.Scene>.Request(commandid);
+
+
+            /*var Tavern_PlayerLoc = LocatorTools.PlaceholderLocator("Tavern_PlayerLoc", -46.40f, 49.005f, -150.35f, 277.30f);
+            var Tavern_WoljifLoc = LocatorTools.PlaceholderLocator("Tavern_WoljifLoc", -48.22f, 49.005f, -150.33f, 99.20f);
+            var Tavern_CameraLoc = LocatorTools.PlaceholderLocator("Tavern_CameraLoc", -46.88f, 49.19f, -150.19f, -34.06f);
+            var Woljif_Exit = LocatorTools.PlaceholderLocator("WoljifDefault", -8.844f, 56.02f, 0.325f, 275.0469f);*/
+
+            var Tavern_PlayerLoc = new FakeLocator(-46.40f, 49.005f, -150.35f, 277.30f);
+            var Tavern_WoljifLoc = new FakeLocator(-48.22f, 49.005f, -150.33f, 99.20f);
+            var Tavern_CameraLoc = new FakeLocator(-46.88f, 49.19f, -150.19f, -34.06f);
+            var Woljif_Exit = new FakeLocator(-8.844f, 56.02f, 0.325f, 275.0469f);
+
+
             var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceActive");
             var affection = Resources.GetModBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("WRM_WoljifAffection");
 
-            /*********** DEBUG STUFF ***********/
-            //var debuganswerlist = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("TEST_L_debugmenu");
-            //var taverntestanswer = DialogTools.CreateAnswer("TEST_a_toTavern");
-            //var taverntestcue = DialogTools.CreateCue("TEST_cw_toTavern");
-            //DialogTools.ListAddAnswer(debuganswerlist, taverntestanswer, 0);
-            //DialogTools.AnswerAddNextCue(taverntestanswer, taverntestcue);
-            /***********************************/
-
             // Create dialog
-            var placeholdercue = DialogTools.CreateCue("TEST_PLACEHOLDER");
-            var placeholderdialog = DialogTools.CreateDialog("WRM_PLACEHOLDERDIALOG", placeholdercue);
-
             var C_CrazyStory = DialogTools.CreateCue("WRM_2b_c_CrazyStory");
             var A_NoodleIncident = DialogTools.CreateAnswer("WRM_2b_a_NoodleIncident", true);
             var A_WhenItWorksOut = DialogTools.CreateAnswer("WRM_2b_a_WhenItWorksOut");
@@ -222,10 +213,11 @@ namespace WOTR_WoljifRomanceMod
             // Create Track 0A
             var Track0A = CutsceneTools.CreateTrack(Gate1, CommandTools.LockControlCommand());
             // Create Track 0B
-            Kingmaker.ElementsSystem.GameAction[] Actions0B = { ActionTools.TranslocateAction(Companions.Player,PCloc), ActionTools.TranslocateAction(Companions.Woljif, WJloc) };
+
+            Kingmaker.ElementsSystem.GameAction[] Actions0B = { ActionTools.TranslocateAction(Companions.Player,/*PCloc*/Tavern_PlayerLoc), ActionTools.TranslocateAction(Companions.Woljif, /*WJloc*/Tavern_WoljifLoc) };
             Kingmaker.AreaLogic.Cutscenes.CommandBase[] Commands0B = 
                 { CommandTools.ActionCommand("WRM_1_Move0B", Actions0B),
-                  CommandTools.CamMoveCommand(cameraloc),
+                  CommandTools.CamMoveCommand(/*cameraloc*/ Tavern_CameraLoc),
                   CommandTools.DelayCommand(0.5f) };
             var Track0B = CutsceneTools.CreateTrack(Gate1, Commands0B);
             // Create Track 0C and 0D
@@ -237,22 +229,215 @@ namespace WOTR_WoljifRomanceMod
 
             // Finishing dialog ends cutscene, moves Woljif back to his normal place, puts player outside tavern.
             DialogTools.CueAddOnStopAction(C_NoSympathy, ActionTools.StopCutsceneAction(TavernCutscene));
-            DialogTools.CueAddOnStopAction(C_NoSympathy, ActionTools.TeleportAction("e4694f569a0003448b08fa522f7dc79f", ActionTools.MakeList(ActionTools.TranslocateAction(Companions.Woljif, WJExitLoc))));
+            DialogTools.CueAddOnStopAction(C_NoSympathy, ActionTools.TeleportAction("e4694f569a0003448b08fa522f7dc79f", ActionTools.MakeList(ActionTools.TranslocateAction(Companions.Woljif, /*WJExitLoc*/Woljif_Exit))));
             DialogTools.CueAddOnStopAction(C_Thanks, ActionTools.StopCutsceneAction(TavernCutscene));
-            DialogTools.CueAddOnStopAction(C_Thanks, ActionTools.TeleportAction("e4694f569a0003448b08fa522f7dc79f", ActionTools.MakeList(ActionTools.TranslocateAction(Companions.Woljif, WJExitLoc))));
+            DialogTools.CueAddOnStopAction(C_Thanks, ActionTools.TeleportAction("e4694f569a0003448b08fa522f7dc79f", ActionTools.MakeList(ActionTools.TranslocateAction(Companions.Woljif, /*WJExitLoc*/Woljif_Exit))));
             DialogTools.CueAddOnStopAction(C_WowThanks, ActionTools.StopCutsceneAction(TavernCutscene));
-            DialogTools.CueAddOnStopAction(C_WowThanks, ActionTools.TeleportAction("e4694f569a0003448b08fa522f7dc79f", ActionTools.MakeList(ActionTools.TranslocateAction(Companions.Woljif, WJExitLoc))));
+            DialogTools.CueAddOnStopAction(C_WowThanks, ActionTools.TeleportAction("e4694f569a0003448b08fa522f7dc79f", ActionTools.MakeList(ActionTools.TranslocateAction(Companions.Woljif, /*WJExitLoc*/Woljif_Exit))));
             DialogTools.CueAddOnStopAction(C_OneTwoThree, ActionTools.StopCutsceneAction(TavernCutscene));
-            DialogTools.CueAddOnStopAction(C_OneTwoThree, ActionTools.TeleportAction("e4694f569a0003448b08fa522f7dc79f", ActionTools.MakeList(ActionTools.TranslocateAction(Companions.Woljif, WJExitLoc))));
+            DialogTools.CueAddOnStopAction(C_OneTwoThree, ActionTools.TeleportAction("e4694f569a0003448b08fa522f7dc79f", ActionTools.MakeList(ActionTools.TranslocateAction(Companions.Woljif, /*WJExitLoc*/Woljif_Exit))));
 
 
             var teleportparty = ActionTools.TeleportAction("320516612f496da4a8919ba4c78b0be4", ActionTools.MakeList(ActionTools.PlayCutsceneAction(TavernCutscene)));
             DialogTools.CueAddOnStopAction(Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("WRM_2a_c_SeeYouThere"), teleportparty);
+        }
 
-            /*********** DEBUG STUFF ***********/
-            //var teleportparty = ActionTools.TeleportAction("320516612f496da4a8919ba4c78b0be4", ActionTools.MakeList(ActionTools.PlayCutsceneAction(TavernCutscene)));
-            //DialogTools.CueAddOnStopAction(taverntestcue, teleportparty);
-            /***********************************/
+        /*static public void AddLocatorsTavernCutscene(Kingmaker.Blueprints.EntityReference PCloc, Kingmaker.Blueprints.EntityReference WJloc, Kingmaker.Blueprints.EntityReference cameraloc, Kingmaker.Blueprints.EntityReference WJExitLoc)
+        {
+            var C_NoSympathy = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("WRM_2b_c_NoSympathy");
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)((Kingmaker.Designers.EventConditionActionSystem.Actions.TeleportParty)C_NoSympathy.OnStop.Actions[0]).AfterTeleport.Actions[0]).translocatePosition = WJloc;
+
+            var C_Thanks = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("WRM_2b_c_Thanks");
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)((Kingmaker.Designers.EventConditionActionSystem.Actions.TeleportParty)C_Thanks.OnStop.Actions[0]).AfterTeleport.Actions[0]).translocatePosition = WJloc;
+
+            var C_WowThanks = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("WRM_2b_c_WowThanks");
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)((Kingmaker.Designers.EventConditionActionSystem.Actions.TeleportParty)C_WowThanks.OnStop.Actions[0]).AfterTeleport.Actions[0]).translocatePosition = WJloc;
+
+            var C_OneTwoThree = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("WRM_2b_c_OneTwoThree");
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)((Kingmaker.Designers.EventConditionActionSystem.Actions.TeleportParty)C_OneTwoThree.OnStop.Actions[0]).AfterTeleport.Actions[0]).translocatePosition = WJloc;
+
+            var CamMove = Resources.GetModBlueprint<Kingmaker.AreaLogic.Cutscenes.Commands.CommandControlCamera>("camMove_1");
+            ((Kingmaker.Designers.EventConditionActionSystem.Evaluators.LocatorPosition)CamMove.MoveTarget).Locator = cameraloc;
+            ((Kingmaker.Designers.EventConditionActionSystem.Evaluators.LocatorOrientation)CamMove.RotateTarget).Locator = cameraloc;
+
+
+            var Move0B = Resources.GetModBlueprint<Kingmaker.AreaLogic.Cutscenes.CommandAction>("WRM_1_Move0B");
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)Move0B.Action.Actions[0]).translocatePosition = PCloc;
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)Move0B.Action.Actions[1]).translocatePosition = WJloc;
+        }*/
+        /*static public void AddLocatorsTavernCutscene()
+        {
+        }*/
+
+            static public void CreateArgumentScene()
+        {
+            var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceActive");
+            var Ch3Quest = Resources.GetBlueprint<Kingmaker.Blueprints.Quests.BlueprintQuest>("fbef28077988e8049a2e9d3d9dd3fd79");
+            var affection = Resources.GetModBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("WRM_WoljifAffection");
+            var CompanionEtude = (Kingmaker.AreaLogic.Etudes.BlueprintEtude)Kingmaker.Blueprints.ResourcesLibrary.TryGetBlueprint(Kingmaker.Blueprints.BlueprintGuid.Parse("14a80c048c8ceed4a9c856d85bbf10da"));
+
+            // Create Status Etudes
+            var HadFight = EtudeTools.CreateEtude("WRM_WoljifArguedWithPlayer", CompanionEtude, false, false);
+            var AngryEtude = EtudeTools.CreateEtude("WRM_WoljifAngry", CompanionEtude, false, false);
+            var ReadyToReconcile = EtudeTools.CreateEtude("WRM_WoljifReadyToReconcile", CompanionEtude, false, false);
+            var Reconciled = EtudeTools.CreateEtude("WRM_WoljifReconciled", CompanionEtude, false, false);
+
+            EtudeTools.EtudeAddCompleteTrigger(AngryEtude, ActionTools.MakeList(ActionTools.StartEtudeAction(ReadyToReconcile)));
+            EtudeTools.EtudeAddStartsWith(HadFight, AngryEtude);
+            EtudeTools.EtudeAddDelayedAction(HadFight, 1, ActionTools.MakeList(ActionTools.CompleteEtudeAction(AngryEtude)));
+            EtudeTools.EtudeAddCompleteTrigger(ReadyToReconcile, ActionTools.MakeList(ActionTools.StartEtudeAction(Reconciled)));
+
+            // Create Dialog
+            var C_WhatsYourGame = DialogTools.CreateCue("WRM_3_c_WhatsYourGame");
+            var A_CardGames = DialogTools.CreateAnswer("WRM_3_a_CardGames");
+            var A_What1 = DialogTools.CreateAnswer("WRM_3_a_What1");
+            var L_Answers1 = DialogTools.CreateAnswersList("WRM_3_L_Answers1");
+            var C_YouWantSomething = DialogTools.CreateCue("WRM_3_c_YouWantSomething");
+            var A_What2 = DialogTools.CreateAnswer("WRM_3_a_What2");
+            var A_CalmDown = DialogTools.CreateAnswer("WRM_3_a_CalmDown");
+            var A_IWantToBeNice = DialogTools.CreateAnswer("WRM_3_a_IWantToBeNice");
+            var A_GrowUp = DialogTools.CreateAnswer("WRM_3_a_GrowUp");
+            var A_YouWannaBeMad = DialogTools.CreateAnswer("WRM_3_a_YouWannaBeMad");
+            var C_StopTheIdiotAct = DialogTools.CreateCue("WRM_3_c_StopTheIdiotAct");
+            var C_CalmDown = DialogTools.CreateCue("WRM_3_c_CalmDown");
+            var C_NobodysThisNice = DialogTools.CreateCue("WRM_3_c_NobodysThisNice");
+            var C_GuiltTrips = DialogTools.CreateCue("WRM_3_c_GuiltTrips");
+            var C_DontPityMe = DialogTools.CreateCue("WRM_3_c_DontPityMe");
+            var C_IDontNeedYou = DialogTools.CreateCue("WRM_3_c_IDontNeedYou");
+            var L_Answers2 = DialogTools.CreateAnswersList("WRM_3_L_Answers2");
+            var C_NobodysThisNice2 = DialogTools.CreateCue("WRM_3_c_NobodysThisNice2");
+            var C_GuiltTrips2 = DialogTools.CreateCue("WRM_3_c_GuiltTrips2");
+            var C_DontPityMe2 = DialogTools.CreateCue("WRM_3_c_DontPityMe2");
+            var A_IWantToBeNice2 = DialogTools.CreateAnswer("WRM_3_a_IWantToBeNice2", "WRM_3_a_IWantToBeNice");
+            var A_YouWannaBeMad2 = DialogTools.CreateAnswer("WRM_3_a_YouWannaBeMad2", "WRM_3_a_YouWannaBeMad");
+            var A_GrowUp2 = DialogTools.CreateAnswer("WRM_3_a_GrowUp2", "WRM_3_a_GrowUp");
+            var L_Answers3 = DialogTools.CreateAnswersList("WRM_3_L_Answers3");
+            var ArgumentDialog = DialogTools.CreateDialog("WRM_ArgumentDialog", C_WhatsYourGame);
+
+            DialogTools.CueAddAnswersList(C_WhatsYourGame, L_Answers1);
+            DialogTools.ListAddAnswer(L_Answers1, A_CardGames);
+            DialogTools.ListAddAnswer(L_Answers1, A_What1);
+            DialogTools.AnswerAddNextCue(A_CardGames, C_YouWantSomething);
+            DialogTools.AnswerAddNextCue(A_What1, C_YouWantSomething);
+            DialogTools.CueAddAnswersList(C_YouWantSomething, L_Answers2);
+            DialogTools.ListAddAnswer(L_Answers2, A_What2);
+            DialogTools.ListAddAnswer(L_Answers2, A_CalmDown);
+            DialogTools.ListAddAnswer(L_Answers2, A_IWantToBeNice);
+            DialogTools.ListAddAnswer(L_Answers2, A_YouWannaBeMad);
+            DialogTools.ListAddAnswer(L_Answers2, A_GrowUp);
+            DialogTools.AnswerAddOnSelectAction(A_IWantToBeNice, ActionTools.IncrementFlagAction(affection, 1));
+            DialogTools.AnswerAddOnSelectAction(A_YouWannaBeMad, ActionTools.IncrementFlagAction(affection, 1));
+            DialogTools.AnswerAddOnSelectAction(A_GrowUp, ActionTools.CompleteEtudeAction(romanceactive));
+            DialogTools.AnswerAddNextCue(A_What2, C_StopTheIdiotAct);
+            DialogTools.AnswerAddNextCue(A_CalmDown, C_CalmDown);
+            DialogTools.AnswerAddNextCue(A_IWantToBeNice, C_NobodysThisNice);
+            DialogTools.AnswerAddNextCue(A_YouWannaBeMad, C_DontPityMe);
+            DialogTools.AnswerAddNextCue(A_GrowUp, C_GuiltTrips);
+            DialogTools.CueAddContinue(C_GuiltTrips, C_IDontNeedYou);
+            DialogTools.CueAddContinue(C_NobodysThisNice, C_IDontNeedYou);
+            DialogTools.CueAddAnswersList(C_CalmDown, L_Answers3);
+            DialogTools.CueAddAnswersList(C_StopTheIdiotAct, L_Answers3);
+            DialogTools.ListAddAnswer(L_Answers3, A_IWantToBeNice2);
+            DialogTools.ListAddAnswer(L_Answers3, A_YouWannaBeMad2);
+            DialogTools.ListAddAnswer(L_Answers3, A_GrowUp2);
+            DialogTools.AnswerAddNextCue(A_IWantToBeNice2, C_NobodysThisNice2);
+            DialogTools.AnswerAddNextCue(A_YouWannaBeMad2, C_DontPityMe2);
+            DialogTools.AnswerAddNextCue(A_GrowUp2, C_GuiltTrips2);
+            DialogTools.CueAddContinue(C_GuiltTrips2, C_IDontNeedYou);
+            DialogTools.CueAddContinue(C_NobodysThisNice2, C_IDontNeedYou);
+
+            DialogTools.DialogAddFinishAction(ArgumentDialog, ActionTools.StartEtudeAction(HadFight));
+
+            // Create Camp Event
+            var ArgumentEvent = EventTools.CreateCampingEvent("WRM_ArgumentEvent", 100);
+            EventTools.CampEventAddCondition(ArgumentEvent, ConditionalTools.CreateEtudeCondition("WRM_IsRomanceActive", romanceactive, "Playing"));
+            EventTools.CampEventAddCondition(ArgumentEvent, ConditionalTools.CreateQuestStatusCondition("WRM_Ch3Qfinished", "Completed", Ch3Quest));
+            EventTools.CampEventAddCondition(ArgumentEvent, ConditionalTools.CreateDialogSeenCondition("WRM_SeenTavernScene", Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>("WRM_2b_TavernDialog")));
+            EventTools.CampEventAddCondition(ArgumentEvent, ConditionalTools.CreateCurrentAreaIsCondition("WRM_argumentNotInCapital", Resources.GetBlueprint<Kingmaker.Blueprints.Area.BlueprintArea>("2570015799edf594daf2f076f2f975d8"), true));
+            EventTools.CampEventAddCondition(ArgumentEvent, ConditionalTools.CreateCompanionInPartyCondition("WRM_WoljifInPartyForFight", Companions.Woljif));
+            EventTools.CampEventAddAction(ArgumentEvent, ActionTools.StartDialogAction(ArgumentDialog, Companions.Woljif));
+            EventTools.CampEventAddAction(ArgumentEvent, ActionTools.RemoveCampEventAction(ArgumentEvent));
+            // Timer after completing Crescent of the Abyss.
+            var ArgumentTimer = EtudeTools.CreateEtude("WRM_TimerBeforeFight", romanceactive, false, false);
+            EtudeTools.EtudeAddDelayedAction(ArgumentTimer, 3, ActionTools.MakeList(ActionTools.AddCampEventAction(ArgumentEvent)));
+
+            // Start timer after accepting Woljif permanently back into the party after facing Voetiel.
+            var Ch3_FinalizedReRecruit1 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("326e5a8ef1f92914ab122ebac703b4c8");
+            var Ch3_FinalizedReRecruit2 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("941797cc93bac7f4e824022ec3ee08b0");
+            var Ch3_FinalizedReRecruit3 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("0b926925ab25d794a9dce6629a9a98de");
+            DialogTools.CueAddOnStopAction(Ch3_FinalizedReRecruit1, ActionTools.StartEtudeAction(ArgumentTimer));
+            DialogTools.CueAddOnStopAction(Ch3_FinalizedReRecruit2, ActionTools.StartEtudeAction(ArgumentTimer));
+            DialogTools.CueAddOnStopAction(Ch3_FinalizedReRecruit3, ActionTools.StartEtudeAction(ArgumentTimer));
+            // Alter that dialog while we're at it.
+            var C_WarmSmile = DialogTools.CreateCue("WRM_3b_c_WarmSmile");
+            var A_OfCourseYouCan = DialogTools.CreateAnswer("WRM_3b_a_OfCourseYouCan");
+            var alteredanswerslist = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("42e88596d802aec47af9da5b8179b8ef");
+            var devalkilled = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("326e5a8ef1f92914ab122ebac703b4c8");
+            var devalnotkilled = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("2a4e76637816fbc428c22879a2d29652");
+            DialogTools.AnswerAddOnSelectAction(A_OfCourseYouCan, ActionTools.IncrementFlagAction(affection, 1));
+            DialogTools.AnswerAddNextCue(A_OfCourseYouCan, C_WarmSmile);
+            DialogTools.ListAddAnswer(alteredanswerslist, A_OfCourseYouCan, 2);
+            DialogTools.CueAddContinue(C_WarmSmile, devalkilled);
+            DialogTools.CueAddContinue(C_WarmSmile, devalnotkilled);
+            DialogTools.CueAddOnStopAction(C_WarmSmile,
+                ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.GiveObjective>(bp => 
+                { 
+                    bp.m_Objective = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintQuestObjectiveReference>(Resources.GetBlueprint<Kingmaker.Blueprints.Quests.BlueprintQuestObjective>("9b97232f7c5d6774c822e91ea6d075b8"));
+                }));
+            DialogTools.CueAddOnStopAction(C_WarmSmile,
+                ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.SetObjectiveStatus>(bp =>
+                {
+                    bp.m_Objective = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintQuestObjectiveReference>(Resources.GetBlueprint<Kingmaker.Blueprints.Quests.BlueprintQuestObjective>("54b9562225773f640a271b2c0686fbbc"));
+                }));
+
+            // Alter dialog while Woljif is mad at you
+            var C_DontTalkToMe = DialogTools.CreateCue("WRM_3a_c_DontTalkToMe");
+            DialogTools.CueAddCondition(C_DontTalkToMe, ConditionalTools.CreateEtudeCondition("WRM_WoljifMadCheck", AngryEtude, EtudeTools.EtudeStatus.Playing));
+            var woljifmaindialog = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>("8a38eeddc0215a84ca441439bb96b8f4");
+            woljifmaindialog.FirstCue.Cues.Insert(0, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintCueBaseReference>(C_DontTalkToMe));
+        }
+
+        static public void CreateReconciliation()
+        {
+            // Add non-romantic reconciliation dialog
+            var C_ForgiveAndForget = DialogTools.CreateCue("WRM_4justfriends_c_Sorry");
+            var C_Anyway = DialogTools.CreateCue("WRM_4justfriends_c_Anyway");
+
+            var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceActive");
+            var readytoreconcile = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifReadyToReconcile");
+            var readytoreconcilecond = ConditionalTools.CreateEtudeCondition("WRM_WoljifReconciliation", readytoreconcile, EtudeTools.EtudeStatus.Playing);
+            DialogTools.CueAddCondition(C_ForgiveAndForget, readytoreconcilecond);
+            DialogTools.CueAddCondition(C_ForgiveAndForget, ConditionalTools.CreateEtudeCondition("WRM_WoljifPlatonicReconciliation", romanceactive, EtudeTools.EtudeStatus.Playing, true));
+            DialogTools.CueAddContinue(C_ForgiveAndForget, C_Anyway);
+            var woljifnormalanswerlist = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("e41585da330233143b34ef64d7d62d69");
+            DialogTools.CueAddAnswersList(C_Anyway, woljifnormalanswerlist);
+            DialogTools.CueAddOnShowAction(C_ForgiveAndForget, ActionTools.CompleteEtudeAction(readytoreconcile));
+            
+            var woljifmaindialog = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>("8a38eeddc0215a84ca441439bb96b8f4");
+            woljifmaindialog.FirstCue.Cues.Insert(0, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintCueBaseReference>(C_ForgiveAndForget));
+
+            // Prevent Ch4 quest from triggering if you fought with Woljif and haven't made up yet.
+            var Ch4QuestEtude = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("b969089c8ec6ba04abb3aa51d9c54876");
+            //if HadFight is NOT playing, OR Reconciled is playing.
+            var hadfight = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifArguedWithPlayer");
+            var reconciled = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifReconciled"); 
+            Kingmaker.ElementsSystem.Condition[] conditiongroup =
+                {
+                    ConditionalTools.CreateEtudeCondition("WRM_DidNotFight",hadfight,"Playing",true),
+                    ConditionalTools.CreateEtudeCondition("WRM_MadeUp",reconciled,"Playing",false)
+                };
+            var newcondition = ConditionalTools.CreateLogicCondition("WRM_DidntFightOrMadeUp", Kingmaker.ElementsSystem.Operation.Or, conditiongroup);
+            EtudeTools.EtudeAddActivationCondition(Ch4QuestEtude, newcondition);
+
+            // Add romantic reconciliation dialog.
+            var C_PLACEHOLDER = DialogTools.CreateCue("TEST_PLACEHOLDER");
+
+            DialogTools.CueAddCondition(C_PLACEHOLDER, readytoreconcilecond);
+            DialogTools.CueAddCondition(C_PLACEHOLDER, ConditionalTools.CreateEtudeCondition("WRM_WoljifRomanticReconciliation", romanceactive, EtudeTools.EtudeStatus.Playing, false));
+            DialogTools.CueAddAnswersList(C_PLACEHOLDER, woljifnormalanswerlist);
+            DialogTools.CueAddOnShowAction(C_PLACEHOLDER, ActionTools.CompleteEtudeAction(readytoreconcile));
+
+            woljifmaindialog.FirstCue.Cues.Insert(0, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintCueBaseReference>(C_PLACEHOLDER));
         }
     }
 }

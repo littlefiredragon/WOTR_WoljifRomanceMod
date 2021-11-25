@@ -17,13 +17,19 @@ namespace WOTR_WoljifRomanceMod
     [HarmonyPatch(typeof(BlueprintsCache), "Init")]
     class WoljifRomanceMod
     {
+        //static public Kingmaker.Blueprints.EntityReference[] LocatorReferences = new Kingmaker.Blueprints.EntityReference[0];
         static void Postfix()
         {
             DialogTools.NewDialogs.LoadDialogIntoGame("enGB");
+            //LocatorTools.CreateLocatorRoot();
+
             createDebugMenu();
             WRM_Structure.buildEtudes();
             WRM_Act3.ModifyRerecruitScene();
             WRM_Act3.CreateTavernCommandRoomEvent();
+            WRM_Act3.CreateTavernCutscene();
+            WRM_Act3.CreateArgumentScene();
+            WRM_Act3.CreateReconciliation();
         }
 
         static public void createDebugMenu()

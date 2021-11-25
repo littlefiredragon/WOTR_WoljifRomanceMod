@@ -152,5 +152,25 @@ namespace WOTR_WoljifRomanceMod
             return result;
         }
 
+        public static void TrackAddCommands(Kingmaker.AreaLogic.Cutscenes.Track track, params Kingmaker.AreaLogic.Cutscenes.CommandBase[] commands)
+        {
+            var numcommands = 0;
+            if (commands != null)
+            {
+                numcommands = commands.Length;
+            }
+            var refs = new Kingmaker.ElementsSystem.CommandReference[numcommands];
+            if (numcommands > 0)
+            {
+                for (int i = 0; i < numcommands; i++)
+                {
+                    refs[i] = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.ElementsSystem.CommandReference>(commands[i]);
+                }
+            }
+            for (int i = 0; i < numcommands; i++)
+            {
+                track.m_Commands.Add(refs[i]);
+            }
+        }
     }
 }

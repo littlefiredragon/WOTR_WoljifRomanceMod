@@ -14,9 +14,9 @@ using System;
 
 namespace WOTR_WoljifRomanceMod
 {
-    public static class CommandRoomEventTools
+    public static class EventTools
     {
-        public static Kingmaker.Kingdom.Blueprints.BlueprintKingdomEvent CreateEvent(string name, string description)
+        public static Kingmaker.Kingdom.Blueprints.BlueprintKingdomEvent CreateCommandRoomEvent(string name, string description)
         {
             var result = Helpers.CreateBlueprint<Kingmaker.Kingdom.Blueprints.BlueprintKingdomEvent>(name, bp =>
             {
@@ -72,5 +72,49 @@ namespace WOTR_WoljifRomanceMod
                 LocalizedDescription = new Kingmaker.Localization.LocalizedString { m_Key = description }
             };
         } 
+
+        public static Kingmaker.RandomEncounters.Settings.BlueprintCampingEncounter CreateCampingEvent(string name, int chance)
+        {
+            var result = Helpers.CreateBlueprint<Kingmaker.RandomEncounters.Settings.BlueprintCampingEncounter>(name, bp =>
+            {
+                bp.Chance = chance;
+                bp.Conditions = DialogTools.EmptyConditionChecker;
+                bp.EncounterActions = DialogTools.EmptyActionList;
+                bp.InterruptsRest = false;
+                bp.PartyTired = false;
+                bp.MainCharacterTired = false;
+                bp.NotOnGlobalMap = true;
+            });
+            return result;
+        }
+
+        public static void CampEventAddCondition(Kingmaker.RandomEncounters.Settings.BlueprintCampingEncounter campevent, Kingmaker.ElementsSystem.Condition condition)
+        {
+            if (campevent.Conditions == DialogTools.EmptyConditionChecker)
+            {//Make a brand new checker
+                campevent.Conditions = ConditionalTools.CreateChecker();
+            }
+            condition.Owner = campevent;
+            ConditionalTools.CheckerAddCondition(campevent.Conditions, condition);
+        }
+
+        public static void CampEventAddAction(Kingmaker.RandomEncounters.Settings.BlueprintCampingEncounter campevent, Kingmaker.ElementsSystem.GameAction action)
+        {
+            if (campevent.EncounterActions == DialogTools.EmptyActionList)
+            {//Make a brand new action list
+                campevent.EncounterActions = new Kingmaker.ElementsSystem.ActionList();
+            }
+            var len = 0;
+            if (campevent.EncounterActions.Actions == null)
+            {
+                campevent.EncounterActions.Actions = new Kingmaker.ElementsSystem.GameAction[1];
+            }
+            else
+            {
+                len = campevent.EncounterActions.Actions.Length;
+                Array.Resize(ref campevent.EncounterActions.Actions, len + 1);
+            }
+            campevent.EncounterActions.Actions[len] = action;
+        }
     }
 }

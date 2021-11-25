@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+﻿/*using HarmonyLib;
 using JetBrains.Annotations;
 using Kingmaker;
 using Kingmaker.Blueprints.JsonSystem;
@@ -37,17 +37,23 @@ namespace WOTR_WoljifRomanceMod
                 {   // Steal the root transform from PC_Loc locator.
                     var roottransform = thing.View.gameObject.transform.parent;
                     // Create the Locators whenever the scene is loaded, since they go away on unload.
-                    var Tavern_PlayerLoc = LocatorTools.MakeLocator("Tavern_PlayerLoc", roottransform, -46.40f, 49.005f, -150.35f, 277.30f);
+                    /*var Tavern_PlayerLoc = LocatorTools.MakeLocator("Tavern_PlayerLoc", roottransform, -46.40f, 49.005f, -150.35f, 277.30f);
                     var Tavern_WoljifLoc = LocatorTools.MakeLocator("Tavern_WoljifLoc", roottransform, -48.22f, 49.005f, -150.33f, 99.20f);
                     var Tavern_CameraLoc = LocatorTools.MakeLocator("Tavern_CameraLoc", roottransform, -46.88f, 49.19f, -150.19f, -34.06f);
 
-                    var Woljif_Exit = LocatorTools.MakeLocator("WoljifDefault", roottransform, -8.844f, 56.02f, 0.325f, 275.0469f);
+                    var Woljif_Exit = LocatorTools.MakeLocator("WoljifDefault", roottransform, -8.844f, 56.02f, 0.325f, 275.0469f);*/
 
-                    if (null == Resources.GetModBlueprint<Kingmaker.AreaLogic.Cutscenes.Cutscene>("WRM_TavernCutscene"))
+                    /*if (null == Resources.GetModBlueprint<Kingmaker.AreaLogic.Cutscenes.Cutscene>("WRM_TavernCutscene"))
                     { // Only create the rest of the stuff once.
-                        WRM_Act3.CreateTavernCutscene(Tavern_PlayerLoc, Tavern_WoljifLoc, Tavern_CameraLoc, Woljif_Exit);
-                    }
-                    break;
+                        //WRM_Act3.CreateTavernCutscene(Tavern_PlayerLoc, Tavern_WoljifLoc, Tavern_CameraLoc, Woljif_Exit);
+                    }*/
+                    //WRM_Act3.AddLocatorsTavernCutscene();
+
+                    //Kingmaker.Blueprints.EntityReferenceTracker.Register(WoljifRomanceMod.LocatorReferences[0]);
+                    //Kingmaker.Blueprints.EntityReferenceTracker.Register(WoljifRomanceMod.LocatorReferences[1]);
+                    //Kingmaker.Blueprints.EntityReferenceTracker.Register(WoljifRomanceMod.LocatorReferences[2]);
+                    //Kingmaker.Blueprints.EntityReferenceTracker.Register(WoljifRomanceMod.LocatorReferences[3]);
+                    /*break;
                 }
             }
         }
@@ -72,5 +78,5 @@ namespace WOTR_WoljifRomanceMod
                 }
             }
         }*/
-    }
-}
+    //}
+//}
