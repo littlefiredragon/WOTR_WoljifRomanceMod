@@ -57,13 +57,11 @@
 
 	<ItemGroup>
 	  <None Remove="NewContent\Blueprints.json" />
-	  <None Remove="NewContent\Locators.json" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <EmbeddedResource Include="NewContent\Blueprints.json" />
 	  <EmbeddedResource Include="NewContent\enGB.json" />
-	  <EmbeddedResource Include="NewContent\Locators.json" />
 	</ItemGroup>
 
 	<ItemGroup>

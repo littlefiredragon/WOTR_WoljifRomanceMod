@@ -1,6 +1,6 @@
 # WOTR_WoljifRomanceMod
 
-(WORK IN PROGRESS) Give your favorite purple tiefling the love he deserves! Adds a full romance path for Woljif Jefto, for both male and female characters.
+(WORK IN PROGRESS) Follow the full romance path for Woljif Jefto that should have been in the game to begin with, for both male and female characters. At last you can give the tiefling the love he deserves, but winning his heart won't be easy...'
 
 # How to Compile
 

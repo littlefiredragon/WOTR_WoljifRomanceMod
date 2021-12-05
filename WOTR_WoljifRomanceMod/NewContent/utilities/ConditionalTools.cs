@@ -96,6 +96,17 @@ namespace WOTR_WoljifRomanceMod
             return result;
         }
 
+        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.FlagInRange CreateFlagCheck(string name, Kingmaker.Blueprints.BlueprintUnlockableFlag flag, int min, int max)
+        {
+            var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.FlagInRange>(name, bp =>
+            {
+                bp.m_Flag = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintUnlockableFlagReference>(flag);
+                bp.MinValue = min;
+                bp.MaxValue = max;
+            });
+            return result;
+        }
+
         public static Kingmaker.Designers.EventConditionActionSystem.Conditions.AnotherEtudeOfGroupIsPlaying CreateEtudeGroupCondition(string name, Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup group, bool not = false)
         {
             var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.AnotherEtudeOfGroupIsPlaying>(name, not);

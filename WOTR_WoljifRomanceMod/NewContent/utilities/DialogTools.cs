@@ -65,6 +65,11 @@ namespace WOTR_WoljifRomanceMod
             result.TurnFirstSpeaker = true;
             return result;
         }
+        public static void DialogInsertCue(Kingmaker.DialogSystem.Blueprints.BlueprintDialog dialog, Kingmaker.DialogSystem.Blueprints.BlueprintCue cue, int position)
+        {
+            dialog.FirstCue.Cues.Insert(position, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintCueBaseReference>(cue));
+        }
+
         public static void DialogAddStartAction(Kingmaker.DialogSystem.Blueprints.BlueprintDialog dialog, Kingmaker.ElementsSystem.GameAction action)
         {
             if (dialog.StartActions == EmptyActionList)
@@ -121,6 +126,19 @@ namespace WOTR_WoljifRomanceMod
                 bp.OnStop = EmptyActionList;
             });
             return result;
+        }
+        
+        public static void CueSetSpeaker(Kingmaker.DialogSystem.Blueprints.BlueprintCue cue, Companions speaker, bool setconditional = true)
+        {
+            if (cue.Speaker == EmptyDialogSpeaker)
+            {
+                cue.Speaker = new Kingmaker.DialogSystem.DialogSpeaker { m_Blueprint = CommandTools.GetCompanionReference(speaker) };
+            }
+            if (setconditional)
+            {
+                string name = cue.name + "_" + speaker.ToString() + "_inparty";
+                CueAddCondition(cue, ConditionalTools.CreateCompanionInPartyCondition(name, speaker));
+            }
         }
 
         public static void CueAddContinue(Kingmaker.DialogSystem.Blueprints.BlueprintCue cue, Kingmaker.DialogSystem.Blueprints.BlueprintCue nextcue, int position = -1)

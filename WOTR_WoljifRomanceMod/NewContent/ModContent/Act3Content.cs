@@ -343,6 +343,7 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.AnswerAddNextCue(A_IWantToBeNice2, C_NobodysThisNice2);
             DialogTools.AnswerAddNextCue(A_YouWannaBeMad2, C_DontPityMe2);
             DialogTools.AnswerAddNextCue(A_GrowUp2, C_GuiltTrips2);
+            DialogTools.AnswerAddOnSelectAction(A_GrowUp2, ActionTools.CompleteEtudeAction(romanceactive));
             DialogTools.CueAddContinue(C_GuiltTrips2, C_IDontNeedYou);
             DialogTools.CueAddContinue(C_NobodysThisNice2, C_IDontNeedYou);
 
@@ -350,13 +351,14 @@ namespace WOTR_WoljifRomanceMod
 
             // Create Camp Event
             var ArgumentEvent = EventTools.CreateCampingEvent("WRM_ArgumentEvent", 100);
+            EventTools.CampEventAddCondition(ArgumentEvent, ConditionalTools.CreateEtudeCondition("WRM_HaveNotFoughtYet", HadFight, "Playing", true));
             EventTools.CampEventAddCondition(ArgumentEvent, ConditionalTools.CreateEtudeCondition("WRM_IsRomanceActive", romanceactive, "Playing"));
             EventTools.CampEventAddCondition(ArgumentEvent, ConditionalTools.CreateQuestStatusCondition("WRM_Ch3Qfinished", "Completed", Ch3Quest));
             EventTools.CampEventAddCondition(ArgumentEvent, ConditionalTools.CreateDialogSeenCondition("WRM_SeenTavernScene", Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>("WRM_2b_TavernDialog")));
             EventTools.CampEventAddCondition(ArgumentEvent, ConditionalTools.CreateCurrentAreaIsCondition("WRM_argumentNotInCapital", Resources.GetBlueprint<Kingmaker.Blueprints.Area.BlueprintArea>("2570015799edf594daf2f076f2f975d8"), true));
             EventTools.CampEventAddCondition(ArgumentEvent, ConditionalTools.CreateCompanionInPartyCondition("WRM_WoljifInPartyForFight", Companions.Woljif));
-            EventTools.CampEventAddAction(ArgumentEvent, ActionTools.StartDialogAction(ArgumentDialog, Companions.Woljif));
             EventTools.CampEventAddAction(ArgumentEvent, ActionTools.RemoveCampEventAction(ArgumentEvent));
+            EventTools.CampEventAddAction(ArgumentEvent, ActionTools.StartDialogAction(ArgumentDialog, Companions.Woljif));
             // Timer after completing Crescent of the Abyss.
             var ArgumentTimer = EtudeTools.CreateEtude("WRM_TimerBeforeFight", romanceactive, false, false);
             EtudeTools.EtudeAddDelayedAction(ArgumentTimer, 3, ActionTools.MakeList(ActionTools.AddCampEventAction(ArgumentEvent)));
@@ -399,28 +401,98 @@ namespace WOTR_WoljifRomanceMod
 
         static public void CreateReconciliation()
         {
+            var affection = Resources.GetModBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("WRM_WoljifAffection");
+            var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceActive");
+            var readytoreconcile = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifReadyToReconcile");
+            var woljifnormalanswerlist = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("e41585da330233143b34ef64d7d62d69");
+            var woljifmaindialog = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>("8a38eeddc0215a84ca441439bb96b8f4");
+            var Ch4QuestEtude = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("b969089c8ec6ba04abb3aa51d9c54876");
+            var hadfight = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifArguedWithPlayer");
+            var reconciled = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifReconciled");
+
             // Add non-romantic reconciliation dialog
             var C_ForgiveAndForget = DialogTools.CreateCue("WRM_4justfriends_c_Sorry");
             var C_Anyway = DialogTools.CreateCue("WRM_4justfriends_c_Anyway");
 
-            var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceActive");
-            var readytoreconcile = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifReadyToReconcile");
             var readytoreconcilecond = ConditionalTools.CreateEtudeCondition("WRM_WoljifReconciliation", readytoreconcile, EtudeTools.EtudeStatus.Playing);
             DialogTools.CueAddCondition(C_ForgiveAndForget, readytoreconcilecond);
             DialogTools.CueAddCondition(C_ForgiveAndForget, ConditionalTools.CreateEtudeCondition("WRM_WoljifPlatonicReconciliation", romanceactive, EtudeTools.EtudeStatus.Playing, true));
             DialogTools.CueAddContinue(C_ForgiveAndForget, C_Anyway);
-            var woljifnormalanswerlist = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("e41585da330233143b34ef64d7d62d69");
             DialogTools.CueAddAnswersList(C_Anyway, woljifnormalanswerlist);
             DialogTools.CueAddOnShowAction(C_ForgiveAndForget, ActionTools.CompleteEtudeAction(readytoreconcile));
             
-            var woljifmaindialog = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>("8a38eeddc0215a84ca441439bb96b8f4");
             woljifmaindialog.FirstCue.Cues.Insert(0, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintCueBaseReference>(C_ForgiveAndForget));
 
+            // Add romantic reconciliation dialog.
+            var C_Sorry = DialogTools.CreateCue("WRM_4_c_Sorry");
+            var C_Sorry2 = DialogTools.CreateCue("WRM_4_c_Sorry2");
+            var L_AnswersList1 = DialogTools.CreateAnswersList("WRM_4_L_ApologyResponse");
+            var A_ApologyAccepted = DialogTools.CreateAnswer("WRM_4_a_ApologyAccepted");
+            var A_WhatDoYouMean = DialogTools.CreateAnswer("WRM_4_a_WhatDoYouMean");
+            var A_YoureStillLearning = DialogTools.CreateAnswer("WRM_4_a_YoureStillLearning");
+            var A_ApologyRejected = DialogTools.CreateAnswer("WRM_4_a_ApologyRejected");
+            var C_Thanks = DialogTools.CreateCue("WRM_4_c_Thanks");
+            var C_WellYoure = DialogTools.CreateCue("WRM_4_c_WellYoure");
+            var C_LargerThanLife = DialogTools.CreateCue("WRM_4_c_LargerThanLife");
+            var C_ThatsJustIt = DialogTools.CreateCue("WRM_4_c_ThatsJustIt");
+            var C_NothingICanDo = DialogTools.CreateCue("WRM_4_c_NothingICanDo");
+            var C_ActLikeNothingHappened = DialogTools.CreateCue("WRM_4_c_ActLikeNothingHappened");
+            var C_EvenIWannaFollowYou = DialogTools.CreateCue("WRM_4_c_EvenIWannaFollowYou");
+            var L_AnswersList2 = DialogTools.CreateAnswersList("WRM_4_L_ScareResponse");
+            var A_IDidntMeanTo = DialogTools.CreateAnswer("WRM_4_a_IDidntMeanTo");
+            var A_YouCanTrustMe = DialogTools.CreateAnswer("WRM_4_a_YouCanTrustMe");
+            var A_IAmScary = DialogTools.CreateAnswer("WRM_4_a_IAmScary");
+            var C_IBelieveYou = DialogTools.CreateCue("WRM_4_c_IBelieveYou");
+            var C_DifferentKindOfScary = DialogTools.CreateCue("WRM_4_c_DifferentKindOfScary");
+            var L_AnswersList3 = DialogTools.CreateAnswersList("WRM_4_L_MovingOn");
+            var A_UsOrYou = DialogTools.CreateAnswer("WRM_4_a_UsOrYou",true);
+            var A_Understandable = DialogTools.CreateAnswer("WRM_4_a_Understandable");
+            var C_WhatsThatMean = DialogTools.CreateCue("WRM_4_c_WhatsThatMean");
+            var C_ChangeTopic = DialogTools.CreateCue("WRM_4_c_ChangeTopic");
+
+            DialogTools.CueAddContinue(C_Sorry, C_Sorry2);
+            DialogTools.CueAddAnswersList(C_Sorry2, L_AnswersList1);
+            DialogTools.ListAddAnswer(L_AnswersList1, A_ApologyAccepted);
+            DialogTools.ListAddAnswer(L_AnswersList1, A_WhatDoYouMean);
+            DialogTools.ListAddAnswer(L_AnswersList1, A_YoureStillLearning);
+            DialogTools.ListAddAnswer(L_AnswersList1, A_ApologyRejected);
+            DialogTools.AnswerAddOnSelectAction(A_ApologyRejected, ActionTools.CompleteEtudeAction(romanceactive));
+            DialogTools.AnswerAddNextCue(A_ApologyAccepted, C_Thanks);
+            DialogTools.AnswerAddNextCue(A_WhatDoYouMean, C_WellYoure);
+            DialogTools.AnswerAddNextCue(A_YoureStillLearning, C_ThatsJustIt);
+            DialogTools.AnswerAddNextCue(A_ApologyRejected, C_NothingICanDo);
+            DialogTools.CueAddContinue(C_NothingICanDo, C_ActLikeNothingHappened);
+            DialogTools.CueAddAnswersList(C_ActLikeNothingHappened, woljifnormalanswerlist);
+            DialogTools.CueAddContinue(C_Thanks, C_LargerThanLife);
+            DialogTools.CueAddContinue(C_WellYoure, C_LargerThanLife);
+            DialogTools.CueAddContinue(C_ThatsJustIt, C_EvenIWannaFollowYou);
+            DialogTools.CueAddContinue(C_LargerThanLife, C_EvenIWannaFollowYou);
+            DialogTools.CueAddAnswersList(C_EvenIWannaFollowYou, L_AnswersList2);
+            DialogTools.ListAddAnswer(L_AnswersList2, A_IDidntMeanTo);
+            DialogTools.ListAddAnswer(L_AnswersList2, A_YouCanTrustMe);
+            DialogTools.ListAddAnswer(L_AnswersList2, A_IAmScary);
+            DialogTools.AnswerAddOnSelectAction(A_IDidntMeanTo, ActionTools.IncrementFlagAction(affection));
+            DialogTools.AnswerAddOnSelectAction(A_YouCanTrustMe, ActionTools.IncrementFlagAction(affection));
+            DialogTools.AnswerAddNextCue(A_IDidntMeanTo, C_IBelieveYou);
+            DialogTools.AnswerAddNextCue(A_YouCanTrustMe, C_IBelieveYou);
+            DialogTools.AnswerAddNextCue(A_IAmScary, C_DifferentKindOfScary);
+            DialogTools.CueAddAnswersList(C_IBelieveYou, L_AnswersList3);
+            DialogTools.CueAddAnswersList(C_DifferentKindOfScary, L_AnswersList3);
+            DialogTools.ListAddAnswer(L_AnswersList3, A_UsOrYou);
+            DialogTools.ListAddAnswer(L_AnswersList3, A_Understandable);
+            DialogTools.AnswerAddOnSelectAction(A_UsOrYou, ActionTools.IncrementFlagAction(affection));
+            DialogTools.AnswerAddNextCue(A_UsOrYou, C_WhatsThatMean);
+            DialogTools.CueAddAnswersList(C_WhatsThatMean, L_AnswersList3);
+            DialogTools.AnswerAddNextCue(A_Understandable, C_ChangeTopic);
+            DialogTools.CueAddAnswersList(C_ChangeTopic, woljifnormalanswerlist);
+
+            DialogTools.CueAddOnShowAction(C_Sorry2, ActionTools.CompleteEtudeAction(readytoreconcile));
+            DialogTools.CueAddCondition(C_Sorry, readytoreconcilecond);
+            DialogTools.CueAddCondition(C_Sorry, ConditionalTools.CreateEtudeCondition("WRM_WoljifRomanticReconciliation", romanceactive, EtudeTools.EtudeStatus.Playing, false));
+            woljifmaindialog.FirstCue.Cues.Insert(0, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintCueBaseReference>(C_Sorry));
+
             // Prevent Ch4 quest from triggering if you fought with Woljif and haven't made up yet.
-            var Ch4QuestEtude = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("b969089c8ec6ba04abb3aa51d9c54876");
             //if HadFight is NOT playing, OR Reconciled is playing.
-            var hadfight = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifArguedWithPlayer");
-            var reconciled = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifReconciled"); 
             Kingmaker.ElementsSystem.Condition[] conditiongroup =
                 {
                     ConditionalTools.CreateEtudeCondition("WRM_DidNotFight",hadfight,"Playing",true),
@@ -428,16 +500,54 @@ namespace WOTR_WoljifRomanceMod
                 };
             var newcondition = ConditionalTools.CreateLogicCondition("WRM_DidntFightOrMadeUp", Kingmaker.ElementsSystem.Operation.Or, conditiongroup);
             EtudeTools.EtudeAddActivationCondition(Ch4QuestEtude, newcondition);
+        }
 
-            // Add romantic reconciliation dialog.
-            var C_PLACEHOLDER = DialogTools.CreateCue("TEST_PLACEHOLDER");
+        static public void MiscChanges()
+        {
+            var affection = Resources.GetModBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("WRM_WoljifAffection");
+            var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceActive");
+            var reconciled = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifReconciled");
 
-            DialogTools.CueAddCondition(C_PLACEHOLDER, readytoreconcilecond);
-            DialogTools.CueAddCondition(C_PLACEHOLDER, ConditionalTools.CreateEtudeCondition("WRM_WoljifRomanticReconciliation", romanceactive, EtudeTools.EtudeStatus.Playing, false));
-            DialogTools.CueAddAnswersList(C_PLACEHOLDER, woljifnormalanswerlist);
-            DialogTools.CueAddOnShowAction(C_PLACEHOLDER, ActionTools.CompleteEtudeAction(readytoreconcile));
+            // Slight alteration of dialog in Woljif's vision in Areelu's lab if romanced and above 4 affection.
+            var wish_dialog = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>("70d8abb125a1a0b46a7207b3181c48aa");
+            var wish_answerlist = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("3f350eb01cead394d80ca211291da035");
+            var wish_altered = DialogTools.CreateCue("WRM_wish_c_MissedYou");
+            Kingmaker.ElementsSystem.Condition[] conds = {
+                ConditionalTools.CreateEtudeCondition("WRM_wish_romance",romanceactive,"Playing"),
+                ConditionalTools.CreateEtudeCondition("WRM_wish_reconciled",reconciled,"Playing"),
+                ConditionalTools.CreateFlagCheck("WRM_wish_affection",affection,4,30)
+                };
+            var cond = ConditionalTools.CreateLogicCondition("WRM_wish_romancecondition", conds);
+            DialogTools.CueAddCondition(wish_altered, cond);
+            DialogTools.CueAddAnswersList(wish_altered, wish_answerlist);
+            DialogTools.DialogInsertCue(wish_dialog, wish_altered, 0);
 
-            woljifmaindialog.FirstCue.Cues.Insert(0, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintCueBaseReference>(C_PLACEHOLDER));
+            // Quick side dialog at Elan's wedding.
+            var callback_cue = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("WRM_2b_c_LoveIsTrouble");
+            var wedding_cue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("129096ab9053bb94d9af259f0086e91c");
+            var wedding_answerlist = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("06219022c60b7a5498522b8ae19cf86f");
+            var wedding_answer1 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("f9c0231349cfa0941886896ceebe22a0");
+            var wedding_answer2 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("a66eb55f054a25d4499ccb20e256c6d5");
+            var wedding_answer3 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("06376a7020b39114b9a1f1998863b9da");
+            var wedding_answer4 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("a14e18a0dd93e7a48b7645a97a1d1f61");
+
+            var c_CrazyThings = DialogTools.CreateCue("WRM_wedding_c_CrazyThings");
+            DialogTools.CueSetSpeaker(c_CrazyThings, Companions.Woljif);
+            DialogTools.CueAddCondition(c_CrazyThings, ConditionalTools.CreateCueSeenCondition("WRM_SeenTavernLine", callback_cue));
+            DialogTools.CueAddContinue(wedding_cue, c_CrazyThings);
+            var a_LikePaying = DialogTools.CreateAnswer("WRM_wedding_a_LikePaying");
+            var c_InsideJoke = DialogTools.CreateCue("WRM_wedding_c_InsideJoke");
+            DialogTools.CueSetSpeaker(c_InsideJoke, Companions.Woljif, false);
+            DialogTools.AnswerAddNextCue(a_LikePaying, c_InsideJoke);
+            DialogTools.AnswerAddOnSelectAction(a_LikePaying, ActionTools.IncrementFlagAction(affection, 1));
+            var L_jokeanswers = DialogTools.CreateAnswersList("WRM_L_weddingjoke");
+            DialogTools.ListAddAnswer(L_jokeanswers, a_LikePaying);
+            DialogTools.ListAddAnswer(L_jokeanswers, wedding_answer1);
+            DialogTools.ListAddAnswer(L_jokeanswers, wedding_answer2);
+            DialogTools.ListAddAnswer(L_jokeanswers, wedding_answer3);
+            DialogTools.ListAddAnswer(L_jokeanswers, wedding_answer4);
+            DialogTools.CueAddAnswersList(c_CrazyThings, L_jokeanswers);
+            DialogTools.CueAddAnswersList(c_InsideJoke, wedding_answerlist);
         }
     }
 }

@@ -30,6 +30,7 @@ namespace WOTR_WoljifRomanceMod
             WRM_Act3.CreateTavernCutscene();
             WRM_Act3.CreateArgumentScene();
             WRM_Act3.CreateReconciliation();
+            WRM_Act3.MiscChanges();
         }
 
         static public void createDebugMenu()
@@ -40,7 +41,7 @@ namespace WOTR_WoljifRomanceMod
             var starttestanswer = DialogTools.CreateAnswer("TEST_a_helpmetest");
             var endtestanswer = DialogTools.CreateAnswer("TEST_a_donetesting");
             var debuganswerlist = DialogTools.CreateAnswersList("TEST_L_debugmenu");
-            DialogTools.ListAddAnswer(originalanswers, starttestanswer, 12);
+            //DialogTools.ListAddAnswer(originalanswers, starttestanswer, 12);
             DialogTools.AnswerAddNextCue(starttestanswer, starttestcue);
             DialogTools.AnswerAddNextCue(endtestanswer, endtestcue);
             DialogTools.ListAddAnswer(debuganswerlist, endtestanswer);
