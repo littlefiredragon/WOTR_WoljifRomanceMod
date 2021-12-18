@@ -96,9 +96,9 @@ namespace WOTR_WoljifRomanceMod
             return result;
         }
 
-        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.FlagInRange CreateFlagCheck(string name, Kingmaker.Blueprints.BlueprintUnlockableFlag flag, int min, int max)
+        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.FlagInRange CreateFlagCheck(string name, Kingmaker.Blueprints.BlueprintUnlockableFlag flag, int min, int max, bool not = false)
         {
-            var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.FlagInRange>(name, bp =>
+            var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.FlagInRange>(name, not, bp =>
             {
                 bp.m_Flag = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintUnlockableFlagReference>(flag);
                 bp.MinValue = min;
@@ -146,9 +146,14 @@ namespace WOTR_WoljifRomanceMod
             });
             return result;
         }
+
         public static Kingmaker.Designers.EventConditionActionSystem.Conditions.CueSeen CreateCueSeenCondition(string name, Kingmaker.DialogSystem.Blueprints.BlueprintCue cue, bool currentonly = false)
         {
-            var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.CueSeen>(name, bp =>
+            return CreateCueSeenCondition(name, false, cue, currentonly);
+        }
+        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.CueSeen CreateCueSeenCondition(string name, bool not, Kingmaker.DialogSystem.Blueprints.BlueprintCue cue, bool currentonly = false)
+        {
+            var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.CueSeen>(name, not, bp =>
                 {
                     bp.m_Cue = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintCueBaseReference>(cue);
                     bp.CurrentDialog = currentonly;
@@ -180,6 +185,62 @@ namespace WOTR_WoljifRomanceMod
             var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.CurrentAreaIs>(name, not, bp =>
             {
                 bp.m_Area = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintAreaReference>(area);
+            });
+            return result;
+        }
+
+        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.AlignmentCheck CreateAlignmentCondition(string name, string alignment, bool not=false)
+        {
+            var detected = Kingmaker.Enums.AlignmentComponent.Neutral;
+            switch (alignment)
+            {
+                case "Neutral":
+                case "neutral":
+                    detected = Kingmaker.Enums.AlignmentComponent.Neutral;
+                    break;
+                case "Good":
+                case "good":
+                    detected = Kingmaker.Enums.AlignmentComponent.Good;
+                    break;
+                case "Evil":
+                case "evil":
+                    detected = Kingmaker.Enums.AlignmentComponent.Evil;
+                    break;
+                case "Lawful":
+                case "lawful":
+                    detected = Kingmaker.Enums.AlignmentComponent.Lawful;
+                    break;
+                case "Chaotic":
+                case "chaotic":
+                    detected = Kingmaker.Enums.AlignmentComponent.Chaotic;
+                    break;
+            }
+            return CreateAlignmentCondition(name, detected, not);
+        }
+        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.AlignmentCheck CreateAlignmentCondition (string name, Kingmaker.Enums.AlignmentComponent alignment, bool not=false)
+        {
+            var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.AlignmentCheck>(name, not, bp =>
+            {
+                bp.Alignment = alignment;
+            });
+            return result;
+        }
+
+        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.HasFact CreateFactCondition(string name, Kingmaker.Blueprints.Facts.BlueprintUnitFact fact, Companions companion, bool not=false)
+        {
+            var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.HasFact>(name, not, bp =>
+            {
+                bp.m_Fact = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintUnitFactReference>(fact);
+                bp.Unit = CommandTools.getCompanionEvaluator(companion);
+            });
+            return result;
+        }
+
+        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.PlayerSignificantClassIs CreateClassCheck(string name, Kingmaker.Blueprints.Classes.BlueprintCharacterClass charclass, bool not=false)
+        {
+            var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.PlayerSignificantClassIs>(name, not, bp =>
+            {
+                bp.CharacterClass = charclass;
             });
             return result;
         }
@@ -220,6 +281,10 @@ namespace WOTR_WoljifRomanceMod
             init?.Invoke(result);
             result.Operation = op;
             return result;
+        }
+        public static void LogicAddCondition(Kingmaker.Designers.EventConditionActionSystem.Conditions.OrAndLogic logic, Kingmaker.ElementsSystem.Condition condition)
+        {
+            CheckerAddCondition(logic.ConditionsChecker, condition);
         }
         public static void CheckerAddCondition(Kingmaker.ElementsSystem.ConditionsChecker checker, Kingmaker.ElementsSystem.Condition condition)
         {

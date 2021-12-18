@@ -248,6 +248,21 @@ namespace WOTR_WoljifRomanceMod
             return action;
         }
 
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.StopCustomMusic StopMusic()
+        {
+            var action = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.StopCustomMusic>();
+            return action;
+        }
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.PlayCustomMusic StartMusic(string trackname)
+        {
+            var action = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.PlayCustomMusic>(bp =>
+            {
+                bp.MusicEventStart = "MUS_" + trackname + "_Play";
+                bp.MusicEventStop = "MUS_" + trackname + "_Stop";
+            });
+            return action;
+        }
+
         //Creating a conditional action can take either a condition directly, for ease of creating simple checkers, or it can take a pre-constructed conditionchecker tree.
         public static Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional ConditionalAction(Kingmaker.ElementsSystem.Condition condition)
         {

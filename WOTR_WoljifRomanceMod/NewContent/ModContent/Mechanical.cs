@@ -29,7 +29,6 @@ namespace WOTR_WoljifRomanceMod
 
             // build basic romance etude
             var RomanceEtude = EtudeTools.CreateEtude("WRM_WoljifRomance", CompanionEtude, false, false);
-            //    Add component: on complete, complete RomanceActive.
             EtudeTools.EtudeAddActivationCondition(RomanceEtude, ConditionalTools.CreateEtudeCondition("WRM_WJ_NotKickedOutCondition", WoljifKickedOut, EtudeTools.EtudeStatus.Playing, true));
             
             // build romance active etude
@@ -46,19 +45,26 @@ namespace WOTR_WoljifRomanceMod
             decFlag.Value = new Kingmaker.Designers.EventConditionActionSystem.Evaluators.IntConstant { Value = -1 };
             var cond = ActionTools.ConditionalAction(ConditionalTools.CreateLogicCondition("WRM_RomanceJealousyCondition", ConditionalTools.CreateEtudeCondition("WRM_JealousyStatus", JealousyEtude, EtudeTools.EtudeStatus.Playing, true)));
             ActionTools.ConditionalActionOnTrue(cond, ActionTools.MakeList(decFlag));
+            EtudeTools.EtudeAddCompleteTrigger(RomanceActiveEtude, ActionTools.MakeList(cond));
+
             //    Add to RomanceEtude: when complete, autocomplete RomanceActive.
             EtudeTools.EtudeAddCompleteTrigger(RomanceEtude, ActionTools.MakeList(ActionTools.CompleteEtudeAction(RomanceActiveEtude)));
             
             // build romance complete etude
             var RomanceCompleteEtude = EtudeTools.CreateEtude("WRM_WoljifRomanceFinished", RomanceEtude, false, false);
             //    Add component: on start, flame
-            EtudeTools.EtudeAddOnPlayTrigger(RomanceActiveEtude, ActionTools.MakeList(ActionTools.StartEtudeAction(FlameEtude)));
+            EtudeTools.EtudeAddOnPlayTrigger(RomanceCompleteEtude, ActionTools.MakeList(ActionTools.StartEtudeAction(FlameEtude)));
 
             // build affection counter
             var AffectionCounter = EtudeTools.CreateFlag("WRM_WoljifAffection");
 
             // start romance base with companion etude
             CompanionEtude.StartsWith.AddItem(Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintEtudeReference>(RomanceEtude));
+
+            // build affecton gate etudes
+            var AffectionGateSuccess = EtudeTools.CreateEtude("WRM_WoljifRomanceGatePassed", RomanceActiveEtude, false, false);
+            var AffectionGateFail = EtudeTools.CreateEtude("WRM_WoljifRomanceGateFailed", RomanceActiveEtude, false, false);
+            EtudeTools.EtudeAddCompleteTrigger(AffectionGateFail, ActionTools.MakeList(ActionTools.CompleteEtudeAction(RomanceActiveEtude)));
         }
     }
 }

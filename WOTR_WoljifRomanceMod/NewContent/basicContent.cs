@@ -31,6 +31,10 @@ namespace WOTR_WoljifRomanceMod
             WRM_Act3.CreateArgumentScene();
             WRM_Act3.CreateReconciliation();
             WRM_Act3.MiscChanges();
+            WRM_Act4.ModifyQuestTrigger();
+            WRM_Act4.ModifyQuestDialog();
+            WRM_Act4.CreateNightmareScene();
+            WRM_Act4.MiscChanges();
         }
 
         static public void createDebugMenu()

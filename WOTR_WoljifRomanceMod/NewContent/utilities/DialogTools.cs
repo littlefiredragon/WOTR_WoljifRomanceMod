@@ -242,6 +242,15 @@ namespace WOTR_WoljifRomanceMod
             }
         }
 
+        public static void ListAddCondition(Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList answerlist, Kingmaker.ElementsSystem.Condition condition)
+        {
+            if (answerlist.Conditions == EmptyConditionChecker)
+            {//Make a brand new checker
+                answerlist.Conditions = ConditionalTools.CreateChecker();
+            }
+            ConditionalTools.CheckerAddCondition(answerlist.Conditions, condition);
+        }
+
         // Answers
         public static Kingmaker.DialogSystem.Blueprints.BlueprintAnswer CreateAnswer(string name, bool showonce = false)
         {
@@ -338,6 +347,13 @@ namespace WOTR_WoljifRomanceMod
         {
             answer.ShowConditions = checker;
         }
+
+        public static void AnswerAddShowCheck(Kingmaker.DialogSystem.Blueprints.BlueprintAnswer answer, Kingmaker.EntitySystem.Stats.StatType type, int dc)
+        {
+            var check = new Kingmaker.DialogSystem.Blueprints.ShowCheck { Type = type, DC = dc };
+            answer.ShowCheck = check;
+        }
+
         public static void AnswerAddSelectCondition(Kingmaker.DialogSystem.Blueprints.BlueprintAnswer answer, Kingmaker.ElementsSystem.Condition condition)
         {
             if (answer.SelectConditions == EmptyConditionChecker)
