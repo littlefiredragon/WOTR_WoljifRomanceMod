@@ -33,23 +33,20 @@ namespace WOTR_WoljifRomanceMod
             
             // build romance active etude
             var RomanceActiveEtude = EtudeTools.CreateEtude("WRM_WoljifRomanceActive", RomanceEtude, true, false);
-            //    Add component: on start, increment romances counter.
-            var incFlag = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.IncrementFlagValue>();
-            incFlag.m_Flag = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintUnlockableFlagReference>(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("5db9ec615236f044083a5c6bd3292432"));
-            EtudeTools.EtudeAddOnPlayTrigger(RomanceActiveEtude, ActionTools.MakeList(incFlag));
+            //var romancecounter = Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("5db9ec615236f044083a5c6bd3292432");
+            //EtudeTools.EtudeAddOnPlayTrigger(RomanceActiveEtude, ActionTools.MakeList(ActionTools.IncrementFlagAction(romancecounter, 1)));
             //    Add component: on start, spark
             EtudeTools.EtudeAddOnPlayTrigger(RomanceActiveEtude, ActionTools.MakeList(ActionTools.StartEtudeAction(SparkEtude)));
             //    Add component: on complete, if not playing jealousy, decrement romances counter.
-            var decFlag = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.IncrementFlagValue>();
-            decFlag.m_Flag = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintUnlockableFlagReference>(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("5db9ec615236f044083a5c6bd3292432"));
-            decFlag.Value = new Kingmaker.Designers.EventConditionActionSystem.Evaluators.IntConstant { Value = -1 };
-            var cond = ActionTools.ConditionalAction(ConditionalTools.CreateLogicCondition("WRM_RomanceJealousyCondition", ConditionalTools.CreateEtudeCondition("WRM_JealousyStatus", JealousyEtude, EtudeTools.EtudeStatus.Playing, true)));
-            ActionTools.ConditionalActionOnTrue(cond, ActionTools.MakeList(decFlag));
-            EtudeTools.EtudeAddCompleteTrigger(RomanceActiveEtude, ActionTools.MakeList(cond));
+            //var cond = ActionTools.ConditionalAction(ConditionalTools.CreateLogicCondition("WRM_RomanceJealousyCondition", ConditionalTools.CreateEtudeCondition("WRM_JealousyStatus", JealousyEtude, EtudeTools.EtudeStatus.Playing, true)));
+            //ActionTools.ConditionalActionOnTrue(cond, ActionTools.MakeList(ActionTools.IncrementFlagAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("5db9ec615236f044083a5c6bd3292432"), -1)));
+            //EtudeTools.EtudeAddCompleteTrigger(RomanceActiveEtude, ActionTools.MakeList(cond));
 
             //    Add to RomanceEtude: when complete, autocomplete RomanceActive.
             EtudeTools.EtudeAddCompleteTrigger(RomanceEtude, ActionTools.MakeList(ActionTools.CompleteEtudeAction(RomanceActiveEtude)));
-            
+            //    And vice versa
+            EtudeTools.EtudeAddCompleteTrigger(RomanceActiveEtude, ActionTools.MakeList(ActionTools.CompleteEtudeAction(RomanceEtude)));
+
             // build romance complete etude
             var RomanceCompleteEtude = EtudeTools.CreateEtude("WRM_WoljifRomanceFinished", RomanceEtude, false, false);
             //    Add component: on start, flame

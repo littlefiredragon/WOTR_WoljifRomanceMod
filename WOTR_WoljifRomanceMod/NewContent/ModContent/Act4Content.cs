@@ -38,6 +38,8 @@ namespace WOTR_WoljifRomanceMod
             // Add romance enders to nasty dialog
             DialogTools.CueAddOnStopAction(cue_0008, ActionTools.CompleteEtudeAction(romanceactive));
             DialogTools.CueAddOnStopAction(cue_0014, ActionTools.CompleteEtudeAction(romanceactive));
+            DialogTools.CueAddOnStopAction(cue_0014, ActionTools.IncrementFlagAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("5db9ec615236f044083a5c6bd3292432"), -1));
+            DialogTools.CueAddOnStopAction(cue_0008, ActionTools.IncrementFlagAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("5db9ec615236f044083a5c6bd3292432"), -1));
 
             // Patch in new dialog
             DialogTools.ListAddAnswer(answerslist_0002, a_DontWanderAlone);
@@ -102,9 +104,14 @@ namespace WOTR_WoljifRomanceMod
             // Add romance enders 
             DialogTools.AnswerAddOnSelectAction(answer2_0010, ActionTools.CompleteEtudeAction(romanceactive));
             DialogTools.AnswerAddOnSelectAction(answer3_0008, ActionTools.CompleteEtudeAction(romanceactive));
+            DialogTools.AnswerAddOnSelectAction(answer2_0010, ActionTools.IncrementFlagAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("5db9ec615236f044083a5c6bd3292432"), -1));
+            DialogTools.AnswerAddOnSelectAction(answer3_0008, ActionTools.IncrementFlagAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("5db9ec615236f044083a5c6bd3292432"), -1));
             DialogTools.CueAddOnStopAction(cue4_0010, ActionTools.CompleteEtudeAction(romanceactive));
             DialogTools.CueAddOnStopAction(cue4_0024, ActionTools.CompleteEtudeAction(romanceactive));
             DialogTools.CueAddOnStopAction(cue5_0008, ActionTools.CompleteEtudeAction(romanceactive));
+            DialogTools.CueAddOnStopAction(cue4_0010, ActionTools.IncrementFlagAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("5db9ec615236f044083a5c6bd3292432"), -1));
+            DialogTools.CueAddOnStopAction(cue4_0024, ActionTools.IncrementFlagAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("5db9ec615236f044083a5c6bd3292432"), -1));
+            DialogTools.CueAddOnStopAction(cue5_0008, ActionTools.IncrementFlagAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("5db9ec615236f044083a5c6bd3292432"), -1));
             // FailedRomanceGate
             DialogTools.AnswerAddOnSelectAction(answer5_0005, ActionTools.StartEtudeAction(affectiongatefail));
 
@@ -204,6 +211,7 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.ListAddAnswer(List1, a_Ignore2);
             DialogTools.AnswerAddShowCondition(a_Ignore2, ConditionalTools.CreateCueSeenCondition("WRM_IgnoredOnce", c_Ignore1));
             DialogTools.AnswerAddOnSelectAction(a_Ignore2, ActionTools.CompleteEtudeAction(romanceactive));
+            DialogTools.AnswerAddOnSelectAction(a_Ignore2, ActionTools.IncrementFlagAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("5db9ec615236f044083a5c6bd3292432"), -1));
 
             DialogTools.AnswerAddNextCue(a_Wake, c_Wake);
             DialogTools.AnswerAddNextCue(a_Ignore1, c_Ignore1);

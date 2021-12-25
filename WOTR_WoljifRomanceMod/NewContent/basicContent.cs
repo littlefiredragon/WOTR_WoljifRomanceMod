@@ -35,6 +35,10 @@ namespace WOTR_WoljifRomanceMod
             WRM_Act4.ModifyQuestDialog();
             WRM_Act4.CreateNightmareScene();
             WRM_Act4.MiscChanges();
+            WRM_Act5.AlterJealousyScene();
+            WRM_Act5.AddSnowSceneInvite();
+            WRM_Act5.AddSnowCutscene();
+            WRM_Act5.MiscChanges();
         }
 
         static public void createDebugMenu()

@@ -180,6 +180,18 @@ namespace WOTR_WoljifRomanceMod
             return result;
         }
 
+        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.CompanionInParty CreateCompanionAvailableCondition(string name, Companions companion, bool not = false)
+        {
+            var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.CompanionInParty>(name, not, bp =>
+            {
+                bp.m_companion = CommandTools.GetCompanionReference(companion);
+                bp.MatchWhenActive = true;
+                bp.MatchWhenDetached = true;
+                bp.MatchWhenRemote = true;
+            });
+            return result;
+        }
+
         public static Kingmaker.Designers.EventConditionActionSystem.Conditions.CurrentAreaIs CreateCurrentAreaIsCondition (string name, Kingmaker.Blueprints.Area.BlueprintArea area, bool not = false)
         {
             var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.CurrentAreaIs>(name, not, bp =>

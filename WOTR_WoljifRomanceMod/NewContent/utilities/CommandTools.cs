@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using Kingmaker.Utility;
 using JetBrains.Annotations;
 using System;
+using Kingmaker.AreaLogic.Cutscenes;
 
 namespace WOTR_WoljifRomanceMod
 {
@@ -17,6 +18,7 @@ namespace WOTR_WoljifRomanceMod
     {
         None = -1, Player, Arueshalae, Camellia, Daeran, Ember, Greybor, Lann, Nenio, Regill, Seelah, Sosiel, Wenduag, Woljif
     }
+
     public static class CommandTools
     {
         public static int numdelays = 0;

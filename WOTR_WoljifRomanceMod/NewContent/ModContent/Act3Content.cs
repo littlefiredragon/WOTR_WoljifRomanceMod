@@ -30,6 +30,7 @@ namespace WOTR_WoljifRomanceMod
             //Dialog increments affection and starts romance path.
             DialogTools.AnswerAddOnSelectAction(A_AreYouOkay, ActionTools.StartEtudeAction(romanceactive));
             DialogTools.AnswerAddOnSelectAction(A_AreYouOkay, ActionTools.IncrementFlagAction(affection,1));
+            DialogTools.AnswerAddOnSelectAction(A_AreYouOkay, ActionTools.IncrementFlagAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("5db9ec615236f044083a5c6bd3292432"), 1));
         }
 
         static public void CreateTavernCommandRoomEvent()
@@ -57,6 +58,7 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.AnswerAddNextCue(A_No, C_ForgetIt);
             DialogTools.AnswerAddOnSelectAction(A_LoveTo, ActionTools.IncrementFlagAction(affection, 1));
             DialogTools.AnswerAddOnSelectAction(A_No, ActionTools.CompleteEtudeAction(romanceactive));
+            DialogTools.AnswerAddOnSelectAction(A_No, ActionTools.IncrementFlagAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("5db9ec615236f044083a5c6bd3292432"), -1));
 
             // Create the mechanics of the scene
             var NotificationEtude = EtudeTools.CreateEtude("WRM_TavernInvite_Notification", romancebase, false, false);
@@ -157,6 +159,7 @@ namespace WOTR_WoljifRomanceMod
                     bp.CurrentDialog = true;
                 }));
             DialogTools.AnswerAddOnSelectAction(A_WhatIf, ActionTools.StartEtudeAction(romanceactive));
+            DialogTools.AnswerAddOnSelectAction(A_WhatIf, ActionTools.IncrementFlagAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("5db9ec615236f044083a5c6bd3292432"), 1));
             DialogTools.AnswerAddOnSelectAction(A_WhatIf, ActionTools.IncrementFlagAction(affection, 1));
             DialogTools.AnswerAddNextCue(A_NoodleIncident, C_NoodleIncident);
             DialogTools.CueAddAnswersList(C_NoodleIncident, Answerlist1);
@@ -328,6 +331,7 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.AnswerAddOnSelectAction(A_IWantToBeNice, ActionTools.IncrementFlagAction(affection, 1));
             DialogTools.AnswerAddOnSelectAction(A_YouWannaBeMad, ActionTools.IncrementFlagAction(affection, 1));
             DialogTools.AnswerAddOnSelectAction(A_GrowUp, ActionTools.CompleteEtudeAction(romanceactive));
+            DialogTools.AnswerAddOnSelectAction(A_GrowUp, ActionTools.IncrementFlagAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("5db9ec615236f044083a5c6bd3292432"), -1));
             DialogTools.AnswerAddNextCue(A_What2, C_StopTheIdiotAct);
             DialogTools.AnswerAddNextCue(A_CalmDown, C_CalmDown);
             DialogTools.AnswerAddNextCue(A_IWantToBeNice, C_NobodysThisNice);
@@ -344,6 +348,7 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.AnswerAddNextCue(A_YouWannaBeMad2, C_DontPityMe2);
             DialogTools.AnswerAddNextCue(A_GrowUp2, C_GuiltTrips2);
             DialogTools.AnswerAddOnSelectAction(A_GrowUp2, ActionTools.CompleteEtudeAction(romanceactive));
+            DialogTools.AnswerAddOnSelectAction(A_GrowUp2, ActionTools.IncrementFlagAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("5db9ec615236f044083a5c6bd3292432"), -1));
             DialogTools.CueAddContinue(C_GuiltTrips2, C_IDontNeedYou);
             DialogTools.CueAddContinue(C_NobodysThisNice2, C_IDontNeedYou);
 
@@ -457,6 +462,7 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.ListAddAnswer(L_AnswersList1, A_YoureStillLearning);
             DialogTools.ListAddAnswer(L_AnswersList1, A_ApologyRejected);
             DialogTools.AnswerAddOnSelectAction(A_ApologyRejected, ActionTools.CompleteEtudeAction(romanceactive));
+            DialogTools.AnswerAddOnSelectAction(A_ApologyRejected, ActionTools.IncrementFlagAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("5db9ec615236f044083a5c6bd3292432"), -1));
             DialogTools.AnswerAddNextCue(A_ApologyAccepted, C_Thanks);
             DialogTools.AnswerAddNextCue(A_WhatDoYouMean, C_WellYoure);
             DialogTools.AnswerAddNextCue(A_YoureStillLearning, C_ThatsJustIt);

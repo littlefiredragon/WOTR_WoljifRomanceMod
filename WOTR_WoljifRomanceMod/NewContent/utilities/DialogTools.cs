@@ -156,6 +156,21 @@ namespace WOTR_WoljifRomanceMod
                 cue.Continue.Cues.Insert(position, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintCueBaseReference>(nextcue));
             }
         }
+        public static void CueAddContinue(Kingmaker.DialogSystem.Blueprints.BlueprintCue cue, Kingmaker.DialogSystem.Blueprints.BlueprintCueSequence sequence, int position = -1)
+        {
+            if (cue.Continue == EmptyCueSelection)
+            {//Make a brand new cue selection.
+                cue.Continue = new Kingmaker.DialogSystem.CueSelection();
+            }
+            if (position == -1)
+            {//Insert at the end of the list.
+                cue.Continue.Cues.Add(Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintCueBaseReference>(sequence));
+            }
+            else
+            {
+                cue.Continue.Cues.Insert(position, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintCueBaseReference>(sequence));
+            }
+        }
 
         public static void CueAddAnswersList(Kingmaker.DialogSystem.Blueprints.BlueprintCue cue, Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList answerlist, int position = -1)
         {
@@ -218,6 +233,19 @@ namespace WOTR_WoljifRomanceMod
                 Array.Resize(ref cue.OnStop.Actions, len + 1);
             }
             cue.OnStop.Actions[len] = action;
+        }
+
+        // CueSequence
+        public static void CueSequenceInsertCue(Kingmaker.DialogSystem.Blueprints.BlueprintCueSequence sequence, Kingmaker.DialogSystem.Blueprints.BlueprintCue cue, int position = -1)
+        {
+            if (position == -1)
+            {
+                sequence.Cues.Add(Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintCueBaseReference>(cue));
+            }
+            else 
+            {
+                sequence.Cues.Insert(position, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintCueBaseReference>(cue));
+            }
         }
 
         // Answerslist

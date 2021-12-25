@@ -14,6 +14,30 @@ using System;
 
 namespace WOTR_WoljifRomanceMod
 {
+    public class ControlWeather : Kingmaker.ElementsSystem.GameAction
+    {
+        public Owlcat.Runtime.Visual.Effects.WeatherSystem.InclemencyType inclemency;
+        public bool start;
+        public Kingmaker.Controllers.WeatherController control;
+        public override string GetCaption()
+        {
+            return "Overrides weather conditions.";
+        }
+
+        public override void RunAction()
+        {
+            control = Kingmaker.Controllers.WeatherController.Instance;
+            if (start)
+            {
+                control.StartOverrideInclemency(inclemency);
+            }
+            else
+            {
+                control.StopOverrideInclemency();
+            }
+        }
+    }
+
     public static class ActionTools
     {
         public static T GenericAction<T>(Action<T> init = null) where T : Kingmaker.ElementsSystem.GameAction, new()
@@ -44,8 +68,8 @@ namespace WOTR_WoljifRomanceMod
 
         public static Kingmaker.Designers.EventConditionActionSystem.Actions.IncrementFlagValue IncrementFlagAction(Kingmaker.Blueprints.BlueprintUnlockableFlag flag, int amount = 1)
         {
-            var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.IncrementFlagValue>(bp => 
-            { 
+            var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.IncrementFlagValue>(bp =>
+            {
                 bp.m_Flag = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintUnlockableFlagReference>(flag);
                 bp.Value = new Kingmaker.Designers.EventConditionActionSystem.Evaluators.IntConstant { Value = amount };
                 bp.UnlockIfNot = true;
@@ -67,6 +91,118 @@ namespace WOTR_WoljifRomanceMod
                     bp.AfterTeleport = afterTeleport;
                     bp.AutoSaveMode = Kingmaker.EntitySystem.Persistence.AutoSaveMode.None;
                 }
+            });
+            return result;
+        }
+
+        public static ControlWeather EndWeatherAction()
+        {
+            var action = GenericAction<ControlWeather>(bp =>
+            {
+                bp.start = false;
+                bp.inclemency = Owlcat.Runtime.Visual.Effects.WeatherSystem.InclemencyType.Clear;
+            });
+            return action;
+        }
+
+        public static ControlWeather SetWeatherAction(string intensity)
+        {
+            Owlcat.Runtime.Visual.Effects.WeatherSystem.InclemencyType level = Owlcat.Runtime.Visual.Effects.WeatherSystem.InclemencyType.Clear;
+            switch (intensity)
+            {
+                case "Clear":
+                case "clear":
+                    level = Owlcat.Runtime.Visual.Effects.WeatherSystem.InclemencyType.Clear;
+                    break;
+                case "Light":
+                case "light":
+                    level = Owlcat.Runtime.Visual.Effects.WeatherSystem.InclemencyType.Light;
+                    break;
+                case "Moderate":
+                case "moderate":
+                    level = Owlcat.Runtime.Visual.Effects.WeatherSystem.InclemencyType.Moderate;
+                    break;
+                case "Heavy":
+                case "heavy":
+                    level = Owlcat.Runtime.Visual.Effects.WeatherSystem.InclemencyType.Heavy;
+                    break;
+                case "Storm":
+                case "storm":
+                    level = Owlcat.Runtime.Visual.Effects.WeatherSystem.InclemencyType.Storm;
+                    break;
+            }
+
+            var action = GenericAction<ControlWeather>(bp =>
+            {
+                bp.start = true;
+                bp.inclemency = level;
+            });
+            return action;
+        }
+        public static ControlWeather SetWeatherAction(int intensity)
+        {
+            Owlcat.Runtime.Visual.Effects.WeatherSystem.InclemencyType level = Owlcat.Runtime.Visual.Effects.WeatherSystem.InclemencyType.Clear;
+            switch (intensity)
+            {
+                case 0:
+                    level = Owlcat.Runtime.Visual.Effects.WeatherSystem.InclemencyType.Clear;
+                    break;
+                case 1:
+                    level = Owlcat.Runtime.Visual.Effects.WeatherSystem.InclemencyType.Light;
+                    break;
+                case 2:
+                    level = Owlcat.Runtime.Visual.Effects.WeatherSystem.InclemencyType.Moderate;
+                    break;
+                case 3:
+                    level = Owlcat.Runtime.Visual.Effects.WeatherSystem.InclemencyType.Heavy;
+                    break;
+                case 4:
+                    level = Owlcat.Runtime.Visual.Effects.WeatherSystem.InclemencyType.Storm;
+                    break;
+            }
+
+            var action = GenericAction<ControlWeather>(bp =>
+            {
+                bp.start = true;
+                bp.inclemency = level;
+            });
+            return action;
+        }
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.TimeSkip SkipToTimeAction(string timeofday, bool nofatigue = true)
+        {
+            var time = Kingmaker.AreaLogic.TimeOfDay.Morning;
+            switch (timeofday)
+            {
+                case "Morning":
+                case "morning":
+                    time = Kingmaker.AreaLogic.TimeOfDay.Morning;
+                    break;
+                case "Day":
+                case "day":
+                case "daytime":
+                case "Daytime":
+                case "afternoon":
+                case "Afternoon":
+                    time = Kingmaker.AreaLogic.TimeOfDay.Day;
+                    break;
+                case "Evening":
+                case "evening":
+                    time = Kingmaker.AreaLogic.TimeOfDay.Evening;
+                    break;
+                case "Night":
+                case "night":
+                case "Nighttime":
+                case "nighttime":
+                    time = Kingmaker.AreaLogic.TimeOfDay.Night;
+                    break;
+            }
+
+            var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.TimeSkip>(bp =>
+            {
+                bp.NoFatigue = nofatigue;
+                bp.m_Type = Kingmaker.Designers.EventConditionActionSystem.Actions.TimeSkip.SkipType.TimeOfDay;
+                bp.MatchTimeOfDay = true;
+                bp.TimeOfDay = time;
             });
             return result;
         }
@@ -268,6 +404,7 @@ namespace WOTR_WoljifRomanceMod
         {
             var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional>();
             result.ConditionsChecker = new Kingmaker.ElementsSystem.ConditionsChecker();
+            ConditionalTools.CheckerAddCondition(result.ConditionsChecker, condition);
             result.IfTrue = DialogTools.EmptyActionList;
             result.IfFalse = DialogTools.EmptyActionList;
             return result;
