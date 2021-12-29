@@ -53,6 +53,10 @@ namespace WOTR_WoljifRomanceMod
             WRM_Act5.AddBedroomScene();
             WRM_Act5.AddBedroomBarks();
             WRM_Act5.MiscChanges();
+
+
+            var unit = Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnit>("766435873b1361c4287c351de194e5f9");
+            
         }
 
         static public void createDebugMenu()

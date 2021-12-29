@@ -38,6 +38,22 @@ namespace WOTR_WoljifRomanceMod
         }
     }
 
+    // Oh my god I can't believe this actually works. Stupid problems require stupid solutions.
+    public class SetFlyHeight : Kingmaker.ElementsSystem.GameAction
+    {
+        public Kingmaker.ElementsSystem.UnitEvaluator Unit;
+        public float height;
+        public override string GetCaption()
+        {
+            return "Sets FlyHeight to make units hover above the ground.";
+        }
+
+        public override void RunAction()
+        {
+            Unit.GetValue().FlyHeight = height;
+        }
+    }
+
     public static class ActionTools
     {
         public static T GenericAction<T>(Action<T> init = null) where T : Kingmaker.ElementsSystem.GameAction, new()
@@ -71,6 +87,27 @@ namespace WOTR_WoljifRomanceMod
             }
             return result;
         }
+
+        public static SetFlyHeight SetFlyHeightAction(Companions unit, float height)
+        {
+            var result = GenericAction<SetFlyHeight>(bp =>
+            {
+                bp.Unit = CommandTools.getCompanionEvaluator(unit);
+                bp.height = height;
+            });
+            return result;
+        }
+
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.HideWeapons HideWeaponsAction(Companions unit, bool hide = true)
+        {
+            var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.HideWeapons>(bp =>
+            {
+                bp.Target = CommandTools.getCompanionEvaluator(unit);
+                bp.Hide = hide;
+            });
+            return result;
+        }
+
         public static Kingmaker.Designers.EventConditionActionSystem.Actions.LockFlag LockFlagAction(Kingmaker.Blueprints.BlueprintUnlockableFlag flag)
         {
             var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.LockFlag>(bp =>

@@ -768,9 +768,10 @@ namespace WOTR_WoljifRomanceMod
 
         public static void AddBedroomScene()
         {
-            var BarksFlag = EtudeTools.CreateFlag("WRM_BedroomBarksFlag");
             var romancecomplete = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceFinished");
             var romancebase = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomance");
+            var BarksFlag = EtudeTools.CreateFlag("WRM_BedroomBarksFlag");
+            var BarksEtude = EtudeTools.CreateEtude("WRM_BedroomBarksEtude", romancebase, false, false);
             var BedroomSceneEtude = EtudeTools.CreateEtude("WRM_FirstBedroomScenePlaying", romancebase, false, false);
             EtudeTools.EtudeAddConflictingGroups(BedroomSceneEtude, Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>("97e2c4ec46765f143bf21bc9578b22f7"));
 
@@ -793,6 +794,18 @@ namespace WOTR_WoljifRomanceMod
             var C_Forever = DialogTools.CreateCue("WRM_9_c_Forever");
             var C_HoldYouToThat = DialogTools.CreateCue("WRM_9_c_HoldYouToThat");
             var BedroomDialog = DialogTools.CreateDialog("WRM_9_BedroomDialog", C_Cuddles);
+
+            BedroomDialog.TurnPlayer = false;
+            C_Cuddles.TurnSpeaker = false;
+            C_GetOuttaHere.TurnSpeaker = false;
+            C_GetOuttaHerePaladin.TurnSpeaker = false;
+            C_GetOuttaHereInquisitor.TurnSpeaker = false;
+            C_GetOuttaHereHellknight.TurnSpeaker = false;
+            C_GetOuttaHereCleric.TurnSpeaker = false;
+            C_BestHeist.TurnSpeaker = false;
+            C_IWasntLying.TurnSpeaker = false;
+            C_Forever.TurnSpeaker = false;
+            C_HoldYouToThat.TurnSpeaker = false;
 
             DialogTools.CueAddCondition(C_GetOuttaHerePaladin, ConditionalTools.CreateClassCheck("WRM_9_PlayerPaladin", Resources.GetBlueprint<Kingmaker.Blueprints.Classes.BlueprintCharacterClass>("bfa11238e7ae3544bbeb4d0b92e897ec")));
             DialogTools.CueAddCondition(C_GetOuttaHereInquisitor, ConditionalTools.CreateClassCheck("WRM_9_PlayerInquisitor", Resources.GetBlueprint<Kingmaker.Blueprints.Classes.BlueprintCharacterClass>("f1a70d9e1b0b41e49874e1fa9052a1ce")));
@@ -835,9 +848,14 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.CueAddOnShowAction(C_HoldYouToThat, ActionTools.StartEtudeAction(romancecomplete));
 
             // Locators
-            var WoljifLocation = new FakeLocator(185.4f, 78.691f, -14.3f, 4.29f);
-            var PlayerLocation = new FakeLocator(186f, 78.691f, -14.25f, 4.29f);
-            var BedroomCameraPosition = new FakeLocator(184.44f, 79.07f, -14.646f, 339.45f);
+            var WoljifLocation = new FakeLocator(185.46f, 79.7f, -15.36f, 184.29f);
+            var PlayerLocation = new FakeLocator(186f, 79.7f, -15.55f, 184.29f);
+            var BedroomCameraPosition = new FakeLocator(184.44f, 79.07f, -14.646f, 159.45f);
+
+            // Not sure how to get hold of a reference to the Rest Icon, so I'm gonna steal the appropriate action from Lann's romance.
+            /*var LannSource = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("b2fdd13c27e90f542b03ce7b4343cc50");
+            var HideButton = ((Kingmaker.Designers.EventConditionActionSystem.Events.EtudePlayTrigger)LannSource.Components[0]).Actions.Actions[1];
+            var UnhideButton = ((Kingmaker.Designers.EventConditionActionSystem.Events.DeactivateTrigger)LannSource.Components[1]).Actions.Actions[1];*/
 
             // Build cutscene
             DialogTools.DialogAddStartAction(BedroomDialog, ActionTools.StartMusic("RomanceTheme"));
@@ -859,15 +877,19 @@ namespace WOTR_WoljifRomanceMod
             // Gate1
             //   Track 1A
             //      Command: Start Dialog
-            //      EndGate: None
-            var Track1A = CutsceneTools.CreateTrack(null, CommandTools.StartDialogCommand(BedroomDialog));
+            //      EndGate: none
+            var Track1A = CutsceneTools.CreateTrack(null, CommandTools.StartDialogCommand(BedroomDialog, Companions.Woljif));
             var Gate1 = CutsceneTools.CreateGate("WRM_9_Gate1", Track1A);
-            var Track0D = CutsceneTools.CreateTrack(null, CommandTools.GenericAnimationCommand("WRM_9_AnimateWoljif", "3f99350594c27294c969a660adb5887b", Companions.Woljif));
-            var Track0C = CutsceneTools.CreateTrack(null, CommandTools.GenericAnimationCommand("WRM_9_AnimatePlayer", "3f99350594c27294c969a660adb5887b", Companions.Player));
+            var Track0D = CutsceneTools.CreateTrack(null, CommandTools.GenericAnimationCommand("WRM_9_AnimateWoljif", "4b58b2de5f04ddf4f9012d4bc342b968", Companions.Woljif));
+            var Track0C = CutsceneTools.CreateTrack(null, CommandTools.GenericAnimationCommand("WRM_9_AnimatePlayer", "4b58b2de5f04ddf4f9012d4bc342b968", Companions.Player));
             Kingmaker.ElementsSystem.GameAction[] Actions0B =
                 {
+                    ActionTools.SetFlyHeightAction(Companions.Player, 0.85f),
+                    ActionTools.SetFlyHeightAction(Companions.Woljif, 0.85f),
                     ActionTools.TranslocateAction(Companions.Player, PlayerLocation),
-                    ActionTools.TranslocateAction(Companions.Woljif, WoljifLocation)
+                    ActionTools.TranslocateAction(Companions.Woljif, WoljifLocation),
+                    ActionTools.HideWeaponsAction(Companions.Player),
+                    ActionTools.HideWeaponsAction(Companions.Woljif)
                 };
             Kingmaker.AreaLogic.Cutscenes.CommandBase[] Commands0B =
                 { CommandTools.ActionCommand("WRM_9_Move0B", Actions0B),
@@ -878,9 +900,13 @@ namespace WOTR_WoljifRomanceMod
             Kingmaker.AreaLogic.Cutscenes.Track[] Tracks = { Track0A, Track0B, Track0C, Track0D };
             var BedroomCutscene = CutsceneTools.CreateCutscene("WRM_9_BedroomScene", false, Tracks);
 
+            DialogTools.DialogAddFinishAction(BedroomDialog, ActionTools.SetFlyHeightAction(Companions.Player, 0f));
+            DialogTools.DialogAddFinishAction(BedroomDialog, ActionTools.SetFlyHeightAction(Companions.Woljif, 0f));
             DialogTools.DialogAddFinishAction(BedroomDialog, ActionTools.StopCutsceneAction(BedroomCutscene));
             DialogTools.DialogAddFinishAction(BedroomDialog, ActionTools.UnlockFlagAction(BarksFlag));
             DialogTools.DialogAddFinishAction(BedroomDialog, ActionTools.CompleteEtudeAction(BedroomSceneEtude));
+            DialogTools.DialogAddFinishAction(BedroomDialog, ActionTools.StartEtudeAction(BarksEtude));
+            // Unhide Rest Icon
 
             // Trigger Bedroom scene after confession
             var Cue1 = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("WRM_8b_c_ChangeMyMind");
@@ -902,7 +928,8 @@ namespace WOTR_WoljifRomanceMod
             var romancebase = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomance");
 
             var BarksFlag = Resources.GetModBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("WRM_BedroomBarksFlag");
-            var BarksEtude = EtudeTools.CreateEtude("WRM_BedroomBarksEtude", romancebase, false, false);
+            //var BarksEtude = EtudeTools.CreateEtude("WRM_BedroomBarksEtude", romancebase, false, false);
+            var BarksEtude = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_BedroomBarksEtude");
             EtudeTools.EtudeAddConflictingGroups(BarksEtude, Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>("97e2c4ec46765f143bf21bc9578b22f7"));
             EtudeTools.EtudeAddActivationCondition(BarksEtude, ConditionalTools.CreateFlagLockCheck("WRM_TurnOnBarksCond", BarksFlag, false));
 
@@ -937,7 +964,11 @@ namespace WOTR_WoljifRomanceMod
             EtudeTools.EtudeAddOnRestTrigger(BarksEtude, ActionTools.MakeList(OnDeactivate));
 
             // Alter Woljif's main Dialog tree when Flag is unlocked.
-            //TODO
+            //ReplaceActions
+            //  ConditionalAction: Flag is on
+            //   Iftrue:
+            //      RandomAction
+            //          Bark...
         }
 
         public static void ChangeDialogWhenRomanced()
