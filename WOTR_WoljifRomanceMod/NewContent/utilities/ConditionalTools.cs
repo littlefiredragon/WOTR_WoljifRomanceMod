@@ -37,6 +37,27 @@ namespace WOTR_WoljifRomanceMod
             return result;
         }
 
+        /*public static Kingmaker.Designers.EventConditionActionSystem.Conditions.OrAndLogic CreateSafeTimerConditional(string name, string timername, Kingmaker.AreaLogic.Etudes.BlueprintEtude pairedetude, int days, bool not = false)
+        {
+            Kingmaker.ElementsSystem.Condition[] conditions = 
+                { 
+                    CreateEtudeCondition(name + "_etudeplaying", pairedetude, "playing"),
+                    CreateTimerConditional(name + "_timerup", timername, days)
+                };
+            var result = CreateLogicCondition(name, not, conditions);
+            return result;
+        }
+
+        public static TimerConditional CreateTimerConditional(string name, string timername, int days, bool not = false)
+        {
+            var result = CreateCondition<TimerConditional>(name, not, bp =>
+            {
+                bp.timername = timername;
+                bp.dayspassed = days;
+            });
+            return result;
+        }*/
+
         public static Kingmaker.Designers.EventConditionActionSystem.Conditions.EtudeStatus CreateEtudeCondition(string name, Kingmaker.AreaLogic.Etudes.BlueprintEtude etude, string status, bool not = false)
         {
             EtudeTools.EtudeStatus statevar = EtudeTools.EtudeStatus.NotStarted;
@@ -96,6 +117,14 @@ namespace WOTR_WoljifRomanceMod
             return result;
         }
 
+        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.FlagUnlocked CreateFlagLockCheck(string name, Kingmaker.Blueprints.BlueprintUnlockableFlag flag, bool locked)
+        {
+            var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.FlagUnlocked>(name, locked, bp =>
+            {
+                bp.ConditionFlag = flag;
+            });
+            return result;
+        }
         public static Kingmaker.Designers.EventConditionActionSystem.Conditions.FlagInRange CreateFlagCheck(string name, Kingmaker.Blueprints.BlueprintUnlockableFlag flag, int min, int max, bool not = false)
         {
             var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.FlagInRange>(name, not, bp =>
@@ -158,6 +187,20 @@ namespace WOTR_WoljifRomanceMod
                     bp.m_Cue = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintCueBaseReference>(cue);
                     bp.CurrentDialog = currentonly;
                 });
+            return result;
+        }
+
+        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.AnswerSelected CreateAnswerSelectedCondition(string name, Kingmaker.DialogSystem.Blueprints.BlueprintAnswer answer, bool currentonly = false)
+        {
+            return CreateAnswerSelectedCondition(name, false, answer, currentonly);
+        }
+        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.AnswerSelected CreateAnswerSelectedCondition(string name, bool not, Kingmaker.DialogSystem.Blueprints.BlueprintAnswer answer, bool currentonly = false)
+        {
+            var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.AnswerSelected>(name, not, bp =>
+            {
+                bp.m_Answer = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintAnswerReference>(answer);
+                bp.CurrentDialog = currentonly;
+            });
             return result;
         }
 

@@ -109,6 +109,13 @@ namespace WOTR_WoljifRomanceMod
             comp.Actions = actionlist;
             EtudeAddComponent(etude, comp);
         }
+        public static void EtudeAddOnRestTrigger(Kingmaker.AreaLogic.Etudes.BlueprintEtude etude, Kingmaker.ElementsSystem.ActionList actionlist)
+        {
+            var comp = new Kingmaker.Designers.EventConditionActionSystem.Events.RestTrigger();
+            comp.Conditions = DialogTools.EmptyConditionChecker;
+            comp.Actions = actionlist;
+            EtudeAddComponent(etude, comp);
+        }
         public static void EtudeAddCompleteTrigger(Kingmaker.AreaLogic.Etudes.BlueprintEtude etude, Kingmaker.ElementsSystem.ActionList actionlist)
         {
             var comp = new Kingmaker.Designers.EventConditionActionSystem.Events.EtudeCompleteTrigger();

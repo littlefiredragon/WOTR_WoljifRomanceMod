@@ -18,10 +18,20 @@ namespace WOTR_WoljifRomanceMod
     class WoljifRomanceMod
     {
         //static public Kingmaker.Blueprints.EntityReference[] LocatorReferences = new Kingmaker.Blueprints.EntityReference[0];
+        //static public TimeKeeper Timer;
+        static public AreaPartWatcher PartLoadWatcher;
+        static public AreaWatcher LoadWatcher;
         static void Postfix()
         {
             DialogTools.NewDialogs.LoadDialogIntoGame("enGB");
             //LocatorTools.CreateLocatorRoot();
+            //Timer = new TimeKeeper();
+            //Kingmaker.PubSubSystem.EventBus.Subscribe(Timer);
+
+            LoadWatcher = new AreaWatcher();
+            PartLoadWatcher = new AreaPartWatcher();
+            Kingmaker.PubSubSystem.EventBus.Subscribe(LoadWatcher);
+            Kingmaker.PubSubSystem.EventBus.Subscribe(PartLoadWatcher);
 
             createDebugMenu();
             WRM_Structure.buildEtudes();
@@ -38,6 +48,10 @@ namespace WOTR_WoljifRomanceMod
             WRM_Act5.AlterJealousyScene();
             WRM_Act5.AddSnowSceneInvite();
             WRM_Act5.AddSnowCutscene();
+            WRM_Act5.AddConfessionInvite();
+            WRM_Act5.AddConfessionScene();
+            WRM_Act5.AddBedroomScene();
+            WRM_Act5.AddBedroomBarks();
             WRM_Act5.MiscChanges();
         }
 
@@ -55,6 +69,53 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.ListAddAnswer(debuganswerlist, endtestanswer);
             DialogTools.CueAddAnswersList(starttestcue, debuganswerlist);
             DialogTools.CueAddAnswersList(endtestcue, originalanswers);
+
+            /*var CompanionEtude = (Kingmaker.AreaLogic.Etudes.BlueprintEtude)Kingmaker.Blueprints.ResourcesLibrary.TryGetBlueprint(Kingmaker.Blueprints.BlueprintGuid.Parse("14a80c048c8ceed4a9c856d85bbf10da"));
+            var etude1 = EtudeTools.CreateEtude("WRM_TEST_etude1", CompanionEtude, false, false);
+            var etude2 = EtudeTools.CreateEtude("WRM_TEST_etude2", CompanionEtude, false, false);
+            var etude3 = EtudeTools.CreateEtude("WRM_TEST_etude3", CompanionEtude, false, false);
+
+            var a_timerstart1 = DialogTools.CreateAnswer("TEST_a_Timer1Start");
+            var c_timerstart1 = DialogTools.CreateCue("TEST_c_Timer1Start");
+            DialogTools.AnswerAddNextCue(a_timerstart1, c_timerstart1);
+            DialogTools.ListAddAnswer(debuganswerlist, a_timerstart1);
+            var a_timerstatus1 = DialogTools.CreateAnswer("TEST_a_Timer1Status");
+            var c_timerstatus1no = DialogTools.CreateCue("TEST_c_Timer1StatusNo");
+            var c_timerstatus1yes = DialogTools.CreateCue("TEST_c_Timer1StatusYes");
+            DialogTools.AnswerAddNextCue(a_timerstatus1, c_timerstatus1yes);
+            DialogTools.AnswerAddNextCue(a_timerstatus1, c_timerstatus1no);
+            DialogTools.ListAddAnswer(debuganswerlist, a_timerstatus1);
+            DialogTools.AnswerAddOnSelectAction(a_timerstart1, ActionTools.SetTimerAction("WRM_TEST_SavedDate1"));
+            DialogTools.AnswerAddOnSelectAction(a_timerstart1, ActionTools.StartEtudeAction(etude1));
+            DialogTools.CueAddCondition(c_timerstatus1yes, ConditionalTools.CreateSafeTimerConditional("TEST_Timercond1", "WRM_TEST_SavedDate1", etude1, 3));
+
+            var a_timerstart2 = DialogTools.CreateAnswer("TEST_a_Timer2Start");
+            var c_timerstart2 = DialogTools.CreateCue("TEST_c_Timer2Start");
+            DialogTools.AnswerAddNextCue(a_timerstart2, c_timerstart2);
+            DialogTools.ListAddAnswer(debuganswerlist, a_timerstart2);
+            var a_timerstatus2 = DialogTools.CreateAnswer("TEST_a_Timer2Status");
+            var c_timerstatus2no = DialogTools.CreateCue("TEST_c_Timer2StatusNo");
+            var c_timerstatus2yes = DialogTools.CreateCue("TEST_c_Timer2StatusYes");
+            DialogTools.AnswerAddNextCue(a_timerstatus2, c_timerstatus2yes);
+            DialogTools.AnswerAddNextCue(a_timerstatus2, c_timerstatus2no);
+            DialogTools.ListAddAnswer(debuganswerlist, a_timerstatus2);
+            DialogTools.AnswerAddOnSelectAction(a_timerstart2, ActionTools.SetTimerAction("WRM_TEST_SavedDate2"));
+            DialogTools.AnswerAddOnSelectAction(a_timerstart2, ActionTools.StartEtudeAction(etude2));
+            DialogTools.CueAddCondition(c_timerstatus2yes, ConditionalTools.CreateSafeTimerConditional("TEST_Timercond2", "WRM_TEST_SavedDate2", etude2, 5));
+
+            var a_timerstart3 = DialogTools.CreateAnswer("TEST_a_Timer3Start");
+            var c_timerstart3 = DialogTools.CreateCue("TEST_c_Timer3Start");
+            DialogTools.AnswerAddNextCue(a_timerstart3, c_timerstart3);
+            DialogTools.ListAddAnswer(debuganswerlist, a_timerstart3);
+            var a_timerstatus3 = DialogTools.CreateAnswer("TEST_a_Timer3Status");
+            var c_timerstatus3no = DialogTools.CreateCue("TEST_c_Timer3StatusNo");
+            var c_timerstatus3yes = DialogTools.CreateCue("TEST_c_Timer3StatusYes");
+            DialogTools.AnswerAddNextCue(a_timerstatus3, c_timerstatus3yes);
+            DialogTools.AnswerAddNextCue(a_timerstatus3, c_timerstatus3no);
+            DialogTools.ListAddAnswer(debuganswerlist, a_timerstatus3);
+            DialogTools.AnswerAddOnSelectAction(a_timerstart3, ActionTools.SetTimerAction("WRM_TEST_SavedDate3"));
+            DialogTools.AnswerAddOnSelectAction(a_timerstart3, ActionTools.StartEtudeAction(etude3));
+            DialogTools.CueAddCondition(c_timerstatus3yes, ConditionalTools.CreateSafeTimerConditional("TEST_Timercond3", "WRM_TEST_SavedDate3", etude3, 10));*/
         }
         //Archived Test Functions, kept around for structural reference for now.
         /*static public void createSimpleConditionalCue()

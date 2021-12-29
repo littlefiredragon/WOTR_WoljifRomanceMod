@@ -47,6 +47,12 @@ namespace WOTR_WoljifRomanceMod
             return result;
         }
 
+        /*public static SetTimer SetTimerAction(string timername)
+        {
+            var result = GenericAction<SetTimer>( bp => { bp.timername = timername; });
+            return result;
+        }*/
+
         public static Kingmaker.ElementsSystem.ActionList MakeList(Kingmaker.ElementsSystem.GameAction action)
         {
             var result = new Kingmaker.ElementsSystem.ActionList();
@@ -65,7 +71,22 @@ namespace WOTR_WoljifRomanceMod
             }
             return result;
         }
-
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.LockFlag LockFlagAction(Kingmaker.Blueprints.BlueprintUnlockableFlag flag)
+        {
+            var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.LockFlag>(bp =>
+            {
+                bp.m_Flag = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintUnlockableFlagReference>(flag);
+            });
+            return result;
+        }
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.UnlockFlag UnlockFlagAction(Kingmaker.Blueprints.BlueprintUnlockableFlag flag)
+        {
+            var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.UnlockFlag>(bp =>
+            {
+                bp.m_flag = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintUnlockableFlagReference>(flag);
+            });
+            return result;
+        }
         public static Kingmaker.Designers.EventConditionActionSystem.Actions.IncrementFlagValue IncrementFlagAction(Kingmaker.Blueprints.BlueprintUnlockableFlag flag, int amount = 1)
         {
             var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.IncrementFlagValue>(bp =>

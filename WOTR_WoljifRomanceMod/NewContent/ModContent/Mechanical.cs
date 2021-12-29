@@ -8,6 +8,7 @@ using TabletopTweaks.Config;
 using TabletopTweaks.Utilities;
 using UnityModManagerNet;
 using TabletopTweaks.Extensions;
+using System.Collections.Generic;
 
 /*
  * This content is the structural basis of the mod - not individual scenes, but rather the over-arching etudes and flags and whatnot,
@@ -16,6 +17,152 @@ using TabletopTweaks.Extensions;
 
 namespace WOTR_WoljifRomanceMod
 {
+    /*public class TimeKeeper : Kingmaker.Kingdom.IKingdomDayHandler
+    {
+        //public SortedDictionary<string, Kingmaker.Blueprints.BlueprintUnlockableFlag> SavedDates = new SortedDictionary<string, Kingmaker.Blueprints.BlueprintUnlockableFlag>();
+        //public Kingmaker.Blueprints.BlueprintUnlockableFlag saveddate;
+        public Kingmaker.Blueprints.BlueprintUnlockableFlag currentdate;
+
+        public Kingmaker.Blueprints.BlueprintUnlockableFlag saved_1;
+        public Kingmaker.Blueprints.BlueprintUnlockableFlag saved_2;
+        public Kingmaker.Blueprints.BlueprintUnlockableFlag saved_3;
+
+        //public Kingmaker.Blueprints.BlueprintUnlockableFlag TavernTimerFlag;
+        //public Kingmaker.Blueprints.BlueprintUnlockableFlag ReconciliationTimerFlag;
+        //public Kingmaker.Blueprints.BlueprintUnlockableFlag ArgumentTimerFlag;
+        //public Kingmaker.Blueprints.BlueprintUnlockableFlag NightmareTimerFlag;
+        //public Kingmaker.Blueprints.BlueprintUnlockableFlag SnowTimerFlag;
+
+
+        public TimeKeeper()
+        {
+            saved_1 = EtudeTools.CreateFlag("WRM_TEST_SavedDate1");
+            saved_2 = EtudeTools.CreateFlag("WRM_TEST_SavedDate2");
+            saved_3 = EtudeTools.CreateFlag("WRM_TEST_SavedDate3");
+            currentdate = EtudeTools.CreateFlag("WRM_TEST_CurrentDate");
+            //TavernTimerFlag = EtudeTools.CreateFlag("WRM_TavernTimerFlag");
+            //ReconciliationTimerFlag = EtudeTools.CreateFlag("WRM_ReconciliationTimerFlag");
+            //ArgumentTimerFlag = EtudeTools.CreateFlag("WRM_ArgumentTimerFlag");
+            //NightmareTimerFlag = EtudeTools.CreateFlag("WRM_NightmareTimerFlag");
+            //SnowTimerFlag = EtudeTools.CreateFlag("WRM_SnowTimerFlag");
+        }
+        public int GetSavedDate(string saveddatename)
+        {
+            //return saveddate.Value;
+            //return SavedDates[saveddatename].Value;
+            var val = 10000;
+            switch (saveddatename)
+            {
+                case "WRM_TEST_SavedDate1":
+                    val = saved_1.Value;
+                    break;
+                case "WRM_TEST_SavedDate2":
+                    val = saved_2.Value;
+                    break;
+                case "WRM_TEST_SavedDate3":
+                    val = saved_3.Value;
+                    break;
+            }*/
+                    /*switch (saveddatename)
+                    {
+                        case "WRM_TavernTimerFlag":
+                            val = TavernTimerFlag.Value;
+                            break;
+                        case "WRM_ReconciliationTimerFlag":
+                            val = ReconciliationTimerFlag.Value;
+                            break;
+                        case "WRM_ArgumentTimerFlag":
+                            val = ArgumentTimerFlag.Value;
+                            break;
+                        case "WRM_NightmareTimerFlag":
+                            val = NightmareTimerFlag.Value;
+                            break;
+                        case "WRM_SnowTimerFlag":
+                            val = SnowTimerFlag.Value;
+                            break;
+                    }*/
+            /*return val;
+        }
+        public int GetCurrentDate()
+        {
+            currentdate.Value = Kingmaker.Kingdom.KingdomState.Instance.CurrentDay;
+            return currentdate.Value;
+        }
+        public void SaveDate(string saveddatename)
+        {
+            currentdate.Value = Kingmaker.Kingdom.KingdomState.Instance.CurrentDay;
+            //saveddate.Value = Kingmaker.Kingdom.KingdomState.Instance.CurrentDay;
+            //SavedDates[saveddatename].Value = Kingmaker.Kingdom.KingdomState.Instance.CurrentDay;
+
+            switch (saveddatename)
+            {
+                case "WRM_TEST_SavedDate1":
+                    saved_1.Value = Kingmaker.Kingdom.KingdomState.Instance.CurrentDay;
+                    break;
+                case "WRM_TEST_SavedDate2":
+                    saved_2.Value = Kingmaker.Kingdom.KingdomState.Instance.CurrentDay;
+                    break;
+                case "WRM_TEST_SavedDate3":
+                    saved_3.Value = Kingmaker.Kingdom.KingdomState.Instance.CurrentDay;
+                    break;
+            }
+            */
+            /*switch (saveddatename)
+            {
+                case "WRM_TavernTimerFlag":
+                    TavernTimerFlag.Value = Kingmaker.Kingdom.KingdomState.Instance.CurrentDay;
+                    break;
+                case "WRM_ReconciliationTimerFlag":
+                    ReconciliationTimerFlag.Value = Kingmaker.Kingdom.KingdomState.Instance.CurrentDay;
+                    break;
+                case "WRM_ArgumentTimerFlag":
+                    ArgumentTimerFlag.Value = Kingmaker.Kingdom.KingdomState.Instance.CurrentDay;
+                    break;
+                case "WRM_NightmareTimerFlag":
+                    NightmareTimerFlag.Value = Kingmaker.Kingdom.KingdomState.Instance.CurrentDay;
+                    break;
+                case "WRM_SnowTimerFlag":
+                    SnowTimerFlag.Value = Kingmaker.Kingdom.KingdomState.Instance.CurrentDay;
+                    break;
+            }*/
+        /*}
+        public void OnNewDay()
+        {
+            currentdate.Value = Kingmaker.Kingdom.KingdomState.Instance.CurrentDay;
+        }
+    }
+
+    public class TimerConditional : Kingmaker.ElementsSystem.Condition
+    {
+        public int dayspassed;
+        public string timername;
+        public override bool CheckCondition()
+        {
+            var saved = WoljifRomanceMod.Timer.GetSavedDate(timername);
+            var current = WoljifRomanceMod.Timer.GetCurrentDate();
+
+            return current >= (saved + dayspassed);
+        }
+
+        public override string GetConditionCaption()
+        {
+            return "Checks status of a timer variable.";
+        }
+    }
+    public class SetTimer : Kingmaker.ElementsSystem.GameAction
+    {
+        public string timername;
+        public override string GetCaption()
+        {
+            return "Sets the date on a timer variable.";
+        }
+
+        public override void RunAction()
+        {
+            WoljifRomanceMod.Timer.SaveDate(timername);
+        }
+    }*/
+
     public static class WRM_Structure
     {
         public static void buildEtudes()

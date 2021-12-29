@@ -10,10 +10,42 @@ using System.Collections.Generic;
 using Kingmaker.Utility;
 using JetBrains.Annotations;
 using System;
-
+using Kingmaker.Blueprints.Area;
 
 namespace WOTR_WoljifRomanceMod
 {
+    class AreaWatcher : Kingmaker.PubSubSystem.IAreaHandler
+    {
+        public void OnAreaDidLoad()
+        {
+        }
+        public void OnAreaBeginUnloading()
+        {
+            if (Game.Instance.CurrentlyLoadedArea.AssetGuidThreadSafe.Equals("2570015799edf594daf2f076f2f975d8", StringComparison.OrdinalIgnoreCase))
+            {
+                // Do stuff on leaving Drezen
+                Resources.GetModBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("WRM_BedroomBarksFlag").Lock();
+                var EtudeBP = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_BedroomBarksEtude");
+                var Etude = Game.Instance.Player.EtudesSystem.Etudes.GetFact((Kingmaker.Blueprints.Facts.BlueprintFact)EtudeBP);
+                Etude.Deactivate();
+            }
+        }
+    }
+    class AreaPartWatcher : Kingmaker.PubSubSystem.IAreaPartHandler
+    {
+        public void OnAreaPartChanged(BlueprintAreaPart previous)
+        {
+            if (previous.AssetGuidThreadSafe.Equals("2570015799edf594daf2f076f2f975d8", StringComparison.OrdinalIgnoreCase))
+            {
+                // Do stuff on leaving Citadel
+                Resources.GetModBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("WRM_BedroomBarksFlag").Lock();
+                var EtudeBP = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_BedroomBarksEtude");
+                var Etude = Game.Instance.Player.EtudesSystem.Etudes.GetFact((Kingmaker.Blueprints.Facts.BlueprintFact)EtudeBP);
+                Etude.Deactivate();
+            }
+        }
+    }
+
     public static class EventTools
     {
         public static Kingmaker.Kingdom.Blueprints.BlueprintKingdomEvent CreateCommandRoomEvent(string name, string description)
