@@ -298,6 +298,20 @@
         "WRM_Barks_2": "\"Aw, c'mon, chief. Can't we stay a little longer?\"",
         "WRM_Barks_3": "\"I'm so lucky I met you.\"",
         "WRM_Barks_4": "\"You know, I heard Irabeth sayin' she cleared your schedule for the rest of the day... No? Not buyin' it? Eh, it was worth a shot.\"",
-        "WRM_Barks_5": "\"I love you so much.\""
+        "WRM_Barks_5": "\"I love you so much.\"",
+        "WRM_Main_c_Greeting": "{n}Woljif's face lights up the moment he sees you.{/n}\"Chief! I was just thinkin' about you!\"",
+        "WRM_Main_a_Breakup": "\"We need to have a serious talk about our relationship.\"",
+        "WRM_Main_a_TogetherTime": "\"I'd like to spend some time with you.\"",
+        "WRM_Main_c_Vendor": "\"Only the best for you, {mf|dreamboat|gorgeous}!\" {n}Woljif gives you a wink. A moment later he sheepishly adds,{/n} \"Uh, just... don't expect a discount. I gotta cover expenses, ya know?\"",
+        "WRM_Main_c_Breakup": "{n}His smile fades into a grimace and he chuckles anxiously.{/n} \"Uh, what's the matter?\"",
+        "WRM_Main_c_TogetherTime": "{n}Woljif takes your hand and smiles warmly.{/n} \"I always have time for you, chief.\"",
+        "WRM_Main_c_Dismiss": "\"Wh-what?!\" {n}Woljif stares at you in wide-eyed shock.{/n} \"You... You can't be serious!\"",
+        "WRM_Main_c_Goodbye": "\"Already? Fine, but come back soon, okay?\"",
+        "WRM_Main_a_BreakupCancel": "\"You need to stop taking money from me without asking. Stealing from your {mf|boyfriend|girlfriend} is not okay. Are we clear?\"",
+        "WRM_Main_a_BreakupConfirm": "\"This relationship isn't working out. I'm sorry.\"",
+        "WRM_Main_c_BreakupCancel": "{n}Despite the nervous grin, Woljif actually seems a bit relieved, as if he was expecting something worse.{/n} \"Oh, that! Ah, you know, force of habit and all that... Won't happen again!\" {n}He gives you his best puppy-dog eyes and coos{/n} \"I love you...\" {n}in an obvious, yet adorable, attempt to placate you.{/n}",
+        "WRM_Main_c_BreakupConfirm": "{n}Woljif stares at you in stunned silence for a long time. You can see tears welling up in his eyes as he finally regains his voice, trembling and quiet.{/n} \"Th-that's it? Just like that? After everything we've been through?\" {n}He grits his teeth, shuts his eyes tightly, and tries valiantly not to cry. Unable to speak past the lump in his throat, he waves you off and turns away to nurse his broken heart.{/n}",
+        "WRM_Main_c_DismissCancel": "{n}Woljif's tail whips back and forth.{/n} \"That wasn't funny, chief! Don't ever do that to me again!\"",
+        "WRM_Main_c_DismissConfirm": "{n}Woljif stares at you in stunned silence for a long time. You can see tears welling up in his eyes as he finally regains his voice, trembling and quiet.{/n} \"Th-that's it? Just like that? After everything we've been through?\" {n}He grits his teeth, shuts his eyes tightly, and tries valiantly not to cry. Unable to speak past the lump in his throat, he waves you off and storms away, heartbroken.{/n}"
     }
 }

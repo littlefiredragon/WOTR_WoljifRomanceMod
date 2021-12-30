@@ -195,7 +195,7 @@ namespace WOTR_WoljifRomanceMod
             EtudeTools.EtudeAddCompleteTrigger(RomanceActiveEtude, ActionTools.MakeList(ActionTools.CompleteEtudeAction(RomanceEtude)));
 
             // build romance complete etude
-            var RomanceCompleteEtude = EtudeTools.CreateEtude("WRM_WoljifRomanceFinished", RomanceEtude, false, false);
+            var RomanceCompleteEtude = EtudeTools.CreateEtude("WRM_WoljifRomanceFinished", RomanceActiveEtude, false, false);
             //    Add component: on start, flame
             EtudeTools.EtudeAddOnPlayTrigger(RomanceCompleteEtude, ActionTools.MakeList(ActionTools.StartEtudeAction(FlameEtude)));
 

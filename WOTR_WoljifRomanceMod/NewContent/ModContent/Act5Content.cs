@@ -929,7 +929,6 @@ namespace WOTR_WoljifRomanceMod
             var WoljifDialog = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>("8a38eeddc0215a84ca441439bb96b8f4");
 
             var BarksFlag = Resources.GetModBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("WRM_BedroomBarksFlag");
-            //var BarksEtude = EtudeTools.CreateEtude("WRM_BedroomBarksEtude", romancebase, false, false);
             var BarksEtude = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_BedroomBarksEtude");
             EtudeTools.EtudeAddConflictingGroups(BarksEtude, Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>("97e2c4ec46765f143bf21bc9578b22f7"));
             EtudeTools.EtudeAddActivationCondition(BarksEtude, ConditionalTools.CreateFlagLockCheck("WRM_TurnOnBarksCond", BarksFlag, false));
@@ -955,7 +954,9 @@ namespace WOTR_WoljifRomanceMod
                     ActionTools.PlayCutsceneAction(movecamcutscene),
                     ActionTools.PlayCutsceneAction(fadecutscene)
                 };
-            EtudeTools.EtudeAddOnPlayTrigger(BarksEtude, ActionTools.MakeList(ActionTools.TeleportAction("ab3b5c105893562488ae5bb6e7b0cba7", ActionTools.MakeList(OnPlay))));
+            //EtudeTools.EtudeAddOnPlayTrigger(BarksEtude, ActionTools.MakeList(ActionTools.TeleportAction("ab3b5c105893562488ae5bb6e7b0cba7", ActionTools.MakeList(OnPlay))));
+            EtudeTools.EtudeAddOnPlayTrigger(BarksEtude, ActionTools.MakeList(OnPlay));
+
 
             //On Etude deactivate, move WJ back to normal location, lock the Flag.
             Kingmaker.ElementsSystem.GameAction[] OnDeactivate =
@@ -986,11 +987,76 @@ namespace WOTR_WoljifRomanceMod
 
         public static void ChangeDialogWhenRomanced()
         {
-            // New greeting
-            // New sales pitch
-            // New goodbye
-            // Add private time request
-            // Add breakup dialog
+            var successfulromance = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceFinished");
+            var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceActive");
+            var BarksFlag = Resources.GetModBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("WRM_BedroomBarksFlag");
+            var BarksEtude = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_BedroomBarksEtude");
+            // Pull existing parts
+            var MainDialog = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>("8a38eeddc0215a84ca441439bb96b8f4");
+            var AnswerList0003 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("e41585da330233143b34ef64d7d62d69");
+            var AnswerList0010 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("aa9ab2093f0209949997379208cfbf41");
+            var Answer0005 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("c08e22b2fa03b934aa888d16f22c083e");
+            var Answer0007 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("848846faac181d34bbaf9a26766df8b9");
+            var Answer0009 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("b9c26621aff1d8243b5f43bb2efeff80");
+            var Answer0011 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("0249aec9ddf1b1f4a9dacbd7b870c58b");
+            var Answer0012 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("104e5d75cd7ef9c48a107cf5ecd23d94");
+            var Cue0006 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("ac10d2c0d42be624dab89e4531e87e64");
+            var Cue0014 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("03052f736f889cd4c9c240fdeca11e51");
+            // Make new parts
+            var c_Greeting = DialogTools.CreateCue("WRM_Main_c_Greeting");
+            var a_Breakup = DialogTools.CreateAnswer("WRM_Main_a_Breakup");
+            var a_TogetherTime = DialogTools.CreateAnswer("WRM_Main_a_TogetherTime");
+            var c_Vendor = DialogTools.CreateCue("WRM_Main_c_Vendor");
+            var c_Breakup = DialogTools.CreateCue("WRM_Main_c_Breakup");
+            var c_TogetherTime = DialogTools.CreateCue("WRM_Main_c_TogetherTime");
+            var c_Dismiss = DialogTools.CreateCue("WRM_Main_c_Dismiss");
+            var c_Goodbye = DialogTools.CreateCue("WRM_Main_c_Goodbye");
+            var a_BreakupCancel = DialogTools.CreateAnswer("WRM_Main_a_BreakupCancel");
+            var a_BreakupConfirm = DialogTools.CreateAnswer("WRM_Main_a_BreakupConfirm");
+            var c_BreakupCancel = DialogTools.CreateCue("WRM_Main_c_BreakupCancel");
+            var c_BreakupConfirm = DialogTools.CreateCue("WRM_Main_c_BreakupConfirm");
+            var c_DismissCancel = DialogTools.CreateCue("WRM_Main_c_DismissCancel");
+            var c_DismissConfirm = DialogTools.CreateCue("WRM_Main_c_DismissConfirm");
+            var L_Breakup = DialogTools.CreateAnswersList("WRM_Main_L_Breakup");
+            // Splice them together
+            DialogTools.CueAddCondition(c_Greeting, ConditionalTools.CreateEtudeCondition("WRM_GreetingIfRomanced", successfulromance, "playing"));
+            DialogTools.DialogInsertCue(MainDialog, c_Greeting, 0);
+            DialogTools.CueAddAnswersList(c_Greeting, AnswerList0003);
+
+            DialogTools.CueAddCondition(c_Vendor, ConditionalTools.CreateEtudeCondition("WRM_VendorIfRomanced", successfulromance, "playing"));
+            DialogTools.AnswerAddNextCue(Answer0005, c_Vendor, 0);
+            c_Vendor.OnStop = Cue0006.OnStop;
+
+            DialogTools.CueAddCondition(c_Dismiss, ConditionalTools.CreateEtudeCondition("WRM_DismissBaseIfRomanced", successfulromance, "playing"));
+            DialogTools.AnswerAddNextCue(Answer0007, c_Dismiss, 0);
+            DialogTools.CueAddAnswersList(c_Dismiss, AnswerList0010);
+
+            DialogTools.CueAddCondition(c_DismissCancel, ConditionalTools.CreateEtudeCondition("WRM_DismissCancelIfRomanced", successfulromance, "playing"));
+            DialogTools.AnswerAddNextCue(Answer0011, c_DismissCancel, 0);
+            DialogTools.CueAddAnswersList(c_DismissCancel, AnswerList0003);
+
+            DialogTools.CueAddCondition(c_DismissConfirm, ConditionalTools.CreateEtudeCondition("WRM_DismissConfirmIfRomanced", successfulromance, "playing"));
+            DialogTools.AnswerAddNextCue(Answer0012, c_DismissConfirm, 0);
+            c_DismissConfirm.OnStop = Cue0014.OnStop;
+
+            DialogTools.AnswerAddShowCondition(a_Breakup, ConditionalTools.CreateEtudeCondition("WRM_ShowBreakupIfRomanced", successfulromance, "playing"));
+            DialogTools.ListAddAnswer(AnswerList0003, a_Breakup, 10);
+            DialogTools.AnswerAddNextCue(a_Breakup, c_Breakup);
+            DialogTools.CueAddAnswersList(c_Breakup, L_Breakup);
+            DialogTools.ListAddAnswer(L_Breakup, a_BreakupCancel);
+            DialogTools.ListAddAnswer(L_Breakup, a_BreakupConfirm);
+            DialogTools.AnswerAddNextCue(a_BreakupCancel, c_BreakupCancel);
+            DialogTools.CueAddAnswersList(c_BreakupCancel, AnswerList0003);
+            DialogTools.AnswerAddNextCue(a_BreakupConfirm, c_BreakupConfirm);
+            DialogTools.AnswerAddOnSelectAction(a_BreakupConfirm, ActionTools.CompleteEtudeAction(romanceactive));
+
+            DialogTools.AnswerAddShowCondition(a_TogetherTime, ConditionalTools.CreateEtudeCondition("WRM_ShowTogetherTimeIfRomanced", successfulromance, "playing"));
+            DialogTools.ListAddAnswer(AnswerList0003, a_TogetherTime, 11);
+            DialogTools.AnswerAddNextCue(a_TogetherTime, c_TogetherTime);
+            DialogTools.CueAddOnStopAction(c_TogetherTime, ActionTools.UnlockFlagAction(BarksFlag));
+            // I don't know why, but even though the translocate/teleport is handled in the etude, it doesn't work properly unless I put it here too.
+            var WoljifBedroomLocation = new FakeLocator(183.76f, 78.691f, -14.49f, 274.26f);
+            DialogTools.CueAddOnStopAction(c_TogetherTime, ActionTools.TeleportAction("ab3b5c105893562488ae5bb6e7b0cba7", ActionTools.MakeList(ActionTools.TranslocateAction(Companions.Woljif, WoljifBedroomLocation))));
         }
 
         public static void MiscChanges()
@@ -1036,10 +1102,6 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.CueSetSpeaker(C_LoveYourself, Companions.Ember);
             DialogTools.CueAddContinue(cue3, C_LoveYourself);
             DialogTools.CueAddContinue(C_LoveYourself, C_CalledOut);
-
-
-
-            // NOTE TO SELF: add lich sacrifice scene.
         }
     }
 }
