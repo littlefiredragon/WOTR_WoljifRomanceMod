@@ -107,6 +107,33 @@ namespace WOTR_WoljifRomanceMod
             dialog.FinishActions.Actions[len] = action;
         }
 
+        public static void DialogAddReplaceAction(Kingmaker.DialogSystem.Blueprints.BlueprintDialog dialog, Kingmaker.ElementsSystem.GameAction action)
+        {
+            if (dialog.ReplaceActions == EmptyActionList)
+            {//Make a brand new action list
+                dialog.ReplaceActions = new Kingmaker.ElementsSystem.ActionList();
+            }
+            var len = 0;
+            if (dialog.ReplaceActions.Actions == null)
+            {
+                dialog.ReplaceActions.Actions = new Kingmaker.ElementsSystem.GameAction[1];
+            }
+            else
+            {
+                len = dialog.ReplaceActions.Actions.Length;
+                Array.Resize(ref dialog.ReplaceActions.Actions, len + 1);
+            }
+            dialog.ReplaceActions.Actions[len] = action;
+        }
+
+        public static void DialogAddCondition(Kingmaker.DialogSystem.Blueprints.BlueprintDialog dialog, Kingmaker.ElementsSystem.Condition condition)
+        {
+            if (dialog.Conditions == EmptyConditionChecker)
+            {//Make a brand new checker
+                dialog.Conditions = ConditionalTools.CreateChecker();
+            }
+            ConditionalTools.CheckerAddCondition(dialog.Conditions, condition);
+        }
 
         // Cues
         public static Kingmaker.DialogSystem.Blueprints.BlueprintCue CreateCue(string name)

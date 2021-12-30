@@ -88,6 +88,55 @@ namespace WOTR_WoljifRomanceMod
             return result;
         }
 
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.ActionAndWeight WeightedAction(Kingmaker.ElementsSystem.GameAction action, int weight, Kingmaker.ElementsSystem.Condition condition = null)
+        {
+            Kingmaker.Designers.EventConditionActionSystem.Actions.ActionAndWeight result;
+            result.Conditions = new Kingmaker.ElementsSystem.ConditionsChecker();
+            if (condition != null)
+            {
+                ConditionalTools.CheckerAddCondition(result.Conditions, condition);
+            }
+            result.Action = MakeList(action);
+            result.Weight = weight;
+            return result;
+        }
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.RandomAction RandomAction(params Kingmaker.ElementsSystem.GameAction[] actions)
+        {
+            var len = actions.Length;
+            Kingmaker.Designers.EventConditionActionSystem.Actions.ActionAndWeight[] WeightedActions = new Kingmaker.Designers.EventConditionActionSystem.Actions.ActionAndWeight[len];
+            for (int i = 0; i < len; i++)
+            {
+                WeightedActions[i] = WeightedAction(actions[i], 1);
+            }
+            return RandomAction(WeightedActions);
+        }
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.RandomAction RandomAction(params Kingmaker.Designers.EventConditionActionSystem.Actions.ActionAndWeight[] WeightedActions)
+        {
+            var len = WeightedActions.Length;
+            var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.RandomAction>(bp =>
+            {
+                bp.Actions = new Kingmaker.Designers.EventConditionActionSystem.Actions.ActionAndWeight[len];
+                for (int i = 0; i < len; i++)
+                {
+                    bp.Actions[i] = WeightedActions[i];
+                }
+            });
+            return result;
+        }
+
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.ShowBark BarkAction(string name, Companions target = Companions.None)
+        {
+            var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.ShowBark>(bp =>
+            {
+                bp.TargetUnit = CommandTools.getCompanionEvaluator(target);
+                bp.BarkDurationByText = true;
+                bp.WhatToBarkShared = new Kingmaker.Localization.SharedStringAsset();
+                bp.WhatToBarkShared.String = new Kingmaker.Localization.LocalizedString { m_Key = name };
+                bp.WhatToBark = bp.WhatToBarkShared.String;
+            });
+            return result;
+        }
+
         public static SetFlyHeight SetFlyHeightAction(Companions unit, float height)
         {
             var result = GenericAction<SetFlyHeight>(bp =>
@@ -226,6 +275,18 @@ namespace WOTR_WoljifRomanceMod
             });
             return action;
         }
+        public static Kingmaker.Designers.EventConditionActionSystem.Actions.TimeSkip SkipTimeAction(int minutes, bool nofatigue = true)
+        {
+            var skip = new Kingmaker.Designers.EventConditionActionSystem.Evaluators.IntConstant { Value = minutes };
+            var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.TimeSkip>(bp =>
+            {
+                bp.NoFatigue = nofatigue;
+                bp.m_Type = Kingmaker.Designers.EventConditionActionSystem.Actions.TimeSkip.SkipType.Minutes;
+                bp.MinutesToSkip = skip;
+            });
+            return result;
+        }
+
         public static Kingmaker.Designers.EventConditionActionSystem.Actions.TimeSkip SkipToTimeAction(string timeofday, bool nofatigue = true)
         {
             var time = Kingmaker.AreaLogic.TimeOfDay.Morning;

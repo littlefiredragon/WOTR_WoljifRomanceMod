@@ -926,6 +926,7 @@ namespace WOTR_WoljifRomanceMod
         public static void AddBedroomBarks()
         {
             var romancebase = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomance");
+            var WoljifDialog = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>("8a38eeddc0215a84ca441439bb96b8f4");
 
             var BarksFlag = Resources.GetModBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("WRM_BedroomBarksFlag");
             //var BarksEtude = EtudeTools.CreateEtude("WRM_BedroomBarksEtude", romancebase, false, false);
@@ -935,7 +936,7 @@ namespace WOTR_WoljifRomanceMod
 
             var PlayerBedroomLocation = new FakeLocator(183.91f, 78.691f, -15.50f, 274.26f);
             var WoljifBedroomLocation = new FakeLocator(183.76f, 78.691f, -14.49f, 274.26f);
-            var BedroomCameraPosition = new FakeLocator(184.44f, 79.07f, -14.646f, 339.45f);
+            var BedroomCameraPosition = new FakeLocator(184.44f, 79.07f, -14.646f, 159.45f);
             var Woljif_Exit = new FakeLocator(-8.844f, 56.02f, 0.325f, 275.0469f);
 
             //On Etude activation, teleport WJ + PC, unhide them, move camera, fadeout
@@ -946,16 +947,21 @@ namespace WOTR_WoljifRomanceMod
             var fadecutscene = Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.Cutscene>("4d0821789698d264bad86ac40bf785d2");
             Kingmaker.ElementsSystem.GameAction[] OnPlay =
                 {
+                    ActionTools.SkipTimeAction(120),
                     movePlayer,
                     moveWoljif,
+                    ActionTools.HideWeaponsAction(Companions.Player),
+                    ActionTools.HideWeaponsAction(Companions.Woljif),
                     ActionTools.PlayCutsceneAction(movecamcutscene),
                     ActionTools.PlayCutsceneAction(fadecutscene)
                 };
-            EtudeTools.EtudeAddOnPlayTrigger(BarksEtude, ActionTools.MakeList(OnPlay));
+            EtudeTools.EtudeAddOnPlayTrigger(BarksEtude, ActionTools.MakeList(ActionTools.TeleportAction("ab3b5c105893562488ae5bb6e7b0cba7", ActionTools.MakeList(OnPlay))));
 
             //On Etude deactivate, move WJ back to normal location, lock the Flag.
             Kingmaker.ElementsSystem.GameAction[] OnDeactivate =
                 {
+                    ActionTools.HideWeaponsAction(Companions.Player, false),
+                    ActionTools.HideWeaponsAction(Companions.Woljif, false),
                     ActionTools.TranslocateAction(Companions.Woljif, Woljif_Exit),
                     ActionTools.LockFlagAction(BarksFlag)
                 };
@@ -964,11 +970,18 @@ namespace WOTR_WoljifRomanceMod
             EtudeTools.EtudeAddOnRestTrigger(BarksEtude, ActionTools.MakeList(OnDeactivate));
 
             // Alter Woljif's main Dialog tree when Flag is unlocked.
-            //ReplaceActions
-            //  ConditionalAction: Flag is on
-            //   Iftrue:
-            //      RandomAction
-            //          Bark...
+            var BarkConditional = ActionTools.ConditionalAction(ConditionalTools.CreateFlagLockCheck("WRM_EnableBedroomBarks", BarksFlag, false));
+            Kingmaker.ElementsSystem.GameAction[] BarkActions = 
+                {
+                    ActionTools.BarkAction("WRM_Barks_1", Companions.Woljif),
+                    ActionTools.BarkAction("WRM_Barks_2", Companions.Woljif),
+                    ActionTools.BarkAction("WRM_Barks_3", Companions.Woljif),
+                    ActionTools.BarkAction("WRM_Barks_4", Companions.Woljif),
+                    ActionTools.BarkAction("WRM_Barks_5", Companions.Woljif)
+                };
+            ActionTools.ConditionalActionOnTrue(BarkConditional, ActionTools.MakeList(ActionTools.RandomAction(BarkActions)));
+            DialogTools.DialogAddReplaceAction(WoljifDialog, BarkConditional);
+            DialogTools.DialogAddCondition(WoljifDialog, ConditionalTools.CreateFlagLockCheck("WRM_SwitchToBarks", BarksFlag, true));
         }
 
         public static void ChangeDialogWhenRomanced()
@@ -1023,6 +1036,10 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.CueSetSpeaker(C_LoveYourself, Companions.Ember);
             DialogTools.CueAddContinue(cue3, C_LoveYourself);
             DialogTools.CueAddContinue(C_LoveYourself, C_CalledOut);
+
+
+
+            // NOTE TO SELF: add lich sacrifice scene.
         }
     }
 }
