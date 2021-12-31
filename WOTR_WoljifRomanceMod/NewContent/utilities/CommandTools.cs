@@ -11,12 +11,32 @@ using Kingmaker.Utility;
 using JetBrains.Annotations;
 using System;
 using Kingmaker.AreaLogic.Cutscenes;
+using Kingmaker.EntitySystem.Entities;
 
 namespace WOTR_WoljifRomanceMod
 {
     public enum Companions
     {
         None = -1, Player, Arueshalae, Camellia, Daeran, Ember, Greybor, Lann, Nenio, Regill, Seelah, Sosiel, Wenduag, Woljif
+    }
+
+    public class GenericUnitEvaluator : Kingmaker.ElementsSystem.UnitEvaluator
+    {
+        public UnitEntityData entity;
+        public override string GetCaption()
+        {
+            return "Generic Unit Evaluator";
+        }
+
+        public override UnitEntityData GetValueInternal()
+        {
+            return entity;
+        }
+        
+        public void setEntity(UnitEntityData data)
+        {
+            entity = data;
+        }
     }
 
     public static class CommandTools

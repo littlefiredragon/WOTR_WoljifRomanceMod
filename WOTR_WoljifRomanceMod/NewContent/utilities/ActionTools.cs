@@ -54,6 +54,29 @@ namespace WOTR_WoljifRomanceMod
         }
     }
 
+    // Here be dragons; completely untested.
+    public class SpawnUnit : Kingmaker.ElementsSystem.GameAction
+    {
+        public Kingmaker.Blueprints.BlueprintUnit unit;
+        public FakeLocator location;
+        public Kingmaker.EntitySystem.Entities.UnitEntityData entity;
+        public override string GetCaption()
+        {
+            return "UNTESTED: Spawn a unit.";
+        }
+
+        public override void RunAction()
+        {
+            entity = Game.Instance.EntityCreator.SpawnUnit(unit, location.GetValue(), UnityEngine.Quaternion.identity, null);
+        }
+
+        public Kingmaker.EntitySystem.Entities.UnitEntityData GetEntity()
+        {
+            return entity;
+        }
+    }
+
+
     public static class ActionTools
     {
         public static T GenericAction<T>(Action<T> init = null) where T : Kingmaker.ElementsSystem.GameAction, new()
@@ -514,6 +537,17 @@ namespace WOTR_WoljifRomanceMod
             {
                 bp.MusicEventStart = "MUS_" + trackname + "_Play";
                 bp.MusicEventStop = "MUS_" + trackname + "_Stop";
+            });
+            return action;
+        }
+
+        //Be warned, this is completely untested. Use at your own risk!
+        public static SpawnUnit SpawnUnitAction(Kingmaker.Blueprints.BlueprintUnit unit, FakeLocator location)
+        {
+            var action = GenericAction<SpawnUnit>(bp =>
+            {
+                bp.unit = unit;
+                bp.location = location;
             });
             return action;
         }

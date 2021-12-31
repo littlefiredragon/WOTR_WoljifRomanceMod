@@ -306,7 +306,16 @@ namespace WOTR_WoljifRomanceMod
 
             var NightmareTimer = EtudeTools.CreateEtude("WRM_TimerBeforeNightmare", romanceactive, false, false);
             DialogTools.AnswerAddOnSelectAction(embraceAnswer, ActionTools.StartEtudeAction(NightmareTimer));
-            EtudeTools.EtudeAddDelayedAction(NightmareTimer, 3, ActionTools.MakeList(ActionTools.AddCampEventAction(NightmareEvent)));
+            var CampCounter = EtudeTools.CreateFlag("WRM_NightmareCampEventFlag");
+            Kingmaker.ElementsSystem.GameAction[] AddCampEvent =
+                {
+                    ActionTools.IncrementFlagAction(CampCounter),
+                    ActionTools.ConditionalAction(ConditionalTools.CreateFlagCheck("WRM_DontDoubleNightmare", CampCounter, 2, 1000000, true))
+                };
+            ActionTools.ConditionalActionOnTrue((Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional)AddCampEvent[1], ActionTools.AddCampEventAction(NightmareEvent));
+            EtudeTools.EtudeAddDelayedAction(NightmareTimer, 3, ActionTools.MakeList(AddCampEvent));
+
+            //EtudeTools.EtudeAddDelayedAction(NightmareTimer, 3, ActionTools.MakeList(ActionTools.AddCampEventAction(NightmareEvent)));
 
             var affectiongatesuccess = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceGatePassed");
             EtudeTools.EtudeAddOnPlayTrigger(affectiongatesuccess, ActionTools.MakeList(ActionTools.StartEtudeAction(NightmareTimer)));

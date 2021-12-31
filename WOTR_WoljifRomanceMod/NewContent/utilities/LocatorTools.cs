@@ -45,7 +45,6 @@ namespace WOTR_WoljifRomanceMod
         public override UnityEngine.Vector3 GetValueInternal()
         {
             return new UnityEngine.Vector3(x, y, z);
-            throw new NotImplementedException();
         }
 
         public Kingmaker.Designers.EventConditionActionSystem.Evaluators.FloatConstant GetRotation()

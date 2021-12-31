@@ -64,10 +64,18 @@ namespace WOTR_WoljifRomanceMod
             var NotificationEtude = EtudeTools.CreateEtude("WRM_TavernInvite_Notification", romancebase, false, false);
             var EventEtude = EtudeTools.CreateEtude("WRM_TavernInvite_Event", NotificationEtude, true, true);
             var Notification = EventTools.CreateCommandRoomEvent("WRM_note_2a_Name", "WRM_note_2a_Desc");
+            var NotificationCounter = EtudeTools.CreateFlag("WRM_TavernInviteFlag");
             EventTools.AddResolution(Notification, Kingmaker.Kingdom.Blueprints.EventResult.MarginType.Fail, "WRM_note_2a_Ignored");
             EventTools.AddResolution(Notification, Kingmaker.Kingdom.Blueprints.EventResult.MarginType.Success, "WRM_note_2a_Complete");
 
-            EtudeTools.EtudeAddOnPlayTrigger(NotificationEtude, ActionTools.MakeList(ActionTools.StartCommandRoomEventAction(Notification)));
+            Kingmaker.ElementsSystem.GameAction[] StartNotification =
+                {
+                    ActionTools.IncrementFlagAction(NotificationCounter),
+                    ActionTools.ConditionalAction(ConditionalTools.CreateFlagCheck("WRM_DontDoubleTavern",NotificationCounter, 2, 1000000, true))
+                };
+            ActionTools.ConditionalActionOnTrue((Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional)StartNotification[1], ActionTools.StartCommandRoomEventAction(Notification));
+            EtudeTools.EtudeAddOnPlayTrigger(NotificationEtude, ActionTools.MakeList(StartNotification));
+            //EtudeTools.EtudeAddOnPlayTrigger(NotificationEtude, ActionTools.MakeList(ActionTools.StartCommandRoomEventAction(Notification)));
             EtudeTools.EtudeAddOnDeactivateTrigger(NotificationEtude, ActionTools.MakeList(ActionTools.EndCommandRoomEventAction(Notification)));
             var Capital_KTC_group = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>("10d01be767521a340978c8e57ab536b6");
             var Capital_WoljifCompanion_group = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>("97e2c4ec46765f143bf21bc9578b22f7");
@@ -366,7 +374,15 @@ namespace WOTR_WoljifRomanceMod
             EventTools.CampEventAddAction(ArgumentEvent, ActionTools.StartDialogAction(ArgumentDialog, Companions.Woljif));
             // Timer after completing Crescent of the Abyss.
             var ArgumentTimer = EtudeTools.CreateEtude("WRM_TimerBeforeFight", romanceactive, false, false);
-            EtudeTools.EtudeAddDelayedAction(ArgumentTimer, 3, ActionTools.MakeList(ActionTools.AddCampEventAction(ArgumentEvent)));
+            var CampCounter = EtudeTools.CreateFlag("WRM_ArgumentCampEventFlag");
+            Kingmaker.ElementsSystem.GameAction[] AddCampEvent = 
+                {
+                    ActionTools.IncrementFlagAction(CampCounter),
+                    ActionTools.ConditionalAction(ConditionalTools.CreateFlagCheck("WRM_DontDoubleArgument", CampCounter, 2, 1000000, true))
+                };
+            ActionTools.ConditionalActionOnTrue((Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional)AddCampEvent[1], ActionTools.AddCampEventAction(ArgumentEvent));
+            EtudeTools.EtudeAddDelayedAction(ArgumentTimer, 3, ActionTools.MakeList(AddCampEvent));
+            //EtudeTools.EtudeAddDelayedAction(ArgumentTimer, 3, ActionTools.MakeList(ActionTools.AddCampEventAction(ArgumentEvent)));
 
             // Start timer after accepting Woljif permanently back into the party after facing Voetiel.
             var Ch3_FinalizedReRecruit1 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("326e5a8ef1f92914ab122ebac703b4c8");

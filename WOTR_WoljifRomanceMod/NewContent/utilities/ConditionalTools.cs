@@ -223,6 +223,16 @@ namespace WOTR_WoljifRomanceMod
             return result;
         }
 
+        public static Kingmaker.Designers.EventConditionActionSystem.Conditions.CompanionInParty CreateCompanionDeadCondition(string name, Companions companion, bool not = false)
+        {
+            var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.CompanionInParty>(name, not, bp =>
+            {
+                bp.m_companion = CommandTools.GetCompanionReference(companion);
+                bp.MatchWhenDead = true;
+            });
+            return result;
+        }
+
         public static Kingmaker.Designers.EventConditionActionSystem.Conditions.CompanionInParty CreateCompanionAvailableCondition(string name, Companions companion, bool not = false)
         {
             var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.CompanionInParty>(name, not, bp =>
