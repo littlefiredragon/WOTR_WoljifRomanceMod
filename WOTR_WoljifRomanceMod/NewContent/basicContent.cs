@@ -54,6 +54,9 @@ namespace WOTR_WoljifRomanceMod
             WRM_Act5.AddBedroomBarks();
             WRM_Act5.ChangeDialogWhenRomanced();
             WRM_Act5.AlterLichScene();
+            WRM_Act5.AddIrabethConversation();
+            WRM_Act5.AlterThresholdScene();
+            WRM_Act5.AlterEpilogue();
             WRM_Act5.MiscChanges();
 
 

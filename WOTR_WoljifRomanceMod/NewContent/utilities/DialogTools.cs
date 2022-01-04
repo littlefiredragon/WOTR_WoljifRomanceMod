@@ -136,11 +136,11 @@ namespace WOTR_WoljifRomanceMod
         }
 
         // Cues
-        public static Kingmaker.DialogSystem.Blueprints.BlueprintCue CreateCue(string name)
+        public static Kingmaker.DialogSystem.Blueprints.BlueprintCue CreateCue(string name, Kingmaker.DialogSystem.DialogSpeaker speaker = null)
         {
-            return CreateCue(name, name);
+            return CreateCue(name, name, speaker);
         }
-        public static Kingmaker.DialogSystem.Blueprints.BlueprintCue CreateCue(string name, string key)
+        public static Kingmaker.DialogSystem.Blueprints.BlueprintCue CreateCue(string name, string key, Kingmaker.DialogSystem.DialogSpeaker speaker = null)
         {
             var result = Helpers.CreateBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>(name, bp =>
             {
@@ -148,7 +148,9 @@ namespace WOTR_WoljifRomanceMod
                 bp.Continue = EmptyCueSelection;
                 bp.AlignmentShift = EmptyAlignmentShift;
                 bp.Conditions = EmptyConditionChecker;
-                bp.Speaker = EmptyDialogSpeaker;
+                if (speaker == null)
+                { bp.Speaker = EmptyDialogSpeaker; }
+                else { bp.Speaker = speaker; }
                 bp.OnShow = EmptyActionList;
                 bp.OnStop = EmptyActionList;
             });
