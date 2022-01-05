@@ -18,15 +18,15 @@ namespace WOTR_WoljifRomanceMod
     class WoljifRomanceMod
     {
         //static public Kingmaker.Blueprints.EntityReference[] LocatorReferences = new Kingmaker.Blueprints.EntityReference[0];
-        //static public TimeKeeper Timer;
+        static public TimeKeeper Clock;
         static public AreaPartWatcher PartLoadWatcher;
         static public AreaWatcher LoadWatcher;
         static void Postfix()
         {
             DialogTools.NewDialogs.LoadDialogIntoGame("enGB");
-            //LocatorTools.CreateLocatorRoot();
-            //Timer = new TimeKeeper();
-            //Kingmaker.PubSubSystem.EventBus.Subscribe(Timer);
+
+            Clock = new TimeKeeper();
+            Kingmaker.PubSubSystem.EventBus.Subscribe(Clock);
 
             LoadWatcher = new AreaWatcher();
             PartLoadWatcher = new AreaPartWatcher();
@@ -58,10 +58,6 @@ namespace WOTR_WoljifRomanceMod
             WRM_Act5.AlterThresholdScene();
             WRM_Act5.AlterEpilogue();
             WRM_Act5.MiscChanges();
-
-
-            var unit = Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnit>("766435873b1361c4287c351de194e5f9");
-            
         }
 
         static public void createDebugMenu()

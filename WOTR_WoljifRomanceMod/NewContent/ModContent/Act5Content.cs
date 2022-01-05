@@ -249,17 +249,21 @@ namespace WOTR_WoljifRomanceMod
 
 
             // Timer
-            var SnowTimer = EtudeTools.CreateEtude("WRM_TimerBeforeSnowScene", romanceactive, false, false);
-            Kingmaker.ElementsSystem.GameAction[] delayedactions = { ActionTools.StartEtudeAction(EventEtude), ActionTools.CompleteEtudeAction(SnowTimer) };
+            //var SnowTimer = EtudeTools.CreateEtude("WRM_TimerBeforeSnowScene", romanceactive, false, false);
+            //Kingmaker.ElementsSystem.GameAction[] delayedactions = { ActionTools.StartEtudeAction(EventEtude), ActionTools.CompleteEtudeAction(SnowTimer) };
             //EtudeTools.EtudeAddDelayedAction(SnowTimer, 10, ActionTools.MakeList(delayedactions));
             // DEBUG VERSION WITH SHORTER TIMER
-            EtudeTools.EtudeAddDelayedAction(SnowTimer, 2, ActionTools.MakeList(delayedactions));
+            //EtudeTools.EtudeAddDelayedAction(SnowTimer, 2, ActionTools.MakeList(delayedactions));
+            //Act5.m_StartsWith.Add(Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintEtudeReference>(SnowTimer));
 
-            Act5.m_StartsWith.Add(Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintEtudeReference>(SnowTimer));
-
-            //ce8c690ebb184474fbcb73e31144c8c3 iomedae cue
-            //var IomedaeCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("ce8c690ebb184474fbcb73e31144c8c3");
-            //DialogTools.CueAddOnShowAction(IomedaeCue, ActionTools.StartEtudeAction(SnowTimer));
+            
+            var SnowTimer = WoljifRomanceMod.Clock.AddTimer("WRM_Timers_Snow");
+            var SnowTimerEtude = EtudeTools.CreateEtude("WRM_Timers_SnowEtude", romancebase, false, false);
+            EtudeTools.EtudeAddActivationCondition(SnowTimerEtude, ConditionalTools.CreateFlagCheck("WRM_Timers_SnowTrigger", SnowTimer.time, 10, 1000000));
+            Kingmaker.ElementsSystem.GameAction[] delayedactions = { ActionTools.StartEtudeAction(EventEtude), ActionTools.CompleteEtudeAction(SnowTimerEtude) };
+            EtudeTools.EtudeAddOnPlayTrigger(SnowTimerEtude, ActionTools.MakeList(delayedactions));
+            EtudeTools.EtudeAddOnPlayTrigger(Act5, ActionTools.MakeList(ActionTools.IncrementFlagAction(SnowTimer.active)));
+            EtudeTools.EtudeAddOnPlayTrigger(Act5, ActionTools.MakeList(ActionTools.StartEtudeAction(SnowTimerEtude)));
         }
 
         public static void AddSnowCutscene()
@@ -521,13 +525,18 @@ namespace WOTR_WoljifRomanceMod
 
             // Timer
             var SnowDialog = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("WRM_7b_c_IShouldGo");
-            var ConfessionTimer = EtudeTools.CreateEtude("WRM_TimerBeforeConfession", romanceactive, false, false);
+            /*var ConfessionTimer = EtudeTools.CreateEtude("WRM_TimerBeforeConfession", romanceactive, false, false);
             Kingmaker.ElementsSystem.GameAction[] delayedactions = { ActionTools.StartEtudeAction(EventEtude), ActionTools.CompleteEtudeAction(ConfessionTimer) };
-            //EtudeTools.EtudeAddDelayedAction(ConfessionTimer, 10, ActionTools.MakeList(delayedactions));
-            // DEBUG VERSION WITH SHORTER TIMER
-            EtudeTools.EtudeAddDelayedAction(ConfessionTimer, 2, ActionTools.MakeList(delayedactions));
+            EtudeTools.EtudeAddDelayedAction(ConfessionTimer, 10, ActionTools.MakeList(delayedactions));
+            DialogTools.CueAddOnStopAction(SnowDialog, ActionTools.StartEtudeAction(ConfessionTimer));*/
 
-            DialogTools.CueAddOnStopAction(SnowDialog, ActionTools.StartEtudeAction(ConfessionTimer));
+            var ConfessionTimer = WoljifRomanceMod.Clock.AddTimer("WRM_Timers_Confession");
+            var ConfessionTimerEtude = EtudeTools.CreateEtude("WRM_Timers_ConfessionEtude", romancebase, false, false);
+            EtudeTools.EtudeAddActivationCondition(ConfessionTimerEtude, ConditionalTools.CreateFlagCheck("WRM_Timers_ConfessionTrigger", ConfessionTimer.time, 10, 1000000));
+            Kingmaker.ElementsSystem.GameAction[] delayedactions = { ActionTools.StartEtudeAction(EventEtude), ActionTools.CompleteEtudeAction(ConfessionTimerEtude) };
+            EtudeTools.EtudeAddOnPlayTrigger(ConfessionTimerEtude, ActionTools.MakeList(delayedactions));
+            DialogTools.CueAddOnStopAction(SnowDialog, ActionTools.IncrementFlagAction(ConfessionTimer.active));
+            DialogTools.CueAddOnStopAction(SnowDialog, ActionTools.StartEtudeAction(ConfessionTimerEtude));
         }
 
         public static void AddConfessionScene()

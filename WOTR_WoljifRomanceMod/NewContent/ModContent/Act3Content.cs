@@ -100,11 +100,21 @@ namespace WOTR_WoljifRomanceMod
             EventEtude.m_LinkedAreaPart = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintAreaPartReference>(Resources.GetBlueprint<Kingmaker.Blueprints.Area.BlueprintAreaPart>("2570015799edf594daf2f076f2f975d8"));
 
             //Create a timer to trigger the event, and hook it up to the rerecruit dialog.
-            var TavernTimer = EtudeTools.CreateEtude("WRM_TimerBeforeTavernScene", romancebase, false, false);
+            /*var TavernTimer = EtudeTools.CreateEtude("WRM_TimerBeforeTavernScene", romancebase, false, false);
             Kingmaker.ElementsSystem.GameAction[] delayedactions = { ActionTools.StartEtudeAction(EventEtude), ActionTools.CompleteEtudeAction(TavernTimer) };
             EtudeTools.EtudeAddDelayedAction(TavernTimer, 2, ActionTools.MakeList(delayedactions));
             var rerecruitCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("af3b9e51747fda2478b5cf6d97c078fe");
-            DialogTools.CueAddOnStopAction(rerecruitCue, ActionTools.StartEtudeAction(TavernTimer));
+            DialogTools.CueAddOnStopAction(rerecruitCue, ActionTools.StartEtudeAction(TavernTimer));*/
+
+            // NEW TIMER
+            var rerecruitCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("af3b9e51747fda2478b5cf6d97c078fe");
+            var TavernTimer = WoljifRomanceMod.Clock.AddTimer("WRM_Timers_Tavern");
+            DialogTools.CueAddOnStopAction(rerecruitCue, ActionTools.IncrementFlagAction(TavernTimer.active));
+            var TavernTimerEtude = EtudeTools.CreateEtude("WRM_Timers_TavernEtude", romancebase, false, false);
+            EtudeTools.EtudeAddActivationCondition(TavernTimerEtude, ConditionalTools.CreateFlagCheck("WRM_Timers_TavernTrigger", TavernTimer.time, 2, 1000000));
+            Kingmaker.ElementsSystem.GameAction[] delayedactions = { ActionTools.StartEtudeAction(EventEtude), ActionTools.CompleteEtudeAction(TavernTimerEtude) };
+            EtudeTools.EtudeAddOnPlayTrigger(TavernTimerEtude, ActionTools.MakeList(delayedactions));
+            DialogTools.CueAddOnStopAction(rerecruitCue, ActionTools.StartEtudeAction(TavernTimerEtude));
         }
         static public void CreateTavernCutscene(/*Kingmaker.Blueprints.EntityReference PCloc, Kingmaker.Blueprints.EntityReference WJloc, Kingmaker.Blueprints.EntityReference cameraloc, Kingmaker.Blueprints.EntityReference WJExitLoc*/)
         {
@@ -295,8 +305,17 @@ namespace WOTR_WoljifRomanceMod
 
             EtudeTools.EtudeAddCompleteTrigger(AngryEtude, ActionTools.MakeList(ActionTools.StartEtudeAction(ReadyToReconcile)));
             EtudeTools.EtudeAddStartsWith(HadFight, AngryEtude);
-            EtudeTools.EtudeAddDelayedAction(HadFight, 1, ActionTools.MakeList(ActionTools.CompleteEtudeAction(AngryEtude)));
+            //EtudeTools.EtudeAddDelayedAction(HadFight, 1, ActionTools.MakeList(ActionTools.CompleteEtudeAction(AngryEtude)));
             EtudeTools.EtudeAddCompleteTrigger(ReadyToReconcile, ActionTools.MakeList(ActionTools.StartEtudeAction(Reconciled)));
+
+            
+            var AngryTimer = WoljifRomanceMod.Clock.AddTimer("WRM_Timers_Angry");
+            var AngryTimerEtude = EtudeTools.CreateEtude("WRM_Timers_AngryEtude", HadFight, false, false);
+            EtudeTools.EtudeAddActivationCondition(AngryTimerEtude, ConditionalTools.CreateFlagCheck("WRM_Timers_AngryTrigger", AngryTimer.time, 1, 1000000));
+            Kingmaker.ElementsSystem.GameAction[] finishanger = { ActionTools.CompleteEtudeAction(AngryEtude), ActionTools.CompleteEtudeAction(AngryTimerEtude) };
+            EtudeTools.EtudeAddOnPlayTrigger(AngryTimerEtude, ActionTools.MakeList(finishanger));
+            EtudeTools.EtudeAddOnPlayTrigger(HadFight, ActionTools.MakeList(ActionTools.IncrementFlagAction(AngryTimer.active)));
+            EtudeTools.EtudeAddOnPlayTrigger(HadFight, ActionTools.MakeList(ActionTools.StartEtudeAction(AngryTimerEtude)));
 
             // Create Dialog
             var C_WhatsYourGame = DialogTools.CreateCue("WRM_3_c_WhatsYourGame");
@@ -373,7 +392,7 @@ namespace WOTR_WoljifRomanceMod
             EventTools.CampEventAddAction(ArgumentEvent, ActionTools.RemoveCampEventAction(ArgumentEvent));
             EventTools.CampEventAddAction(ArgumentEvent, ActionTools.StartDialogAction(ArgumentDialog, Companions.Woljif));
             // Timer after completing Crescent of the Abyss.
-            var ArgumentTimer = EtudeTools.CreateEtude("WRM_TimerBeforeFight", romanceactive, false, false);
+            //var ArgumentTimer = EtudeTools.CreateEtude("WRM_TimerBeforeFight", romanceactive, false, false);
             var CampCounter = EtudeTools.CreateFlag("WRM_ArgumentCampEventFlag");
             Kingmaker.ElementsSystem.GameAction[] AddCampEvent = 
                 {
@@ -381,16 +400,31 @@ namespace WOTR_WoljifRomanceMod
                     ActionTools.ConditionalAction(ConditionalTools.CreateFlagCheck("WRM_DontDoubleArgument", CampCounter, 2, 1000000, true))
                 };
             ActionTools.ConditionalActionOnTrue((Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional)AddCampEvent[1], ActionTools.AddCampEventAction(ArgumentEvent));
-            EtudeTools.EtudeAddDelayedAction(ArgumentTimer, 3, ActionTools.MakeList(AddCampEvent));
+            //EtudeTools.EtudeAddDelayedAction(ArgumentTimer, 3, ActionTools.MakeList(AddCampEvent));
             //EtudeTools.EtudeAddDelayedAction(ArgumentTimer, 3, ActionTools.MakeList(ActionTools.AddCampEventAction(ArgumentEvent)));
 
             // Start timer after accepting Woljif permanently back into the party after facing Voetiel.
             var Ch3_FinalizedReRecruit1 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("326e5a8ef1f92914ab122ebac703b4c8");
             var Ch3_FinalizedReRecruit2 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("941797cc93bac7f4e824022ec3ee08b0");
             var Ch3_FinalizedReRecruit3 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("0b926925ab25d794a9dce6629a9a98de");
-            DialogTools.CueAddOnStopAction(Ch3_FinalizedReRecruit1, ActionTools.StartEtudeAction(ArgumentTimer));
+            /*DialogTools.CueAddOnStopAction(Ch3_FinalizedReRecruit1, ActionTools.StartEtudeAction(ArgumentTimer));
             DialogTools.CueAddOnStopAction(Ch3_FinalizedReRecruit2, ActionTools.StartEtudeAction(ArgumentTimer));
-            DialogTools.CueAddOnStopAction(Ch3_FinalizedReRecruit3, ActionTools.StartEtudeAction(ArgumentTimer));
+            DialogTools.CueAddOnStopAction(Ch3_FinalizedReRecruit3, ActionTools.StartEtudeAction(ArgumentTimer));*/
+
+            // New timer
+            var ArgumentTimer = WoljifRomanceMod.Clock.AddTimer("WRM_Timers_Argument");
+            var ArgumentTimerEtude = EtudeTools.CreateEtude("WRM_Timers_ArgumentEtude", romanceactive, false, false);
+            EtudeTools.EtudeAddActivationCondition(ArgumentTimerEtude, ConditionalTools.CreateFlagCheck("WRM_Timers_ArgumentTrigger", ArgumentTimer.time, 3, 1000000));
+            Kingmaker.ElementsSystem.GameAction[] delayedactions = { AddCampEvent[0], AddCampEvent[1], ActionTools.CompleteEtudeAction(ArgumentTimerEtude) };
+            EtudeTools.EtudeAddOnPlayTrigger(ArgumentTimerEtude, ActionTools.MakeList(delayedactions));
+
+            DialogTools.CueAddOnStopAction(Ch3_FinalizedReRecruit1, ActionTools.IncrementFlagAction(ArgumentTimer.active));
+            DialogTools.CueAddOnStopAction(Ch3_FinalizedReRecruit1, ActionTools.StartEtudeAction(ArgumentTimerEtude));
+            DialogTools.CueAddOnStopAction(Ch3_FinalizedReRecruit2, ActionTools.IncrementFlagAction(ArgumentTimer.active));
+            DialogTools.CueAddOnStopAction(Ch3_FinalizedReRecruit2, ActionTools.StartEtudeAction(ArgumentTimerEtude));
+            DialogTools.CueAddOnStopAction(Ch3_FinalizedReRecruit3, ActionTools.IncrementFlagAction(ArgumentTimer.active));
+            DialogTools.CueAddOnStopAction(Ch3_FinalizedReRecruit3, ActionTools.StartEtudeAction(ArgumentTimerEtude));
+
             // Alter that dialog while we're at it.
             var C_WarmSmile = DialogTools.CreateCue("WRM_3b_c_WarmSmile");
             var A_OfCourseYouCan = DialogTools.CreateAnswer("WRM_3b_a_OfCourseYouCan");
