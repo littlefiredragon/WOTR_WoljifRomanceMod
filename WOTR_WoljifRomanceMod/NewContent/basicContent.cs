@@ -9,7 +9,6 @@ using TabletopTweaks.Utilities;
 using UnityModManagerNet;
 using TabletopTweaks.Extensions;
 using System.Collections.Generic;
-
 using System.Linq;
 
 namespace WOTR_WoljifRomanceMod
@@ -17,7 +16,6 @@ namespace WOTR_WoljifRomanceMod
     [HarmonyPatch(typeof(BlueprintsCache), "Init")]
     class WoljifRomanceMod
     {
-        //static public Kingmaker.Blueprints.EntityReference[] LocatorReferences = new Kingmaker.Blueprints.EntityReference[0];
         static public TimeKeeper Clock;
         static public AreaPartWatcher PartLoadWatcher;
         static public AreaWatcher LoadWatcher;

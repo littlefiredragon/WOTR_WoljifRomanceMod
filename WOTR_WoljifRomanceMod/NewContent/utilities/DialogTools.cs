@@ -161,7 +161,7 @@ namespace WOTR_WoljifRomanceMod
         {
             if (cue.Speaker == EmptyDialogSpeaker)
             {
-                cue.Speaker = new Kingmaker.DialogSystem.DialogSpeaker { m_Blueprint = CommandTools.GetCompanionReference(speaker) };
+                cue.Speaker = new Kingmaker.DialogSystem.DialogSpeaker { m_Blueprint = CompanionTools.GetCompanionReference(speaker) };
             }
             if (setconditional)
             {

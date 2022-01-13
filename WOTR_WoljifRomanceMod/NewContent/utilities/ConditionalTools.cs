@@ -217,7 +217,7 @@ namespace WOTR_WoljifRomanceMod
         {
             var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.CompanionInParty>(name, not, bp => 
             {
-                bp.m_companion = CommandTools.GetCompanionReference(companion);
+                bp.m_companion = CompanionTools.GetCompanionReference(companion);
                 bp.MatchWhenActive = true;
             });
             return result;
@@ -227,7 +227,7 @@ namespace WOTR_WoljifRomanceMod
         {
             var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.CompanionInParty>(name, not, bp =>
             {
-                bp.m_companion = CommandTools.GetCompanionReference(companion);
+                bp.m_companion = CompanionTools.GetCompanionReference(companion);
                 bp.MatchWhenDead = true;
             });
             return result;
@@ -237,7 +237,7 @@ namespace WOTR_WoljifRomanceMod
         {
             var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.CompanionInParty>(name, not, bp =>
             {
-                bp.m_companion = CommandTools.GetCompanionReference(companion);
+                bp.m_companion = CompanionTools.GetCompanionReference(companion);
                 bp.MatchWhenActive = true;
                 bp.MatchWhenDetached = true;
                 bp.MatchWhenRemote = true;
@@ -296,7 +296,7 @@ namespace WOTR_WoljifRomanceMod
             var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.HasFact>(name, not, bp =>
             {
                 bp.m_Fact = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintUnitFactReference>(fact);
-                bp.Unit = CommandTools.getCompanionEvaluator(companion);
+                bp.Unit = CompanionTools.GetCompanionEvaluator(companion);
             });
             return result;
         }

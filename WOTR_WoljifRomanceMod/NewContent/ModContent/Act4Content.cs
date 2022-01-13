@@ -113,7 +113,15 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.CueAddOnStopAction(cue4_0024, ActionTools.IncrementFlagAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("5db9ec615236f044083a5c6bd3292432"), -1));
             DialogTools.CueAddOnStopAction(cue5_0008, ActionTools.IncrementFlagAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("5db9ec615236f044083a5c6bd3292432"), -1));
             // FailedRomanceGate
-            DialogTools.AnswerAddOnSelectAction(answer5_0005, ActionTools.StartEtudeAction(affectiongatefail));
+            Kingmaker.ElementsSystem.Condition[] gateconds = {
+                ConditionalTools.CreateEtudeCondition("WRM_RomanceActiveGate", romanceactive, "playing"),
+                ConditionalTools.CreateFlagCheck("WRM_9Affection",affection,9,20),
+                ConditionalTools.CreateEtudeCondition("WRM_HumanEndingGoodGate", humanendinggood, "playing")
+                };
+            var affectionEvaluator = ActionTools.ConditionalAction(ConditionalTools.CreateLogicCondition("WRM_AffectionGateNoHug", gateconds));
+            ActionTools.ConditionalActionOnTrue(affectionEvaluator, ActionTools.StartEtudeAction(affectiongatesuccess));
+            ActionTools.ConditionalActionOnFalse(affectionEvaluator, ActionTools.StartEtudeAction(affectiongatefail));
+            DialogTools.AnswerAddOnSelectAction(answer5_0005, affectionEvaluator);
 
             // New dialogs
             var A_DontListen = DialogTools.CreateAnswer("WRM_5b_a_DontListen");
@@ -142,11 +150,6 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.CueAddContinue(C_0017copy, cue4_0018);
 
             DialogTools.ListAddAnswer(list5_0002, A_Embrace, 2);
-            Kingmaker.ElementsSystem.Condition[] gateconds = {
-                ConditionalTools.CreateEtudeCondition("WRM_RomanceActiveGate", romanceactive, "playing"),
-                ConditionalTools.CreateFlagCheck("WRM_9Affection",affection,9,20),
-                ConditionalTools.CreateEtudeCondition("WRM_HumanEndingGoodGate", humanendinggood, "playing")
-                };
             DialogTools.AnswerAddShowCondition(A_Embrace, ConditionalTools.CreateLogicCondition("WRM_AffectionGate", gateconds));
             DialogTools.AnswerAddOnSelectAction(A_Embrace, ActionTools.StartEtudeAction(affectiongatesuccess));
             DialogTools.AnswerAddOnSelectAction(A_Embrace, ActionTools.StopMusic());

@@ -234,7 +234,7 @@ namespace WOTR_WoljifRomanceMod
             // Parameterized cutscene stuff.
             var unhideaction = ActionTools.HideUnitAction(Companions.Woljif, true);
             var playscene = ActionTools.PlayCutsceneAction(Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.Cutscene>("e8d44f13de8b6154687a05f42f767eb5"));
-            ActionTools.CutsceneActionAddParameter(playscene, "Unit", "unit", CommandTools.getCompanionEvaluator(Companions.Woljif));
+            ActionTools.CutsceneActionAddParameter(playscene, "Unit", "unit", CompanionTools.GetCompanionEvaluator(Companions.Woljif));
             Kingmaker.ElementsSystem.Dialog dialogeval = (Kingmaker.ElementsSystem.Dialog)Kingmaker.ElementsSystem.Element.CreateInstance(typeof(Kingmaker.ElementsSystem.Dialog));
             dialogeval.m_Value = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintDialogReference>(InviteDialog);
             ActionTools.CutsceneActionAddParameter(playscene, "Dialog", "blueprint", dialogeval);
@@ -507,7 +507,7 @@ namespace WOTR_WoljifRomanceMod
             // Parameterized cutscene stuff.
             var unhideaction = ActionTools.HideUnitAction(Companions.Woljif, true);
             var playscene = ActionTools.PlayCutsceneAction(Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.Cutscene>("e8d44f13de8b6154687a05f42f767eb5"));
-            ActionTools.CutsceneActionAddParameter(playscene, "Unit", "unit", CommandTools.getCompanionEvaluator(Companions.Woljif));
+            ActionTools.CutsceneActionAddParameter(playscene, "Unit", "unit", CompanionTools.GetCompanionEvaluator(Companions.Woljif));
             Kingmaker.ElementsSystem.Dialog dialogeval = (Kingmaker.ElementsSystem.Dialog)Kingmaker.ElementsSystem.Element.CreateInstance(typeof(Kingmaker.ElementsSystem.Dialog));
             dialogeval.m_Value = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintDialogReference>(InviteDialog);
             ActionTools.CutsceneActionAddParameter(playscene, "Dialog", "blueprint", dialogeval);
@@ -1381,7 +1381,7 @@ namespace WOTR_WoljifRomanceMod
             command.Action.Actions[len] = woljifConditionalSpawn;
             // Add to Cuesequence 0047
             var WoljifCue1 = DialogTools.CreateCue("WRM_lich_c_1");
-            WoljifCue1.Speaker.m_SpeakerPortrait = CommandTools.GetCompanionReference(Companions.Woljif);
+            WoljifCue1.Speaker.m_SpeakerPortrait = CompanionTools.GetCompanionReference(Companions.Woljif);
             DialogTools.CueAddCondition(WoljifCue1, ConditionalTools.CreateEtudeCondition("WRM_lich_WoljifRomance4", romanceactive, "playing"));
             var cuesequence0047 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCueSequence>("0409cff795b3a04479f657f55aded190");
             DialogTools.CueSequenceInsertCue(cuesequence0047, WoljifCue1);
@@ -1393,7 +1393,7 @@ namespace WOTR_WoljifRomanceMod
             var buff = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.AttachBuff>(bp =>
                 {
                     bp.m_Buff = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintBuffReference>(paralysis);
-                    bp.Target = /*CommandTools.getCompanionEvaluator(Companions.Woljif)*/ eval;
+                    bp.Target = /*CompanionTools.GetCompanionEvaluator(Companions.Woljif)*/ eval;
                 });
             var buffifapplicable = ActionTools.ConditionalAction(ConditionalTools.CreateEtudeCondition("WRM_lich_WoljifRomance5", romanceactive, "playing"));
             ActionTools.ConditionalActionOnTrue(buffifapplicable, ActionTools.MakeList(buff));
@@ -1406,8 +1406,8 @@ namespace WOTR_WoljifRomanceMod
             //   Add dialog sequence
             var WoljifCue2 = DialogTools.CreateCue("WRM_lich_c_2");
             var WoljifCue3 = DialogTools.CreateCue("WRM_lich_c_3");
-            WoljifCue2.Speaker.m_SpeakerPortrait = CommandTools.GetCompanionReference(Companions.Woljif);
-            WoljifCue3.Speaker.m_SpeakerPortrait = CommandTools.GetCompanionReference(Companions.Woljif);
+            WoljifCue2.Speaker.m_SpeakerPortrait = CompanionTools.GetCompanionReference(Companions.Woljif);
+            WoljifCue3.Speaker.m_SpeakerPortrait = CompanionTools.GetCompanionReference(Companions.Woljif);
             DialogTools.CueAddCondition(WoljifCue2, ConditionalTools.CreateEtudeCondition("WRM_lich_WoljifRomance6", romanceactive, "playing"));
             DialogTools.CueAddContinue(WoljifCue2, WoljifCue3);
             var cue0085 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("ce7ce1c176d0a7344a1cd935357c7757");
@@ -1426,10 +1426,10 @@ namespace WOTR_WoljifRomanceMod
             //Alter Cuesequence 0036
             var cuesequence0036 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCueSequence>("2ef9dde3f19d49444a51f38156da8846");
             var WoljifCue4 = DialogTools.CreateCue("WRM_lich_c_4");
-            WoljifCue4.Speaker.m_SpeakerPortrait = CommandTools.GetCompanionReference(Companions.Woljif);
+            WoljifCue4.Speaker.m_SpeakerPortrait = CompanionTools.GetCompanionReference(Companions.Woljif);
             var cutscene = Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.Cutscene>("442fb54c1eb24bd4cb6b991dfdc0179a");
             var playcutscene = ActionTools.PlayCutsceneAction(cutscene);
-            ActionTools.CutsceneActionAddParameter(playcutscene, "WRM_RomanceDeath_Woljif", "unit", /*CommandTools.getCompanionEvaluator(Companions.Woljif)*/ eval);
+            ActionTools.CutsceneActionAddParameter(playcutscene, "WRM_RomanceDeath_Woljif", "unit", /*CompanionTools.GetCompanionEvaluator(Companions.Woljif)*/ eval);
             DialogTools.CueAddOnShowAction(WoljifCue4, playcutscene);
             var WoljifDeathFlag = EtudeTools.CreateFlag("WRM_KilledRomance_Woljif");
             DialogTools.CueAddOnShowAction(WoljifCue4, ActionTools.UnlockFlagAction(WoljifDeathFlag));
@@ -1457,11 +1457,11 @@ namespace WOTR_WoljifRomanceMod
                     ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.DetachBuff>(bp =>
                         {
                             bp.m_Buff = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintBuffReference>(paralysis);
-                            bp.Target = /*CommandTools.getCompanionEvaluator(Companions.Woljif)*/ eval;
+                            bp.Target = /*CompanionTools.GetCompanionEvaluator(Companions.Woljif)*/ eval;
                         }),
                     ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.HideUnit>(bp =>
                         {
-                            bp.Target = /*CommandTools.getCompanionEvaluator(Companions.Woljif)*/ eval;
+                            bp.Target = /*CompanionTools.GetCompanionEvaluator(Companions.Woljif)*/ eval;
                             bp.Fade = true;
                         })
                 };
@@ -1470,7 +1470,7 @@ namespace WOTR_WoljifRomanceMod
                 ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.DetachBuff>(bp =>
                     {
                         bp.m_Buff = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintBuffReference>(paralysis);
-                        bp.Target = CommandTools.getCompanionEvaluator(Companions.Woljif);
+                        bp.Target = CompanionTools.GetCompanionEvaluator(Companions.Woljif);
                     })));
             var outerconditional = ActionTools.ConditionalAction(ConditionalTools.CreateEtudeCondition("WRM_lich_WoljifRomance11", romanceactive, "playing"));
             ActionTools.ConditionalActionOnTrue(outerconditional, ActionTools.MakeList(innerConditional));

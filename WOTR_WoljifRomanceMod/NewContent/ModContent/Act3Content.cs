@@ -86,7 +86,7 @@ namespace WOTR_WoljifRomanceMod
             // Parameterized cutscene stuff.
             var unhideaction = ActionTools.HideUnitAction(Companions.Woljif, true);
             var playscene = ActionTools.PlayCutsceneAction(Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.Cutscene>("e8d44f13de8b6154687a05f42f767eb5"));
-            ActionTools.CutsceneActionAddParameter(playscene, "Unit", "unit", CommandTools.getCompanionEvaluator(Companions.Woljif));
+            ActionTools.CutsceneActionAddParameter(playscene, "Unit", "unit", CompanionTools.GetCompanionEvaluator(Companions.Woljif));
             Kingmaker.ElementsSystem.Dialog dialogeval = (Kingmaker.ElementsSystem.Dialog)Kingmaker.ElementsSystem.Element.CreateInstance(typeof(Kingmaker.ElementsSystem.Dialog));
             dialogeval.m_Value = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintDialogReference>(InviteDialog);
             ActionTools.CutsceneActionAddParameter(playscene, "Dialog", "blueprint", dialogeval);
