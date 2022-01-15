@@ -65,8 +65,8 @@ namespace WOTR_WoljifRomanceMod
 
             var WoljifTeleport = ActionTools.ConditionalAction(WoljifRomanceIsActiveCond);
             Kingmaker.ElementsSystem.GameAction[] TranslocateActions = {
-                ActionTools.HideUnitAction(Companions.Woljif,true),
-                ActionTools.TranslocateAction(Companions.Woljif, WoljifJealousyLocation)
+                ActionTools.HideUnitAction(jealousycutscene, Companions.Woljif,true),
+                ActionTools.TranslocateAction(jealousycutscene, Companions.Woljif, WoljifJealousyLocation)
                 };
             ActionTools.ConditionalActionOnTrue(WoljifTeleport, TranslocateActions);
 
@@ -232,9 +232,9 @@ namespace WOTR_WoljifRomanceMod
             EtudeTools.EtudeAddActivationCondition(EventEtude, ConditionalTools.CreateEtudeCondition("WRM_SnowMeansLove", romanceactive, "playing"));
 
             // Parameterized cutscene stuff.
-            var unhideaction = ActionTools.HideUnitAction(Companions.Woljif, true);
+            var unhideaction = ActionTools.HideUnitAction(EventEtude, Companions.Woljif, true);
             var playscene = ActionTools.PlayCutsceneAction(Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.Cutscene>("e8d44f13de8b6154687a05f42f767eb5"));
-            ActionTools.CutsceneActionAddParameter(playscene, "Unit", "unit", CompanionTools.GetCompanionEvaluator(Companions.Woljif));
+            ActionTools.CutsceneActionAddParameter(playscene, "Unit", "unit", CompanionTools.GetCompanionEvaluator(Companions.Woljif, EventEtude));
             Kingmaker.ElementsSystem.Dialog dialogeval = (Kingmaker.ElementsSystem.Dialog)Kingmaker.ElementsSystem.Element.CreateInstance(typeof(Kingmaker.ElementsSystem.Dialog));
             dialogeval.m_Value = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintDialogReference>(InviteDialog);
             ActionTools.CutsceneActionAddParameter(playscene, "Dialog", "blueprint", dialogeval);
@@ -381,13 +381,15 @@ namespace WOTR_WoljifRomanceMod
             // Create Track 0B
             Kingmaker.ElementsSystem.GameAction[] Actions0B = 
                 { 
-                    ActionTools.TranslocateAction(Companions.Player, Snow_PlayerStart), 
-                    ActionTools.TranslocateAction(Companions.Woljif, Snow_WoljifStart) 
+                    ActionTools.TranslocateAction(null, Companions.Player, Snow_PlayerStart), 
+                    ActionTools.TranslocateAction(null, Companions.Woljif, Snow_WoljifStart) 
                 };
             Kingmaker.AreaLogic.Cutscenes.CommandBase[] Commands0B =
                 { CommandTools.ActionCommand("WRM_7_Move0B", Actions0B),
                   CommandTools.CamMoveCommand(Snow_CameraLoc),
                   CommandTools.DelayCommand(0.5f) };
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)Actions0B[0]).Unit.Owner = Commands0B[0];
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)Actions0B[1]).Unit.Owner = Commands0B[0];
             var Track0B = CutsceneTools.CreateTrack(Gate1, Commands0B);
             // Create Track 0A
             var Track0A = CutsceneTools.CreateTrack(Gate1, CommandTools.LockControlCommand());
@@ -450,8 +452,9 @@ namespace WOTR_WoljifRomanceMod
             Kingmaker.AreaLogic.Cutscenes.CommandBase[] Commands3C =
                 {
                     CommandTools.DelayCommand(0.5f),
-                    CommandTools.ActionCommand("WRM_7_MoveWJBack", ActionTools.TranslocateAction(Companions.Woljif, Woljif_Exit))
+                    CommandTools.ActionCommand("WRM_7_MoveWJBack", ActionTools.TranslocateAction(null, Companions.Woljif, Woljif_Exit))
                 };
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)((Kingmaker.AreaLogic.Cutscenes.CommandAction)Commands3C[1]).Action.Actions[0]).Unit.Owner = Commands3C[1];
             var Track3C = CutsceneTools.CreateTrack(gate3, Commands3C);
             Kingmaker.AreaLogic.Cutscenes.Track[] Tracks3 = { Track3A, Track3B, Track3C };
             var EndCutscene = CutsceneTools.CreateCutscene("WRM_7_SnowCutsceneEnd", false, Tracks3);
@@ -505,9 +508,9 @@ namespace WOTR_WoljifRomanceMod
             EtudeTools.EtudeAddActivationCondition(EventEtude, ConditionalTools.CreateEtudeCondition("WRM_ConfessionRomance", romanceactive, "playing"));
 
             // Parameterized cutscene stuff.
-            var unhideaction = ActionTools.HideUnitAction(Companions.Woljif, true);
+            var unhideaction = ActionTools.HideUnitAction(EventEtude, Companions.Woljif, true);
             var playscene = ActionTools.PlayCutsceneAction(Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.Cutscene>("e8d44f13de8b6154687a05f42f767eb5"));
-            ActionTools.CutsceneActionAddParameter(playscene, "Unit", "unit", CompanionTools.GetCompanionEvaluator(Companions.Woljif));
+            ActionTools.CutsceneActionAddParameter(playscene, "Unit", "unit", CompanionTools.GetCompanionEvaluator(Companions.Woljif, EventEtude));
             Kingmaker.ElementsSystem.Dialog dialogeval = (Kingmaker.ElementsSystem.Dialog)Kingmaker.ElementsSystem.Element.CreateInstance(typeof(Kingmaker.ElementsSystem.Dialog));
             dialogeval.m_Value = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintDialogReference>(InviteDialog);
             ActionTools.CutsceneActionAddParameter(playscene, "Dialog", "blueprint", dialogeval);
@@ -743,9 +746,9 @@ namespace WOTR_WoljifRomanceMod
             // Create Track 0B
             Kingmaker.ElementsSystem.GameAction[] Actions0B =
                 {
-                    ActionTools.TranslocateAction(Companions.Player, PlayerBalconyPosition),
-                    ActionTools.HideUnitAction(Companions.Woljif,true),
-                    ActionTools.TranslocateAction(Companions.Woljif, WoljifStartPosition)
+                    ActionTools.TranslocateAction(null, Companions.Player, PlayerBalconyPosition),
+                    ActionTools.HideUnitAction(null, Companions.Woljif, true),
+                    ActionTools.TranslocateAction(null, Companions.Woljif, WoljifStartPosition)
                 };
             Kingmaker.AreaLogic.Cutscenes.CommandBase[] Commands0B =
                 {
@@ -753,6 +756,9 @@ namespace WOTR_WoljifRomanceMod
                     CommandTools.CamMoveCommand(BalconyCameraPosition),
                     CommandTools.DelayCommand(0.5f) 
                 };
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)Actions0B[0]).Unit.Owner = Commands0B[0];
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.HideUnit)Actions0B[1]).Target.Owner = Commands0B[0];
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)Actions0B[2]).Unit.Owner = Commands0B[0];
             var Track0B = CutsceneTools.CreateTrack(Gate1, Commands0B);
             // Create Track 0A
             var Track0A = CutsceneTools.CreateTrack(Gate2, CommandTools.LockControlCommand());
@@ -914,24 +920,31 @@ namespace WOTR_WoljifRomanceMod
             var Track0C = CutsceneTools.CreateTrack(null, CommandTools.GenericAnimationCommand("WRM_9_AnimatePlayer", "4b58b2de5f04ddf4f9012d4bc342b968", Companions.Player));
             Kingmaker.ElementsSystem.GameAction[] Actions0B =
                 {
-                    ActionTools.SetFlyHeightAction(Companions.Player, 0.85f),
-                    ActionTools.SetFlyHeightAction(Companions.Woljif, 0.85f),
-                    ActionTools.TranslocateAction(Companions.Player, PlayerLocation),
-                    ActionTools.TranslocateAction(Companions.Woljif, WoljifLocation),
-                    ActionTools.HideWeaponsAction(Companions.Player),
-                    ActionTools.HideWeaponsAction(Companions.Woljif)
+                    ActionTools.SetFlyHeightAction(null, Companions.Player, 0.85f),
+                    ActionTools.SetFlyHeightAction(null, Companions.Woljif, 0.85f),
+                    ActionTools.TranslocateAction(null, Companions.Player, PlayerLocation),
+                    ActionTools.TranslocateAction(null, Companions.Woljif, WoljifLocation),
+                    ActionTools.HideWeaponsAction(null, Companions.Player),
+                    ActionTools.HideWeaponsAction(null, Companions.Woljif)
                 };
             Kingmaker.AreaLogic.Cutscenes.CommandBase[] Commands0B =
                 { CommandTools.ActionCommand("WRM_9_Move0B", Actions0B),
                   CommandTools.CamMoveCommand(BedroomCameraPosition),
                   CommandTools.DelayCommand(0.5f) };
+            ((SetFlyHeight)Actions0B[0]).Unit.Owner = Commands0B[0];
+            ((SetFlyHeight)Actions0B[1]).Unit.Owner = Commands0B[0];
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)Actions0B[2]).Unit.Owner = Commands0B[0];
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)Actions0B[3]).Unit.Owner = Commands0B[0];
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.HideWeapons)Actions0B[4]).Target.Owner = Commands0B[0];
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.HideWeapons)Actions0B[5]).Target.Owner = Commands0B[0];
+
             var Track0B = CutsceneTools.CreateTrack(Gate1, Commands0B);
             var Track0A = CutsceneTools.CreateTrack(Gate1, CommandTools.LockControlCommand());
             Kingmaker.AreaLogic.Cutscenes.Track[] Tracks = { Track0A, Track0B, Track0C, Track0D };
             var BedroomCutscene = CutsceneTools.CreateCutscene("WRM_9_BedroomScene", false, Tracks);
 
-            DialogTools.DialogAddFinishAction(BedroomDialog, ActionTools.SetFlyHeightAction(Companions.Player, 0f));
-            DialogTools.DialogAddFinishAction(BedroomDialog, ActionTools.SetFlyHeightAction(Companions.Woljif, 0f));
+            DialogTools.DialogAddFinishAction(BedroomDialog, ActionTools.SetFlyHeightAction(BedroomDialog, Companions.Player, 0f));
+            DialogTools.DialogAddFinishAction(BedroomDialog, ActionTools.SetFlyHeightAction(BedroomDialog, Companions.Woljif, 0f));
             DialogTools.DialogAddFinishAction(BedroomDialog, ActionTools.StopCutsceneAction(BedroomCutscene));
             DialogTools.DialogAddFinishAction(BedroomDialog, ActionTools.UnlockFlagAction(BarksFlag));
             DialogTools.DialogAddFinishAction(BedroomDialog, ActionTools.CompleteEtudeAction(BedroomSceneEtude));
@@ -969,8 +982,8 @@ namespace WOTR_WoljifRomanceMod
             var Woljif_Exit = new FakeLocator(-8.844f, 56.02f, 0.325f, 275.0469f);
 
             //On Etude activation, teleport WJ + PC, unhide them, move camera, fadeout
-            var movePlayer = ActionTools.TranslocateAction(Companions.Player, PlayerBedroomLocation);
-            var moveWoljif = ActionTools.TranslocateAction(Companions.Woljif, WoljifBedroomLocation);
+            var movePlayer = ActionTools.TranslocateAction(BarksEtude, Companions.Player, PlayerBedroomLocation);
+            var moveWoljif = ActionTools.TranslocateAction(BarksEtude, Companions.Woljif, WoljifBedroomLocation);
             var movecamtrack = CutsceneTools.CreateTrack(null, CommandTools.CamMoveCommand(BedroomCameraPosition));
             var movecamcutscene = CutsceneTools.CreateCutscene("WRM_MoveCameraToBedroom", false, movecamtrack);
             var fadecutscene = Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.Cutscene>("4d0821789698d264bad86ac40bf785d2");
@@ -979,8 +992,8 @@ namespace WOTR_WoljifRomanceMod
                     ActionTools.SkipTimeAction(120),
                     movePlayer,
                     moveWoljif,
-                    ActionTools.HideWeaponsAction(Companions.Player),
-                    ActionTools.HideWeaponsAction(Companions.Woljif),
+                    ActionTools.HideWeaponsAction(BarksEtude, Companions.Player),
+                    ActionTools.HideWeaponsAction(BarksEtude, Companions.Woljif),
                     ActionTools.PlayCutsceneAction(movecamcutscene),
                     ActionTools.PlayCutsceneAction(fadecutscene)
                 };
@@ -991,9 +1004,9 @@ namespace WOTR_WoljifRomanceMod
             //On Etude deactivate, move WJ back to normal location, lock the Flag.
             Kingmaker.ElementsSystem.GameAction[] OnDeactivate =
                 {
-                    ActionTools.HideWeaponsAction(Companions.Player, false),
-                    ActionTools.HideWeaponsAction(Companions.Woljif, false),
-                    ActionTools.TranslocateAction(Companions.Woljif, Woljif_Exit),
+                    ActionTools.HideWeaponsAction(BarksEtude, Companions.Player, false),
+                    ActionTools.HideWeaponsAction(BarksEtude, Companions.Woljif, false),
+                    ActionTools.TranslocateAction(BarksEtude, Companions.Woljif, Woljif_Exit),
                     ActionTools.LockFlagAction(BarksFlag)
                 };
             EtudeTools.EtudeAddOnDeactivateTrigger(BarksEtude, ActionTools.MakeList(OnDeactivate));
@@ -1004,11 +1017,11 @@ namespace WOTR_WoljifRomanceMod
             var BarkConditional = ActionTools.ConditionalAction(ConditionalTools.CreateFlagLockCheck("WRM_EnableBedroomBarks", BarksFlag, false));
             Kingmaker.ElementsSystem.GameAction[] BarkActions = 
                 {
-                    ActionTools.BarkAction("WRM_Barks_1", Companions.Woljif),
-                    ActionTools.BarkAction("WRM_Barks_2", Companions.Woljif),
-                    ActionTools.BarkAction("WRM_Barks_3", Companions.Woljif),
-                    ActionTools.BarkAction("WRM_Barks_4", Companions.Woljif),
-                    ActionTools.BarkAction("WRM_Barks_5", Companions.Woljif)
+                    ActionTools.BarkAction("WRM_Barks_1", BarksEtude, Companions.Woljif),
+                    ActionTools.BarkAction("WRM_Barks_2", BarksEtude, Companions.Woljif),
+                    ActionTools.BarkAction("WRM_Barks_3", BarksEtude, Companions.Woljif),
+                    ActionTools.BarkAction("WRM_Barks_4", BarksEtude, Companions.Woljif),
+                    ActionTools.BarkAction("WRM_Barks_5", BarksEtude, Companions.Woljif)
                 };
             ActionTools.ConditionalActionOnTrue(BarkConditional, ActionTools.MakeList(ActionTools.RandomAction(BarkActions)));
             DialogTools.DialogAddReplaceAction(WoljifDialog, BarkConditional);
@@ -1089,7 +1102,7 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.CueAddOnStopAction(c_TogetherTime, ActionTools.UnlockFlagAction(BarksFlag));
             // I don't know why, but even though the translocate/teleport is handled in the etude, it doesn't work properly unless I put it here too.
             var WoljifBedroomLocation = new FakeLocator(183.76f, 78.691f, -14.49f, 274.26f);
-            DialogTools.CueAddOnStopAction(c_TogetherTime, ActionTools.TeleportAction("ab3b5c105893562488ae5bb6e7b0cba7", ActionTools.MakeList(ActionTools.TranslocateAction(Companions.Woljif, WoljifBedroomLocation))));
+            DialogTools.CueAddOnStopAction(c_TogetherTime, ActionTools.TeleportAction("ab3b5c105893562488ae5bb6e7b0cba7", ActionTools.MakeList(ActionTools.TranslocateAction(c_TogetherTime, Companions.Woljif, WoljifBedroomLocation))));
         }
 
         public static void AddIrabethConversation()
@@ -1465,16 +1478,17 @@ namespace WOTR_WoljifRomanceMod
                             bp.Fade = true;
                         })
                 };
+
+            var WoljifActionHolder = Helpers.CreateBlueprint<Kingmaker.ElementsSystem.ActionsHolder>("WRM_lich_WoljifActionHolder");
             ActionTools.ConditionalActionOnTrue(innerConditional, detachandhide);
             ActionTools.ConditionalActionOnFalse(innerConditional, ActionTools.MakeList(
                 ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.DetachBuff>(bp =>
                     {
                         bp.m_Buff = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintBuffReference>(paralysis);
-                        bp.Target = CompanionTools.GetCompanionEvaluator(Companions.Woljif);
+                        bp.Target = CompanionTools.GetCompanionEvaluator(Companions.Woljif, WoljifActionHolder);
                     })));
             var outerconditional = ActionTools.ConditionalAction(ConditionalTools.CreateEtudeCondition("WRM_lich_WoljifRomance11", romanceactive, "playing"));
             ActionTools.ConditionalActionOnTrue(outerconditional, ActionTools.MakeList(innerConditional));
-            var WoljifActionHolder = Helpers.CreateBlueprint<Kingmaker.ElementsSystem.ActionsHolder>("WRM_lich_WoljifActionHolder");
             WoljifActionHolder.Actions = ActionTools.MakeList(outerconditional);
             //Finish setting up unsummon
             var runholder = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.RunActionHolder>(bp => 

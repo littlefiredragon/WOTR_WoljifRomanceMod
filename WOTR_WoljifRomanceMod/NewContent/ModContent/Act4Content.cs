@@ -234,8 +234,8 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.ListAddAnswer(List3, a_ShelynCheck);
             DialogTools.ListAddAnswer(List3, a_GoOn);
             var shelynite = Resources.GetBlueprint<Kingmaker.Blueprints.Facts.BlueprintUnitFact>("b382afa31e4287644b77a8b30ed4aa0b");
-            DialogTools.AnswerAddShowCondition(a_ShelynWorshipper, ConditionalTools.CreateFactCondition("WRM_PlayerShelynite", shelynite, Companions.Player));
-            DialogTools.AnswerAddShowCondition(a_ShelynCheck, ConditionalTools.CreateFactCondition("WRM_PlayerNotShelynite", shelynite, Companions.Player, true));
+            DialogTools.AnswerAddShowCondition(a_ShelynWorshipper, ConditionalTools.CreateFactCondition("WRM_PlayerShelynite", a_ShelynWorshipper, shelynite, Companions.Player));
+            DialogTools.AnswerAddShowCondition(a_ShelynCheck, ConditionalTools.CreateFactCondition("WRM_PlayerNotShelynite", a_ShelynCheck, shelynite, Companions.Player, true));
             DialogTools.AnswerAddShowCheck(a_ShelynCheck, Kingmaker.EntitySystem.Stats.StatType.SkillLoreReligion, 12);
             DialogTools.AnswerAddNextCue(a_ShelynWorshipper, c_YourGod);
             DialogTools.AnswerAddNextCue(a_ShelynCheck, c_IDunno);
@@ -312,7 +312,8 @@ namespace WOTR_WoljifRomanceMod
             Kingmaker.ElementsSystem.GameAction[] AddCampEvent =
                 {
                     ActionTools.IncrementFlagAction(CampCounter),
-                    ActionTools.ConditionalAction(ConditionalTools.CreateFlagCheck("WRM_DontDoubleNightmare", CampCounter, 2, 1000000, true))
+                    /*ActionTools.ConditionalAction(ConditionalTools.CreateFlagCheck("WRM_DontDoubleNightmare", CampCounter, 2, 1000000, true))*/
+                    ActionTools.ConditionalAction(ConditionalTools.CreateCampEventCheck("WRM_CheckNightmareExistence", NightmareEvent, true))
                 };
             ActionTools.ConditionalActionOnTrue((Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional)AddCampEvent[1], ActionTools.AddCampEventAction(NightmareEvent));
             //EtudeTools.EtudeAddDelayedAction(NightmareTimer, 3, ActionTools.MakeList(AddCampEvent));

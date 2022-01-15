@@ -84,9 +84,9 @@ namespace WOTR_WoljifRomanceMod
             EtudeTools.EtudeAddActivationCondition(EventEtude, ConditionalTools.CreateEtudeGroupCondition("WRM_TavernTrigger", Capital_KTC_group, true));
 
             // Parameterized cutscene stuff.
-            var unhideaction = ActionTools.HideUnitAction(Companions.Woljif, true);
+            var unhideaction = ActionTools.HideUnitAction(EventEtude, Companions.Woljif, true);
             var playscene = ActionTools.PlayCutsceneAction(Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.Cutscene>("e8d44f13de8b6154687a05f42f767eb5"));
-            ActionTools.CutsceneActionAddParameter(playscene, "Unit", "unit", CompanionTools.GetCompanionEvaluator(Companions.Woljif));
+            ActionTools.CutsceneActionAddParameter(playscene, "Unit", "unit", CompanionTools.GetCompanionEvaluator(Companions.Woljif, EventEtude));
             Kingmaker.ElementsSystem.Dialog dialogeval = (Kingmaker.ElementsSystem.Dialog)Kingmaker.ElementsSystem.Element.CreateInstance(typeof(Kingmaker.ElementsSystem.Dialog));
             dialogeval.m_Value = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintDialogReference>(InviteDialog);
             ActionTools.CutsceneActionAddParameter(playscene, "Dialog", "blueprint", dialogeval);
@@ -235,11 +235,13 @@ namespace WOTR_WoljifRomanceMod
             var Track0A = CutsceneTools.CreateTrack(Gate1, CommandTools.LockControlCommand());
             // Create Track 0B
 
-            Kingmaker.ElementsSystem.GameAction[] Actions0B = { ActionTools.TranslocateAction(Companions.Player,/*PCloc*/Tavern_PlayerLoc), ActionTools.TranslocateAction(Companions.Woljif, /*WJloc*/Tavern_WoljifLoc) };
+            Kingmaker.ElementsSystem.GameAction[] Actions0B = { ActionTools.TranslocateAction(null, Companions.Player,/*PCloc*/Tavern_PlayerLoc), ActionTools.TranslocateAction(null, Companions.Woljif, /*WJloc*/Tavern_WoljifLoc) };
             Kingmaker.AreaLogic.Cutscenes.CommandBase[] Commands0B = 
                 { CommandTools.ActionCommand("WRM_1_Move0B", Actions0B),
                   CommandTools.CamMoveCommand(/*cameraloc*/ Tavern_CameraLoc),
                   CommandTools.DelayCommand(0.5f) };
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)Actions0B[0]).Unit.Owner = Commands0B[0];
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)Actions0B[1]).Unit.Owner = Commands0B[0];
             var Track0B = CutsceneTools.CreateTrack(Gate1, Commands0B);
             // Create Track 0C and 0D
             var Track0C = CutsceneTools.CreateTrack(null, CommandTools.SitIdleCommand("WRM_1_Animate0C_player", Companions.Player));
@@ -250,13 +252,13 @@ namespace WOTR_WoljifRomanceMod
 
             // Finishing dialog ends cutscene, moves Woljif back to his normal place, puts player outside tavern.
             DialogTools.CueAddOnStopAction(C_NoSympathy, ActionTools.StopCutsceneAction(TavernCutscene));
-            DialogTools.CueAddOnStopAction(C_NoSympathy, ActionTools.TeleportAction("e4694f569a0003448b08fa522f7dc79f", ActionTools.MakeList(ActionTools.TranslocateAction(Companions.Woljif, /*WJExitLoc*/Woljif_Exit))));
+            DialogTools.CueAddOnStopAction(C_NoSympathy, ActionTools.TeleportAction("e4694f569a0003448b08fa522f7dc79f", ActionTools.MakeList(ActionTools.TranslocateAction(C_NoSympathy, Companions.Woljif, /*WJExitLoc*/Woljif_Exit))));
             DialogTools.CueAddOnStopAction(C_Thanks, ActionTools.StopCutsceneAction(TavernCutscene));
-            DialogTools.CueAddOnStopAction(C_Thanks, ActionTools.TeleportAction("e4694f569a0003448b08fa522f7dc79f", ActionTools.MakeList(ActionTools.TranslocateAction(Companions.Woljif, /*WJExitLoc*/Woljif_Exit))));
+            DialogTools.CueAddOnStopAction(C_Thanks, ActionTools.TeleportAction("e4694f569a0003448b08fa522f7dc79f", ActionTools.MakeList(ActionTools.TranslocateAction(C_Thanks, Companions.Woljif, /*WJExitLoc*/Woljif_Exit))));
             DialogTools.CueAddOnStopAction(C_WowThanks, ActionTools.StopCutsceneAction(TavernCutscene));
-            DialogTools.CueAddOnStopAction(C_WowThanks, ActionTools.TeleportAction("e4694f569a0003448b08fa522f7dc79f", ActionTools.MakeList(ActionTools.TranslocateAction(Companions.Woljif, /*WJExitLoc*/Woljif_Exit))));
+            DialogTools.CueAddOnStopAction(C_WowThanks, ActionTools.TeleportAction("e4694f569a0003448b08fa522f7dc79f", ActionTools.MakeList(ActionTools.TranslocateAction(C_WowThanks, Companions.Woljif, /*WJExitLoc*/Woljif_Exit))));
             DialogTools.CueAddOnStopAction(C_OneTwoThree, ActionTools.StopCutsceneAction(TavernCutscene));
-            DialogTools.CueAddOnStopAction(C_OneTwoThree, ActionTools.TeleportAction("e4694f569a0003448b08fa522f7dc79f", ActionTools.MakeList(ActionTools.TranslocateAction(Companions.Woljif, /*WJExitLoc*/Woljif_Exit))));
+            DialogTools.CueAddOnStopAction(C_OneTwoThree, ActionTools.TeleportAction("e4694f569a0003448b08fa522f7dc79f", ActionTools.MakeList(ActionTools.TranslocateAction(C_OneTwoThree, Companions.Woljif, /*WJExitLoc*/Woljif_Exit))));
 
 
             var teleportparty = ActionTools.TeleportAction("320516612f496da4a8919ba4c78b0be4", ActionTools.MakeList(ActionTools.PlayCutsceneAction(TavernCutscene)));
@@ -397,7 +399,8 @@ namespace WOTR_WoljifRomanceMod
             Kingmaker.ElementsSystem.GameAction[] AddCampEvent = 
                 {
                     ActionTools.IncrementFlagAction(CampCounter),
-                    ActionTools.ConditionalAction(ConditionalTools.CreateFlagCheck("WRM_DontDoubleArgument", CampCounter, 2, 1000000, true))
+                    /*ActionTools.ConditionalAction(ConditionalTools.CreateFlagCheck("WRM_DontDoubleArgument", CampCounter, 2, 1000000, true))*/
+                    ActionTools.ConditionalAction(ConditionalTools.CreateCampEventCheck("WRM_CheckArgumentExistence", ArgumentEvent, true))
                 };
             ActionTools.ConditionalActionOnTrue((Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional)AddCampEvent[1], ActionTools.AddCampEventAction(ArgumentEvent));
             //EtudeTools.EtudeAddDelayedAction(ArgumentTimer, 3, ActionTools.MakeList(AddCampEvent));

@@ -14,7 +14,7 @@ using Kingmaker.AreaLogic.Cutscenes;
 using Kingmaker.EntitySystem.Entities;
 
 //##########################################################################################################################
-// Command TOOLS
+// COMMAND TOOLS
 // Helper functions to generate Cutscene Commands
 //##########################################################################################################################
 
@@ -87,7 +87,7 @@ namespace WOTR_WoljifRomanceMod
             var result = GenericCommand<Kingmaker.AreaLogic.Cutscenes.Commands.CommandBark>("bark_" + name);
             result.SharedText = new Kingmaker.Localization.SharedStringAsset();
             result.SharedText.String = new Kingmaker.Localization.LocalizedString { m_Key = key };
-            result.Unit = CompanionTools.GetCompanionEvaluator(target);
+            result.Unit = CompanionTools.GetCompanionEvaluator(target, result);
             result.BarkDurationByText = true;
             result.AwaitFinish = true;
             result.CommandDurationShift = 0.0f;
@@ -108,7 +108,7 @@ namespace WOTR_WoljifRomanceMod
             var name = "camfollow_" + numcamfollows.ToString();
             var result = GenericCommand<Kingmaker.AreaLogic.Cutscenes.Commands.CommandCameraFollow>(name);
             var pos = new Kingmaker.Designers.EventConditionActionSystem.Evaluators.UnitPosition();
-            pos.Unit = CompanionTools.GetCompanionEvaluator(target);
+            pos.Unit = CompanionTools.GetCompanionEvaluator(target, result);
             result.Target = pos;
             return result;
         }
@@ -183,7 +183,7 @@ namespace WOTR_WoljifRomanceMod
         {
             var autoname = "command_" + dialog.name;
             var result = GenericCommand<Kingmaker.AreaLogic.Cutscenes.Commands.CommandStartDialog>(autoname);
-            result.Speaker = CompanionTools.GetCompanionEvaluator(speaker);
+            result.Speaker = CompanionTools.GetCompanionEvaluator(speaker, result);
             result.m_Dialog = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<BlueprintDialogReference>(dialog);
             return result;
         }
@@ -191,7 +191,7 @@ namespace WOTR_WoljifRomanceMod
                       string dialogid, Companions speaker = Companions.None)
         {
             var result = GenericCommand<Kingmaker.AreaLogic.Cutscenes.Commands.CommandStartDialog>("command_"+dialogid);
-            result.Speaker = CompanionTools.GetCompanionEvaluator(speaker);
+            result.Speaker = CompanionTools.GetCompanionEvaluator(speaker, result);
             result.m_Dialog = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<BlueprintDialogReference>
                               (Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>(dialogid));
             return result;
@@ -209,18 +209,20 @@ namespace WOTR_WoljifRomanceMod
         public static Kingmaker.AreaLogic.Cutscenes.CommandAction TranslocateCommand(
                       string name, Companions unit, FakeLocator position)
         {
-            var action = ActionTools.TranslocateAction(unit, position);
+            var action = ActionTools.TranslocateAction(null, unit, position);
             var command = ActionCommand(name, action);
             action.Owner = command;
+            action.Unit.Owner = command;
             return command;
         }
         public static Kingmaker.AreaLogic.Cutscenes.CommandAction TranslocateCommand(Companions unit, FakeLocator position)
         {
             var name = "translocate_" + numunnamedmoves.ToString();
             numunnamedmoves++;
-            var action = ActionTools.TranslocateAction(unit, position);
+            var action = ActionTools.TranslocateAction(null, unit, position);
             var command = ActionCommand(name, action);
             action.Owner = command;
+            action.Unit.Owner = command;
             return command;
         }
 
@@ -237,7 +239,7 @@ namespace WOTR_WoljifRomanceMod
         {
             var result = GenericCommand<Kingmaker.AreaLogic.Cutscenes.Commands.CommandMoveUnit>(name);
             result.m_Timeout = 20.0f;
-            result.Unit = CompanionTools.GetCompanionEvaluator(unit);
+            result.Unit = CompanionTools.GetCompanionEvaluator(unit, result);
             result.DisableAvoidance = true;
             result.RunAway = vanish;
             result.Target = position;

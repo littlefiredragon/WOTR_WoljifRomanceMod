@@ -92,11 +92,11 @@ namespace WOTR_WoljifRomanceMod
          *              with a different UnitEvaluator after creation if you want the line spoken by someone else.
          ******************************************************************************************************************/
         public static Kingmaker.Designers.EventConditionActionSystem.Actions.ShowBark BarkAction(
-                      string name, Companions target = Companions.None)
+                      string name, Kingmaker.Blueprints.SimpleBlueprint owner, Companions target = Companions.None)
         {
             var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.ShowBark>(bp =>
             {
-                bp.TargetUnit = CompanionTools.GetCompanionEvaluator(target);
+                bp.TargetUnit = CompanionTools.GetCompanionEvaluator(target, owner);
                 bp.BarkDurationByText = true;
                 bp.WhatToBarkShared = new Kingmaker.Localization.SharedStringAsset();
                 bp.WhatToBarkShared.String = new Kingmaker.Localization.LocalizedString { m_Key = name };
@@ -115,11 +115,11 @@ namespace WOTR_WoljifRomanceMod
          *   unhide:    defaults to false, but if true will reveal rather than hide the unit.
          ******************************************************************************************************************/
         public static Kingmaker.Designers.EventConditionActionSystem.Actions.HideUnit HideUnitAction(
-                      Companions unit, bool unhide = false)
+                      Kingmaker.Blueprints.SimpleBlueprint owner, Companions unit, bool unhide = false)
         {
             var action = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.HideUnit>(bp =>
             {
-                bp.Target = CompanionTools.GetCompanionEvaluator(unit);
+                bp.Target = CompanionTools.GetCompanionEvaluator(unit, owner);
                 bp.Unhide = unhide;
             });
             return action;
@@ -135,11 +135,11 @@ namespace WOTR_WoljifRomanceMod
          *   hide:      defaults to true, but if false will reveal rather than hide the weapons.
          ******************************************************************************************************************/
         public static Kingmaker.Designers.EventConditionActionSystem.Actions.HideWeapons HideWeaponsAction(
-                      Companions unit, bool hide = true)
+                      Kingmaker.Blueprints.SimpleBlueprint owner, Companions unit, bool hide = true)
         {
             var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.HideWeapons>(bp =>
             {
-                bp.Target = CompanionTools.GetCompanionEvaluator(unit);
+                bp.Target = CompanionTools.GetCompanionEvaluator(unit, owner);
                 bp.Hide = hide;
             });
             return result;
@@ -330,11 +330,12 @@ namespace WOTR_WoljifRomanceMod
          *              after creation if you want to target a non-companion.
          *   height:    The distance at which to hover. Possibly in meters?
          ******************************************************************************************************************/
-        public static SetFlyHeight SetFlyHeightAction(Companions unit, float height)
+        public static SetFlyHeight SetFlyHeightAction(
+                      Kingmaker.Blueprints.SimpleBlueprint owner, Companions unit, float height)
         {
             var result = GenericAction<SetFlyHeight>(bp =>
             {
-                bp.Unit = CompanionTools.GetCompanionEvaluator(unit);
+                bp.Unit = CompanionTools.GetCompanionEvaluator(unit, owner);
                 bp.height = height;
             });
             return result;
@@ -534,12 +535,12 @@ namespace WOTR_WoljifRomanceMod
          *   owner:     The conversation owner. Can be manually changed after creation to a non-companion UnitEvaluator.
          ******************************************************************************************************************/
         public static Kingmaker.Designers.EventConditionActionSystem.Actions.StartDialog StartDialogAction(
-                      Kingmaker.DialogSystem.Blueprints.BlueprintDialog dialog, Companions owner)
+                      Kingmaker.DialogSystem.Blueprints.BlueprintDialog dialog, Companions speaker)
         {
             var action = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.StartDialog>(bp =>
             {
                 bp.m_Dialogue = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<BlueprintDialogReference>(dialog);
-                bp.DialogueOwner = CompanionTools.GetCompanionEvaluator(owner);
+                bp.DialogueOwner = CompanionTools.GetCompanionEvaluator(speaker, dialog);
             });
             return action;
         }
@@ -643,11 +644,11 @@ namespace WOTR_WoljifRomanceMod
          *   position:  the coordinates and rotation to move to.
          ******************************************************************************************************************/
         public static Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit TranslocateAction(
-                      Companions unit, FakeLocator position)
+                      Kingmaker.Blueprints.SimpleBlueprint owner, Companions unit, FakeLocator position)
         {
             var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit>(bp =>
             {
-                bp.Unit = CompanionTools.GetCompanionEvaluator(unit);
+                bp.Unit = CompanionTools.GetCompanionEvaluator(unit, owner);
                 bp.translocatePositionEvaluator = position;
                 bp.m_CopyRotation = true;
                 bp.translocateOrientationEvaluator = position.GetRotation();

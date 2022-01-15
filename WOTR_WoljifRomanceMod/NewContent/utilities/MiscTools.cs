@@ -101,6 +101,22 @@ namespace WOTR_WoljifRomanceMod
         }
     }
 
+
+    public class CampEventExists : Kingmaker.ElementsSystem.Condition
+    {
+        public Kingmaker.RandomEncounters.Settings.BlueprintCampingEncounter Encounter;
+        public override bool CheckCondition()
+        {
+            return Game.Instance.Player.Camping.ExtraEncounters.IndexOf(Encounter) != -1;
+        }
+
+        public override string GetConditionCaption()
+        {
+            return "Checks if camp encounter is in encounter list.";
+        }
+    }
+
+
     public static class CompanionTools
     {
         public static Kingmaker.Blueprints.BlueprintUnitReference GetCompanionReference(Companions companion)
@@ -156,9 +172,13 @@ namespace WOTR_WoljifRomanceMod
             }
             return result;
         }
-        public static Kingmaker.ElementsSystem.UnitEvaluator GetCompanionEvaluator(Companions companion, Kingmaker.Blueprints.SimpleBlueprint owner = null)
+        public static Kingmaker.ElementsSystem.UnitEvaluator GetCompanionEvaluator(Companions companion, Kingmaker.Blueprints.SimpleBlueprint owner)
         {
             Kingmaker.ElementsSystem.UnitEvaluator result = null;
+            if (companion == Companions.None)
+            {
+                return result;
+            }
             if (companion == Companions.Player)
             {
                 //result = new Kingmaker.Designers.EventConditionActionSystem.Evaluators.PlayerCharacter();
