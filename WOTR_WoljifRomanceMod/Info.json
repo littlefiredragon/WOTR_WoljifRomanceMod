@@ -3,7 +3,7 @@
 	"DisplayName": "Woljif Romance Mod",
 	"Author": "Paladingineer",
 	"Version": "0.1.3",
-	"ManagerVersion": "0.23.3",
+	"ManagerVersion": "0.23.5",
 	"Requirements": [],
 	"AssemblyName": "WOTR_WoljifRomanceMod.dll",
 	"EntryMethod": "WOTR_WoljifRomanceMod.Main.Load",

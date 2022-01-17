@@ -17,6 +17,7 @@ namespace WOTR_WoljifRomanceMod
         {
             //Get existing blueprints
             var answerlist = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("2479c49fd0cb64b45869b4b91ac3fdff");
+            var romancebase = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomance");
             var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceActive");
             var affection = Resources.GetModBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("WRM_WoljifAffection");
 
@@ -28,6 +29,7 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.ListAddAnswer(answerlist, A_AreYouOkay, 0);
 
             //Dialog increments affection and starts romance path.
+            DialogTools.AnswerAddOnSelectAction(A_AreYouOkay, ActionTools.StartEtudeAction(romancebase));
             DialogTools.AnswerAddOnSelectAction(A_AreYouOkay, ActionTools.StartEtudeAction(romanceactive));
             DialogTools.AnswerAddOnSelectAction(A_AreYouOkay, ActionTools.IncrementFlagAction(affection,1));
             DialogTools.AnswerAddOnSelectAction(A_AreYouOkay, ActionTools.IncrementFlagAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("5db9ec615236f044083a5c6bd3292432"), 1));
@@ -35,7 +37,7 @@ namespace WOTR_WoljifRomanceMod
 
         static public void CreateTavernCommandRoomEvent()
         {
-            var romancebase = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomance");
+            var CompanionEtude = (Kingmaker.AreaLogic.Etudes.BlueprintEtude)Kingmaker.Blueprints.ResourcesLibrary.TryGetBlueprint(Kingmaker.Blueprints.BlueprintGuid.Parse("14a80c048c8ceed4a9c856d85bbf10da"));
             var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceActive");
             var affection = Resources.GetModBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("WRM_WoljifAffection");
 
@@ -61,8 +63,9 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.AnswerAddOnSelectAction(A_No, ActionTools.IncrementFlagAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("5db9ec615236f044083a5c6bd3292432"), -1));
 
             // Create the mechanics of the scene
-            var NotificationEtude = EtudeTools.CreateEtude("WRM_TavernInvite_Notification", romancebase, false, false);
+            var NotificationEtude = EtudeTools.CreateEtude("WRM_TavernInvite_Notification", CompanionEtude, false, false);
             var EventEtude = EtudeTools.CreateEtude("WRM_TavernInvite_Event", NotificationEtude, true, true);
+            //var EventEtude = EtudeTools.CreateEtude("WRM_TavernInvite_Event", CompanionEtude, false, false);
             var Notification = EventTools.CreateCommandRoomEvent("WRM_note_2a_Name", "WRM_note_2a_Desc");
             var NotificationCounter = EtudeTools.CreateFlag("WRM_TavernInviteFlag");
             EventTools.AddResolution(Notification, Kingmaker.Kingdom.Blueprints.EventResult.MarginType.Fail, "WRM_note_2a_Ignored");
@@ -75,13 +78,14 @@ namespace WOTR_WoljifRomanceMod
                 };
             ActionTools.ConditionalActionOnTrue((Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional)StartNotification[1], ActionTools.StartCommandRoomEventAction(Notification));
             EtudeTools.EtudeAddOnPlayTrigger(NotificationEtude, ActionTools.MakeList(StartNotification));
-            //EtudeTools.EtudeAddOnPlayTrigger(NotificationEtude, ActionTools.MakeList(ActionTools.StartCommandRoomEventAction(Notification)));
-            EtudeTools.EtudeAddOnDeactivateTrigger(NotificationEtude, ActionTools.MakeList(ActionTools.EndCommandRoomEventAction(Notification)));
+            //EtudeTools.EtudeAddOnDeactivateTrigger(NotificationEtude, ActionTools.MakeList(ActionTools.EndCommandRoomEventAction(Notification)));
+            EtudeTools.EtudeAddOnCompleteTrigger(NotificationEtude, ActionTools.MakeList(ActionTools.EndCommandRoomEventAction(Notification)));
             var Capital_KTC_group = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>("10d01be767521a340978c8e57ab536b6");
             var Capital_WoljifCompanion_group = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>("97e2c4ec46765f143bf21bc9578b22f7");
             EtudeTools.EtudeAddConflictingGroups(EventEtude, Capital_KTC_group);
             EtudeTools.EtudeAddConflictingGroups(EventEtude, Capital_WoljifCompanion_group);
             EtudeTools.EtudeAddActivationCondition(EventEtude, ConditionalTools.CreateEtudeGroupCondition("WRM_TavernTrigger", Capital_KTC_group, true));
+            EtudeTools.EtudeAddOnCompleteTrigger(EventEtude, ActionTools.MakeList(ActionTools.CompleteEtudeAction(NotificationEtude)));
 
             // Parameterized cutscene stuff.
             var unhideaction = ActionTools.HideUnitAction(EventEtude, Companions.Woljif, true);
@@ -99,18 +103,11 @@ namespace WOTR_WoljifRomanceMod
 
             EventEtude.m_LinkedAreaPart = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintAreaPartReference>(Resources.GetBlueprint<Kingmaker.Blueprints.Area.BlueprintAreaPart>("2570015799edf594daf2f076f2f975d8"));
 
-            //Create a timer to trigger the event, and hook it up to the rerecruit dialog.
-            /*var TavernTimer = EtudeTools.CreateEtude("WRM_TimerBeforeTavernScene", romancebase, false, false);
-            Kingmaker.ElementsSystem.GameAction[] delayedactions = { ActionTools.StartEtudeAction(EventEtude), ActionTools.CompleteEtudeAction(TavernTimer) };
-            EtudeTools.EtudeAddDelayedAction(TavernTimer, 2, ActionTools.MakeList(delayedactions));
-            var rerecruitCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("af3b9e51747fda2478b5cf6d97c078fe");
-            DialogTools.CueAddOnStopAction(rerecruitCue, ActionTools.StartEtudeAction(TavernTimer));*/
-
             // NEW TIMER
             var rerecruitCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("af3b9e51747fda2478b5cf6d97c078fe");
             var TavernTimer = WoljifRomanceMod.Clock.AddTimer("WRM_Timers_Tavern");
             DialogTools.CueAddOnStopAction(rerecruitCue, ActionTools.IncrementFlagAction(TavernTimer.active));
-            var TavernTimerEtude = EtudeTools.CreateEtude("WRM_Timers_TavernEtude", romancebase, false, false);
+            var TavernTimerEtude = EtudeTools.CreateEtude("WRM_Timers_TavernEtude", CompanionEtude, false, false);
             EtudeTools.EtudeAddActivationCondition(TavernTimerEtude, ConditionalTools.CreateFlagCheck("WRM_Timers_TavernTrigger", TavernTimer.time, 2, 1000000));
             Kingmaker.ElementsSystem.GameAction[] delayedactions = { ActionTools.StartEtudeAction(EventEtude), ActionTools.CompleteEtudeAction(TavernTimerEtude) };
             EtudeTools.EtudeAddOnPlayTrigger(TavernTimerEtude, ActionTools.MakeList(delayedactions));
@@ -133,7 +130,7 @@ namespace WOTR_WoljifRomanceMod
             var Tavern_CameraLoc = new FakeLocator(-46.88f, 49.19f, -150.19f, -34.06f);
             var Woljif_Exit = new FakeLocator(-8.844f, 56.02f, 0.325f, 275.0469f);
 
-
+            var romancebase = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomance");
             var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceActive");
             var affection = Resources.GetModBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("WRM_WoljifAffection");
 
@@ -177,6 +174,7 @@ namespace WOTR_WoljifRomanceMod
                     bp.CurrentDialog = true;
                 }));
             DialogTools.AnswerAddOnSelectAction(A_WhatIf, ActionTools.StartEtudeAction(romanceactive));
+            DialogTools.AnswerAddOnSelectAction(A_WhatIf, ActionTools.StartEtudeAction(romancebase));
             DialogTools.AnswerAddOnSelectAction(A_WhatIf, ActionTools.IncrementFlagAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("5db9ec615236f044083a5c6bd3292432"), 1));
             DialogTools.AnswerAddOnSelectAction(A_WhatIf, ActionTools.IncrementFlagAction(affection, 1));
             DialogTools.AnswerAddNextCue(A_NoodleIncident, C_NoodleIncident);
@@ -305,10 +303,10 @@ namespace WOTR_WoljifRomanceMod
             var ReadyToReconcile = EtudeTools.CreateEtude("WRM_WoljifReadyToReconcile", CompanionEtude, false, false);
             var Reconciled = EtudeTools.CreateEtude("WRM_WoljifReconciled", CompanionEtude, false, false);
 
-            EtudeTools.EtudeAddCompleteTrigger(AngryEtude, ActionTools.MakeList(ActionTools.StartEtudeAction(ReadyToReconcile)));
+            EtudeTools.EtudeAddOnCompleteTrigger(AngryEtude, ActionTools.MakeList(ActionTools.StartEtudeAction(ReadyToReconcile)));
             EtudeTools.EtudeAddStartsWith(HadFight, AngryEtude);
             //EtudeTools.EtudeAddDelayedAction(HadFight, 1, ActionTools.MakeList(ActionTools.CompleteEtudeAction(AngryEtude)));
-            EtudeTools.EtudeAddCompleteTrigger(ReadyToReconcile, ActionTools.MakeList(ActionTools.StartEtudeAction(Reconciled)));
+            EtudeTools.EtudeAddOnCompleteTrigger(ReadyToReconcile, ActionTools.MakeList(ActionTools.StartEtudeAction(Reconciled)));
 
             
             var AngryTimer = WoljifRomanceMod.Clock.AddTimer("WRM_Timers_Angry");

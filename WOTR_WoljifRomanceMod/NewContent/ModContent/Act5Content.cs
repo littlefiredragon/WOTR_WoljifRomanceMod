@@ -223,7 +223,8 @@ namespace WOTR_WoljifRomanceMod
             ActionTools.ConditionalActionOnTrue((Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional)StartNotification[1], ActionTools.StartCommandRoomEventAction(Notification));
             EtudeTools.EtudeAddOnPlayTrigger(NotificationEtude, ActionTools.MakeList(StartNotification));
             //EtudeTools.EtudeAddOnPlayTrigger(NotificationEtude, ActionTools.MakeList(ActionTools.StartCommandRoomEventAction(Notification)));
-            EtudeTools.EtudeAddOnDeactivateTrigger(NotificationEtude, ActionTools.MakeList(ActionTools.EndCommandRoomEventAction(Notification)));
+            //EtudeTools.EtudeAddOnDeactivateTrigger(NotificationEtude, ActionTools.MakeList(ActionTools.EndCommandRoomEventAction(Notification)));
+            EtudeTools.EtudeAddOnCompleteTrigger(NotificationEtude, ActionTools.MakeList(ActionTools.EndCommandRoomEventAction(Notification)));
             var Capital_KTC_group = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>("10d01be767521a340978c8e57ab536b6");
             var Capital_WoljifCompanion_group = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>("97e2c4ec46765f143bf21bc9578b22f7");
             EtudeTools.EtudeAddConflictingGroups(EventEtude, Capital_KTC_group);
@@ -499,7 +500,8 @@ namespace WOTR_WoljifRomanceMod
                 };
             ActionTools.ConditionalActionOnTrue((Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional)StartNotification[1], ActionTools.StartCommandRoomEventAction(Notification));
             EtudeTools.EtudeAddOnPlayTrigger(NotificationEtude, ActionTools.MakeList(StartNotification));
-            EtudeTools.EtudeAddOnDeactivateTrigger(NotificationEtude, ActionTools.MakeList(ActionTools.EndCommandRoomEventAction(Notification)));
+            //EtudeTools.EtudeAddOnDeactivateTrigger(NotificationEtude, ActionTools.MakeList(ActionTools.EndCommandRoomEventAction(Notification)));
+            EtudeTools.EtudeAddOnCompleteTrigger(NotificationEtude, ActionTools.MakeList(ActionTools.EndCommandRoomEventAction(Notification)));
             var Capital_KTC_group = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>("10d01be767521a340978c8e57ab536b6");
             var Capital_WoljifCompanion_group = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>("97e2c4ec46765f143bf21bc9578b22f7");
             EtudeTools.EtudeAddConflictingGroups(EventEtude, Capital_KTC_group);
@@ -703,7 +705,7 @@ namespace WOTR_WoljifRomanceMod
             Kingmaker.ElementsSystem.GameAction[] Unhiders = { IrabethUnhider, AneviaUnhider, GuardUnhider1, GuardUnhider2 };
             // Set the etude to use the hiders on start and unhiders on complete.
             EtudeTools.EtudeAddOnPlayTrigger(ConfessionScenePlaying, ActionTools.MakeList(Hiders));
-            EtudeTools.EtudeAddCompleteTrigger(ConfessionScenePlaying, ActionTools.MakeList(Unhiders));
+            EtudeTools.EtudeAddOnCompleteTrigger(ConfessionScenePlaying, ActionTools.MakeList(Unhiders));
 
             // Locators
             var WoljifStartPosition = new FakeLocator(206.66f, 78.71f, 12.72f, 28.26f);

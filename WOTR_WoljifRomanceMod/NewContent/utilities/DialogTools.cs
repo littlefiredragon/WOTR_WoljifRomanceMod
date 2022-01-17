@@ -42,13 +42,20 @@ namespace WOTR_WoljifRomanceMod
     {
         public static NewDialog NewDialogs;
         // Shared empty objects that are required for dialog parts.
-        public static readonly Kingmaker.ElementsSystem.ActionList EmptyActionList = new Kingmaker.ElementsSystem.ActionList();
-        public static readonly Kingmaker.DialogSystem.CueSelection EmptyCueSelection = new Kingmaker.DialogSystem.CueSelection();
-        public static readonly Kingmaker.UnitLogic.Alignments.AlignmentShift EmptyAlignmentShift = new Kingmaker.UnitLogic.Alignments.AlignmentShift();
-        public static readonly Kingmaker.ElementsSystem.ConditionsChecker EmptyConditionChecker = new Kingmaker.ElementsSystem.ConditionsChecker();
-        public static readonly Kingmaker.DialogSystem.DialogSpeaker EmptyDialogSpeaker= new Kingmaker.DialogSystem.DialogSpeaker();
-        public static readonly Kingmaker.DialogSystem.Blueprints.ShowCheck EmptyShowCheck = new Kingmaker.DialogSystem.Blueprints.ShowCheck();
-        public static readonly Kingmaker.DialogSystem.CharacterSelection EmptyCharSelect = new Kingmaker.DialogSystem.CharacterSelection();
+        public static readonly Kingmaker.ElementsSystem.ActionList EmptyActionList = 
+                                    new Kingmaker.ElementsSystem.ActionList();
+        public static readonly Kingmaker.DialogSystem.CueSelection EmptyCueSelection = 
+                                    new Kingmaker.DialogSystem.CueSelection();
+        public static readonly Kingmaker.UnitLogic.Alignments.AlignmentShift EmptyAlignmentShift = 
+                                    new Kingmaker.UnitLogic.Alignments.AlignmentShift();
+        public static readonly Kingmaker.ElementsSystem.ConditionsChecker EmptyConditionChecker = 
+                                    new Kingmaker.ElementsSystem.ConditionsChecker();
+        public static readonly Kingmaker.DialogSystem.DialogSpeaker EmptyDialogSpeaker = 
+                                    new Kingmaker.DialogSystem.DialogSpeaker();
+        public static readonly Kingmaker.DialogSystem.Blueprints.ShowCheck EmptyShowCheck = 
+                                    new Kingmaker.DialogSystem.Blueprints.ShowCheck();
+        public static readonly Kingmaker.DialogSystem.CharacterSelection EmptyCharSelect = 
+                                    new Kingmaker.DialogSystem.CharacterSelection();
 
         // Wrapper functions
         // Dialog

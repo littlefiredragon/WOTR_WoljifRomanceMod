@@ -10,6 +10,7 @@ using UnityModManagerNet;
 using TabletopTweaks.Extensions;
 using System.Collections.Generic;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.Blueprints.Area;
 
 namespace WOTR_WoljifRomanceMod
 {
@@ -17,6 +18,135 @@ namespace WOTR_WoljifRomanceMod
     {
         None = -1, Player, Arueshalae, Camellia, Daeran, Ember, Greybor, Lann, Nenio, Regill, Seelah, Sosiel, Wenduag, Woljif
     }
+
+    class AreaWatcher : Kingmaker.PubSubSystem.IAreaHandler
+    {
+        public void OnAreaDidLoad()
+        {
+        }
+        public void OnAreaBeginUnloading()
+        {
+            if (Game.Instance.CurrentlyLoadedArea.AssetGuidThreadSafe.Equals("2570015799edf594daf2f076f2f975d8", StringComparison.OrdinalIgnoreCase))
+            {
+                // Do stuff on leaving Drezen
+                Resources.GetModBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("WRM_BedroomBarksFlag").Lock();
+                var EtudeBP = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_BedroomBarksEtude");
+                var Etude = Game.Instance.Player.EtudesSystem.Etudes.GetFact((Kingmaker.Blueprints.Facts.BlueprintFact)EtudeBP);
+                Etude.Deactivate();
+            }
+        }
+    }
+    class AreaPartWatcher : Kingmaker.PubSubSystem.IAreaPartHandler
+    {
+        public void OnAreaPartChanged(BlueprintAreaPart previous)
+        {
+            if (previous.AssetGuidThreadSafe.Equals("2570015799edf594daf2f076f2f975d8", StringComparison.OrdinalIgnoreCase))
+            {
+                // Do stuff on leaving Citadel
+                Resources.GetModBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("WRM_BedroomBarksFlag").Lock();
+                var EtudeBP = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_BedroomBarksEtude");
+                var Etude = Game.Instance.Player.EtudesSystem.Etudes.GetFact((Kingmaker.Blueprints.Facts.BlueprintFact)EtudeBP);
+                Etude.Deactivate();
+            }
+        }
+    }
+
+
+    /* The in-game cutscenes use an object called a Locator to help position them, but you can usually make do with
+     * just using a positionevaluator of some sort. I originally tried to implement tools for the usage of actual
+     * Locators, but it caused a snarl of problems. Essentially, trying to make custom Locators through code alone
+     * is really freaking hard, and led to a variety of strange hoops I had to jump through, like making them on the
+     * fly with an AreaWatcher that waited for areas to load. The problem with that was that it gated the creation of
+     * any blueprint that needed the locator, which in turn meant that the blueprints weren't guaranteed to exist at
+     * all times, which caused save file dependencies and all kinds of nastiness.
+     * Trust me, just use the position evaluators. I've made this FakeLocator class to act as similarly to a real Locator
+     * for the purpose of cutscenes as possible.
+     */
+    public class FakeLocator : Kingmaker.ElementsSystem.PositionEvaluator
+    {
+        public float x;
+        public float y;
+        public float z;
+        public float r;
+
+        public FakeLocator(float x, float y, float z, float r)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.r = r;
+        }
+        public override string GetCaption()
+        {
+            return "FakeLocator Caption";
+        }
+
+        public override UnityEngine.Vector3 GetValueInternal()
+        {
+            return new UnityEngine.Vector3(x, y, z);
+        }
+
+        public Kingmaker.Designers.EventConditionActionSystem.Evaluators.FloatConstant GetRotation()
+        {
+            return new Kingmaker.Designers.EventConditionActionSystem.Evaluators.FloatConstant { Value = r };
+        }
+    }
+
+
+    public class Timer
+    {
+        public Kingmaker.Blueprints.BlueprintUnlockableFlag active;
+        public Kingmaker.Blueprints.BlueprintUnlockableFlag time;
+
+        public Timer(string name)
+        {
+            active = EtudeTools.CreateFlag(name + "_active");
+            time = EtudeTools.CreateFlag(name + "_time");
+        }
+
+        public bool isActive()
+        {
+            return active.Value != 0;
+        }
+
+        public void incrementTimer()
+        {
+            time.Value++;
+        }
+    }
+
+    public class TimeKeeper : Kingmaker.Kingdom.IKingdomDayHandler
+    {
+        public SortedDictionary<string, Timer> Timers;
+
+        public TimeKeeper()
+        {
+            Timers = new SortedDictionary<string, Timer>();
+        }
+
+        public Timer AddTimer(string name)
+        {
+            Timers.Add(name, new Timer(name));
+            return Timers[name];
+        }
+
+        public Timer getTimer(string name)
+        {
+            return Timers[name];
+        }
+
+        public void OnNewDay()
+        {
+            foreach (KeyValuePair<string, Timer> Clock in Timers)
+            {
+                if (Clock.Value.isActive())
+                {
+                    Clock.Value.incrementTimer();
+                }
+            }
+        }
+    }
+
 
     public class ControlWeather : Kingmaker.ElementsSystem.GameAction
     {

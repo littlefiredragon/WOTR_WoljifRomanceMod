@@ -307,7 +307,7 @@ namespace WOTR_WoljifRomanceMod
             EventTools.CampEventAddAction(NightmareEvent, ActionTools.RemoveCampEventAction(NightmareEvent));
             EventTools.CampEventAddAction(NightmareEvent, ActionTools.StartDialogAction(NightmareDialog, Companions.Woljif));
 
-            //var NightmareTimer = EtudeTools.CreateEtude("WRM_TimerBeforeNightmare", romanceactive, false, false);
+
             var CampCounter = EtudeTools.CreateFlag("WRM_NightmareCampEventFlag");
             Kingmaker.ElementsSystem.GameAction[] AddCampEvent =
                 {
@@ -316,22 +316,20 @@ namespace WOTR_WoljifRomanceMod
                     ActionTools.ConditionalAction(ConditionalTools.CreateCampEventCheck("WRM_CheckNightmareExistence", NightmareEvent, true))
                 };
             ActionTools.ConditionalActionOnTrue((Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional)AddCampEvent[1], ActionTools.AddCampEventAction(NightmareEvent));
-            //EtudeTools.EtudeAddDelayedAction(NightmareTimer, 3, ActionTools.MakeList(AddCampEvent));
-            //DialogTools.AnswerAddOnSelectAction(embraceAnswer, ActionTools.StartEtudeAction(NightmareTimer));
 
-            var NightmareTimer = WoljifRomanceMod.Clock.AddTimer("WRM_Timers_Nightmare");
+
+            var NightmareTimer = WoljifRomanceMod.Clock.AddTimer("WRM_Timers_Nightmare"); // Deprecated
+
             var NightmareTimerEtude = EtudeTools.CreateEtude("WRM_Timers_NightmareEtude", romanceactive, false, false);
-            EtudeTools.EtudeAddActivationCondition(NightmareTimerEtude, ConditionalTools.CreateFlagCheck("WRM_Timers_NightmareTrigger", NightmareTimer.time, 3, 1000000));
+            //EtudeTools.EtudeAddActivationCondition(NightmareTimerEtude, ConditionalTools.CreateFlagCheck("WRM_Timers_NightmareTrigger", NightmareTimer.time, 3, 1000000));
+            EtudeTools.EtudeAddActivationCondition(NightmareTimerEtude, ConditionalTools.CreateCurrentAreaIsCondition("WRM_GotToAbyssCaves", Resources.GetBlueprint<Kingmaker.Blueprints.Area.BlueprintArea>("c876d5303f4a19f4a80b0cc9b313db6f")));
+
             Kingmaker.ElementsSystem.GameAction[] delayedactions = { AddCampEvent[0], AddCampEvent[1], ActionTools.CompleteEtudeAction(NightmareTimerEtude) };
             EtudeTools.EtudeAddOnPlayTrigger(NightmareTimerEtude, ActionTools.MakeList(delayedactions));
 
-            DialogTools.AnswerAddOnSelectAction(embraceAnswer, ActionTools.IncrementFlagAction(NightmareTimer.active));
+            //DialogTools.AnswerAddOnSelectAction(embraceAnswer, ActionTools.IncrementFlagAction(NightmareTimer.active));
             DialogTools.AnswerAddOnSelectAction(embraceAnswer, ActionTools.StartEtudeAction(NightmareTimerEtude));
 
-            //EtudeTools.EtudeAddDelayedAction(NightmareTimer, 3, ActionTools.MakeList(ActionTools.AddCampEventAction(NightmareEvent)));
-
-            //var affectiongatesuccess = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceGatePassed");
-            //EtudeTools.EtudeAddOnPlayTrigger(affectiongatesuccess, ActionTools.MakeList(ActionTools.StartEtudeAction(NightmareTimer)));
         }
 
         static public void MiscChanges()
