@@ -193,9 +193,9 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.ListAddAnswer(Answerlist2, A_JustThisOnce);
             DialogTools.ListAddAnswer(Answerlist2, A_Always);
             DialogTools.ListAddAnswer(Answerlist2, A_RunForIt);
-            DialogTools.AnswerAlignmentShift(A_PayForYourself, "lawful", "WRM_shift_2b_PayForYourself");
-            DialogTools.AnswerAlignmentShift(A_Always, "good", "WRM_shift_2b_Always");
-            DialogTools.AnswerAlignmentShift(A_RunForIt, "chaotic", "WRM_shift_2b_RunForIt");
+            DialogTools.AnswerSetAlignmentShift(A_PayForYourself, "lawful", "WRM_shift_2b_PayForYourself");
+            DialogTools.AnswerSetAlignmentShift(A_Always, "good", "WRM_shift_2b_Always");
+            DialogTools.AnswerSetAlignmentShift(A_RunForIt, "chaotic", "WRM_shift_2b_RunForIt");
             DialogTools.AnswerAddOnSelectAction(A_JustThisOnce, ActionTools.IncrementFlagAction(affection, 1));
             DialogTools.AnswerAddOnSelectAction(A_Always, ActionTools.IncrementFlagAction(affection, 1));
             DialogTools.AnswerAddOnSelectAction(A_RunForIt, ActionTools.IncrementFlagAction(affection, 1));

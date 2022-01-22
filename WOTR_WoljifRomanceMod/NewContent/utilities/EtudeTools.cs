@@ -271,7 +271,7 @@ namespace WOTR_WoljifRomanceMod
          * I have left this commented out function here so I can give an explanation. In vanilla WOTR, "x days later"
          * events are handled by delayed actions on etudes. However, if you try to do this with a mod-injected etude, the
          * timer will reset every time you load the game, because the mod is re-injecting its content.
-         * Instead, I have created a timer mechanism you can find it MiscTools that acts as a reasonable substitute for
+         * Instead, I have created a timer mechanism you can find in MiscTools that acts as a reasonable substitute for
          * etudes with delayed actions.
          ******************************************************************************************************************/
         /*public static void EtudeAddDelayedAction(Kingmaker.AreaLogic.Etudes.BlueprintEtude etude, int days, 

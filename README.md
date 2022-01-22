@@ -1,7 +1,8 @@
 # WOTR_WoljifRomanceMod
 
-Follow the full romance path for Woljif Jefto that should have been in the game to begin with. At last you can give the tiefling the love he deserves, but winning his heart won't be easy...
-The romance is available for both male and female characters, and begins in Act 3. It's a very slow burn, but if you're patient with him, you can set his heart alight. Be aware that like official owlcat romances, this romance path contains camping events, command room events, and in-base dialogs!
+Follow the full romance path for Woljif Jefto that should have been in the game to begin with. At last you can give the tiefling the love he deserves, but winning his heart won't be easy... The romance is available for both male and female characters, and begins in Act 3. It's a very slow burn, but if you're patient with him, you can set his heart alight. 
+
+Be aware that like official owlcat romances, this romance path contains wilderness camping events, command room events, and in-base dialogs, as well as additional content in existing scenes! You will miss out on content if you don't set up camp in wilderness maps once in a while, or if you don't ever visit the command room.
 
 ## How to install
 
@@ -27,7 +28,7 @@ For helping me get started with WOTR modding
 - Bubbles
 - ShadowRanger
 
-Credit where it's due to the TableTopTweaks mod, from which all content in the TTT_Content folder is shamelessly stolen!
+And credit where it's due to the TableTopTweaks mod, from which all content in the TTT_Content folder is shamelessly stolen!
 
 **Beta Testing**
 

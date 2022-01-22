@@ -318,19 +318,19 @@ namespace WOTR_WoljifRomanceMod
 
             DialogTools.CueAddAnswersList(c_What, L_2);
             DialogTools.ListAddAnswer(L_2, a_Lawful);
-            DialogTools.AnswerAlignmentShift(a_Lawful, "Lawful", "WRM_shift_7b_Lawful");
+            DialogTools.AnswerSetAlignmentShift(a_Lawful, "Lawful", "WRM_shift_7b_Lawful");
             DialogTools.AnswerAddNextCue(a_Lawful, c_Lawful);
             DialogTools.CueAddAnswersList(c_Lawful, L_3);
             DialogTools.ListAddAnswer(L_2, a_Good);
-            DialogTools.AnswerAlignmentShift(a_Good, "Good", "WRM_shift_7b_Good");
+            DialogTools.AnswerSetAlignmentShift(a_Good, "Good", "WRM_shift_7b_Good");
             DialogTools.AnswerAddNextCue(a_Good, c_Good);
             DialogTools.CueAddAnswersList(c_Good, L_3);
             DialogTools.ListAddAnswer(L_2, a_Chaotic);
-            DialogTools.AnswerAlignmentShift(a_Chaotic, "Chaotic", "WRM_shift_7b_Chaotic");
+            DialogTools.AnswerSetAlignmentShift(a_Chaotic, "Chaotic", "WRM_shift_7b_Chaotic");
             DialogTools.AnswerAddNextCue(a_Chaotic, c_Chaotic);
             DialogTools.CueAddAnswersList(c_Chaotic, L_3);
             DialogTools.ListAddAnswer(L_2, a_Evil);
-            DialogTools.AnswerAlignmentShift(a_Evil, "Evil", "WRM_shift_7b_Evil");
+            DialogTools.AnswerSetAlignmentShift(a_Evil, "Evil", "WRM_shift_7b_Evil");
             DialogTools.AnswerAddNextCue(a_Evil, c_Evil);
             DialogTools.CueAddAnswersList(c_Evil, L_3);
             DialogTools.ListAddAnswer(L_2, a_Neutral);
@@ -599,6 +599,8 @@ namespace WOTR_WoljifRomanceMod
             var C_JustAsk = DialogTools.CreateCue("WRM_8b_c_JustAsk");
             var C_LetsFindOut = DialogTools.CreateCue("WRM_8b_c_LetsFindOut");
             var C_ThatsFineToo = DialogTools.CreateCue("WRM_8b_c_ThatsFineToo");
+            var A_WaitReally = DialogTools.CreateAnswer("WRM_8b_a_WaitReally", true);
+            var C_DoesntEveryone = DialogTools.CreateCue("WRM_8b_c_DoesntEveryone");
             var ConfessionDialog = DialogTools.CreateDialog("WRM_8b_Confession", C_Waiting);
 
             DialogTools.CueAddContinue(C_Waiting, C_TooLate);
@@ -646,12 +648,15 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.CueAddAnswersList(C_NeverThoughtAboutIt, L_Sexuality);
 
             DialogTools.ListAddAnswer(L_Sexuality, A_NotGonnaWork);
+            DialogTools.ListAddAnswer(L_Sexuality, A_WaitReally);
             DialogTools.ListAddAnswer(L_Sexuality, A_LetMeShowYou);
             DialogTools.ListAddAnswer(L_Sexuality, A_YouSure);
             DialogTools.ListAddAnswer(L_Sexuality, A_MyFirstTimeToo);
             DialogTools.ListAddAnswer(L_Sexuality, A_IdLikeToTry);
             DialogTools.ListAddAnswer(L_Sexuality, A_NoThanks);
             DialogTools.AnswerAddNextCue(A_NotGonnaWork, C_WhatElseDoYouWant);
+            DialogTools.AnswerAddNextCue(A_WaitReally, C_DoesntEveryone);
+            DialogTools.CueAddAnswersList(C_DoesntEveryone, L_Sexuality);
             DialogTools.AnswerAddNextCue(A_LetMeShowYou, C_ChangeMyMind);
             DialogTools.AnswerAddNextCue(A_YouSure, C_ImSure);
             DialogTools.AnswerAddNextCue(A_MyFirstTimeToo, C_LetsFindOut);
@@ -972,6 +977,7 @@ namespace WOTR_WoljifRomanceMod
         {
             var romancebase = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomance");
             var WoljifDialog = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>("8a38eeddc0215a84ca441439bb96b8f4");
+            var irabethdead = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("b14e13f9359585e498fcd81ab95d4d7e");
 
             var BarksFlag = Resources.GetModBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("WRM_BedroomBarksFlag");
             var BarksEtude = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_BedroomBarksEtude");
@@ -1017,13 +1023,17 @@ namespace WOTR_WoljifRomanceMod
 
             // Alter Woljif's main Dialog tree when Flag is unlocked.
             var BarkConditional = ActionTools.ConditionalAction(ConditionalTools.CreateFlagLockCheck("WRM_EnableBedroomBarks", BarksFlag, false));
+            var bark5 = ActionTools.BarkAction("WRM_Barks_5", BarksEtude, Companions.Woljif);
+            var conditionalbark = ActionTools.ConditionalAction(ConditionalTools.CreateEtudeCondition("WRM_IrabethDead", irabethdead, "playing"));
+            ActionTools.ConditionalActionOnFalse(conditionalbark, ActionTools.MakeList(ActionTools.BarkAction("WRM_Barks_4", BarksEtude, Companions.Woljif)));
+            ActionTools.ConditionalActionOnTrue(conditionalbark, bark5);
             Kingmaker.ElementsSystem.GameAction[] BarkActions = 
                 {
                     ActionTools.BarkAction("WRM_Barks_1", BarksEtude, Companions.Woljif),
                     ActionTools.BarkAction("WRM_Barks_2", BarksEtude, Companions.Woljif),
                     ActionTools.BarkAction("WRM_Barks_3", BarksEtude, Companions.Woljif),
-                    ActionTools.BarkAction("WRM_Barks_4", BarksEtude, Companions.Woljif),
-                    ActionTools.BarkAction("WRM_Barks_5", BarksEtude, Companions.Woljif)
+                    conditionalbark,
+                    bark5
                 };
             ActionTools.ConditionalActionOnTrue(BarkConditional, ActionTools.MakeList(ActionTools.RandomAction(BarkActions)));
             DialogTools.DialogAddReplaceAction(WoljifDialog, BarkConditional);
@@ -1234,9 +1244,12 @@ namespace WOTR_WoljifRomanceMod
         {
             var successfulromance = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceFinished");
             var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceActive");
+            var marriageflag = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WantToMarry");
             var ThresholdDialog = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>("0e94cfa04d06db1438eb565f60c0012c");
             var ThresholdCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("bbcf85bfeb8e25c409ce45bbb95f234c");
-            
+            var irabethCue = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("WRM_Ira_c_SpeakFreely");
+            var irabethShoveOff = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("WRM_Ira_c_BackingOff");
+
             var c_Start = DialogTools.CreateCue("WRM_TH_c_Start");
             var L_WhyNow = DialogTools.CreateAnswersList("WRM_TH_L_WhyNow");
             var a_AlmostWon = DialogTools.CreateAnswer("WRM_TH_a_AlmostWon");
@@ -1252,6 +1265,12 @@ namespace WOTR_WoljifRomanceMod
             var c_Tears = DialogTools.CreateCue("WRM_TH_c_Tears");
             var c_Kiss = DialogTools.CreateCue("WRM_TH_c_Kiss");
             var c_FussyBoyfriend = DialogTools.CreateCue("WRM_TH_c_FussyBoyfriend");
+            var c_FussyBoyfriend2 = DialogTools.CreateCue("WRM_TH_c_FussyBoyfriend2", "WRM_TH_c_FussyBoyfriend");
+            var L_Marriage = DialogTools.CreateAnswersList("WRM_TH_L_Marriage");
+            var a_MarryMe = DialogTools.CreateAnswer("WRM_TH_a_MarryMe");
+            var a_WarToWin = DialogTools.CreateAnswer("WRM_TH_a_WarToWin");
+            var c_Marriage = DialogTools.CreateCue("WRM_TH_c_Marriage");
+            var c_ChangeTopic = DialogTools.CreateCue("WRM_TH_c_ChangeTopic");
 
             Kingmaker.ElementsSystem.Condition[] romanceconds = 
                 {
@@ -1284,7 +1303,23 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.AnswerAddNextCue(a_ICantPromise, c_Tears);
             DialogTools.CueAddContinue(c_YouCanCountOnMe, c_Kiss);
             DialogTools.CueAddContinue(c_Tears, c_Kiss);
+
+            Kingmaker.ElementsSystem.Condition[] discussedfuture =
+                {
+                    ConditionalTools.CreateCueSeenCondition("WRM_AlreadyDiscussedFuture", irabethCue),
+                    ConditionalTools.CreateCueSeenCondition("WRM_DidntTellIrabethOff", true, irabethShoveOff)
+                };
+
             DialogTools.CueAddContinue(c_Kiss, c_FussyBoyfriend);
+            DialogTools.CueAddCondition(c_FussyBoyfriend, ConditionalTools.CreateLogicCondition("WRM_DidDiscussFuture", discussedfuture));
+            DialogTools.ListAddCondition(L_Marriage, ConditionalTools.CreateLogicCondition("WRM_DidNotDiscussFuture", true, discussedfuture));
+            DialogTools.CueAddAnswersList(c_Kiss, L_Marriage);
+            DialogTools.ListAddAnswer(L_Marriage, a_MarryMe);
+            DialogTools.ListAddAnswer(L_Marriage, a_WarToWin);
+            DialogTools.AnswerAddNextCue(a_WarToWin, c_FussyBoyfriend2);
+            DialogTools.AnswerAddNextCue(a_MarryMe, c_Marriage);
+            DialogTools.AnswerAddOnSelectAction(a_MarryMe, ActionTools.StartEtudeAction(marriageflag));
+            DialogTools.CueAddContinue(c_Marriage, c_ChangeTopic);
         }
 
         public static void AlterEpilogue()
@@ -1299,11 +1334,16 @@ namespace WOTR_WoljifRomanceMod
             var normalPage = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintBookPage>("48f344caa8963c0429dd147b6ad00bee"); 
             var DefaultAscendedCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("3794b0f4f9a3b3244a90889ed120e78d");
             var DefaultGoodEndCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("fc31902e081372f4a89f479616b9c51b");
+            var irabethdead = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("b14e13f9359585e498fcd81ab95d4d7e");
+            var TricksterFinalJoke = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("10e6b2a8c754dae4b81e55ad6d0918b2");
+            var TricksterFixIt = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("fff2f6e49d4c7bb438ffe7a8f256d252");
 
             var WRM_Ascended = DialogTools.CreateCue("WRM_Epilogue_Ascended", DefaultAscendedCue.Speaker);
+            var WRM_Trickster = DialogTools.CreateCue("WRM_Epilogue_Trickster", DefaultAscendedCue.Speaker);
             var WRM_Heartbroken = DialogTools.CreateCue("WRM_Epilogue_Heartbroken", DefaultAscendedCue.Speaker);
             var WRM_Unmarried = DialogTools.CreateCue("WRM_Epilogue_Unmarried", DefaultAscendedCue.Speaker);
             var WRM_Married = DialogTools.CreateCue("WRM_Epilogue_Married", DefaultAscendedCue.Speaker);
+            var WRM_MarriedNoIrabeth = DialogTools.CreateCue("WRM_Epilogue_MarriedNoIrabeth", DefaultAscendedCue.Speaker);
             var WRM_Daeran = DialogTools.CreateCue("WRM_Epilogue_Daeran", DefaultAscendedCue.Speaker);
 
             var DaeranEnding = ConditionalTools.CreateLogicCondition("WRM_DaeranEnding", Kingmaker.ElementsSystem.Operation.Or);
@@ -1319,21 +1359,50 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.CueAddCondition(WRM_Ascended, RomanceIsActive);
             DialogTools.CueAddContinue(DefaultAscendedCue, WRM_Ascended);
 
+            DialogTools.CueAddCondition(WRM_Trickster, RomanceIsActive);
+            DialogTools.CueAddCondition(WRM_Trickster, ConditionalTools.CreateEtudeCondition("WRM_PlayerDead", playerSacrifice, "playing"));
+            DialogTools.CueAddCondition(WRM_Trickster, ConditionalTools.CreateAnswerSelectedCondition("WRM_TricksterJoke", TricksterFinalJoke));
+            DialogTools.CueAddCondition(WRM_Trickster, ConditionalTools.CreateAnswerSelectedCondition("WRM_PlayerDidntOverwrite", true, TricksterFixIt));
+            normalPage.Cues.Insert(2, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintCueBaseReference>(WRM_Trickster));
+
             DialogTools.CueAddCondition(WRM_Heartbroken, RomanceIsActive);
             DialogTools.CueAddCondition(WRM_Heartbroken, ConditionalTools.CreateEtudeCondition("WRM_PlayerDead", playerSacrifice, "playing"));
+            DialogTools.CueAddCondition(WRM_Heartbroken, ConditionalTools.CreateAnswerSelectedCondition("WRM_PlayerDidntOverwrite", true, TricksterFixIt));
+            DialogTools.CueAddCondition(WRM_Heartbroken, ConditionalTools.CreateAnswerSelectedCondition("WRM_NoTricksterJoke", true, TricksterFinalJoke));
             normalPage.Cues.Insert(2, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintCueBaseReference>(WRM_Heartbroken));
 
+            DialogTools.CueAddCondition(DefaultGoodEndCue, ConditionalTools.CreateCueSeenCondition("WRM_NotHeartbroken", true, WRM_Heartbroken));
+            DialogTools.CueAddCondition(DefaultGoodEndCue, ConditionalTools.CreateCueSeenCondition("WRM_NotTrickstered", true, WRM_Trickster));
+
+            Kingmaker.ElementsSystem.Condition[] aliveconds = 
+                {
+                    ConditionalTools.CreateEtudeCondition("WRM_PlayerNotDead", playerSacrifice, "playing", true),
+                    ConditionalTools.CreateAnswerSelectedCondition("WRM_PlayerDidOverwrite", TricksterFixIt)
+                };
+            var NotDeadOrIgnored = ConditionalTools.CreateLogicCondition("WRM_AliveOrIgnoredDeath", Kingmaker.ElementsSystem.Operation.Or, aliveconds);
             DialogTools.CueAddCondition(WRM_Unmarried, RomanceIsActive);
+            //DialogTools.CueAddCondition(WRM_Unmarried, ConditionalTools.CreateEtudeCondition("WRM_PlayerNotDead", playerSacrifice, "playing", true));
+            DialogTools.CueAddCondition(WRM_Unmarried, NotDeadOrIgnored);
             DialogTools.CueAddCondition(WRM_Unmarried, ConditionalTools.CreateEtudeCondition("WRM_Epilogue_NoMarriage", marriageflag, "playing", true));
             DialogTools.CueAddContinue(DefaultGoodEndCue, WRM_Unmarried, 0);
 
             DialogTools.CueAddCondition(WRM_Married, RomanceIsActive);
+            //DialogTools.CueAddCondition(WRM_Married, ConditionalTools.CreateEtudeCondition("WRM_PlayerNotDead", playerSacrifice, "playing", true));
+            DialogTools.CueAddCondition(WRM_Married, NotDeadOrIgnored);
             DialogTools.CueAddCondition(WRM_Married, ConditionalTools.CreateEtudeCondition("WRM_Epilogue_Marriage", marriageflag, "playing"));
+            DialogTools.CueAddCondition(WRM_Married, ConditionalTools.CreateEtudeCondition("WRM_IrabethAlive", irabethdead, "playing", true));
             DialogTools.CueAddContinue(DefaultGoodEndCue, WRM_Married, 0);
+
+            DialogTools.CueAddCondition(WRM_MarriedNoIrabeth, RomanceIsActive);
+            DialogTools.CueAddCondition(WRM_MarriedNoIrabeth, NotDeadOrIgnored);
+            DialogTools.CueAddCondition(WRM_MarriedNoIrabeth, ConditionalTools.CreateEtudeCondition("WRM_Epilogue_Marriage", marriageflag, "playing"));
+            DialogTools.CueAddCondition(WRM_MarriedNoIrabeth, ConditionalTools.CreateEtudeCondition("WRM_IrabethDead", irabethdead, "playing"));
+            DialogTools.CueAddContinue(DefaultGoodEndCue, WRM_MarriedNoIrabeth, 0);
 
             DialogTools.CueAddCondition(WRM_Daeran, DaeranEnding);
             DialogTools.CueAddContinue(WRM_Unmarried, WRM_Daeran);
             DialogTools.CueAddContinue(WRM_Married, WRM_Daeran);
+            DialogTools.CueAddContinue(WRM_MarriedNoIrabeth, WRM_Daeran);
 
             // Aeon ending
             var AeonMemories = Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("a8b030ebca6c9744bac633cff609b698");
