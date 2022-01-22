@@ -131,6 +131,22 @@ namespace WOTR_WoljifRomanceMod
             return result;
         }
 
+        public static Kingmaker.AreaLogic.Cutscenes.Commands.CommandControlCamera CamMoveCommand(FakeLocator position,
+                                                                                                 float zoom)
+        {
+            numcamfollows++;
+            var name = "camMove_" + numcamfollows.ToString();
+            var result = GenericCommand<Kingmaker.AreaLogic.Cutscenes.Commands.CommandControlCamera>(name);
+            result.Move = true;
+            result.MoveTarget = position;
+            result.Rotate = true;
+            result.RotateTarget = position.GetRotation();
+            result.TimingMode = Kingmaker.AreaLogic.Cutscenes.Commands.CommandControlCamera.TimingModeType.Snap;
+            result.ZoomTarget = zoom;
+            result.Zoom = true;
+            return result;
+        }
+
         /*******************************************************************************************************************
          * DELAY COMMAND
          * Waits a certain amount of time before proceeding to the next gate.

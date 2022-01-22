@@ -170,9 +170,9 @@ namespace WOTR_WoljifRomanceMod
     }
 
     // Meant to just pass a unit straight through to something that wants a unit evaluator, without actually doing anything
-    public class GenericUnitEvaluator : Kingmaker.ElementsSystem.UnitEvaluator
+    public class ActionSpawnedUnitEvaluator : Kingmaker.ElementsSystem.UnitEvaluator
     {
-        public UnitEntityData entity;
+        public SpawnUnit action;
         public override string GetCaption()
         {
             return "Generic Unit Evaluator";
@@ -180,12 +180,12 @@ namespace WOTR_WoljifRomanceMod
 
         public override UnitEntityData GetValueInternal()
         {
-            return entity;
+            return action.entity;
         }
 
-        public void setEntity(UnitEntityData data)
+        public void setAction(SpawnUnit inputaction)
         {
-            entity = data;
+            action = inputaction;
         }
     }
 
@@ -258,14 +258,21 @@ namespace WOTR_WoljifRomanceMod
         public Kingmaker.Blueprints.BlueprintUnit unit;
         public FakeLocator location;
         public Kingmaker.EntitySystem.Entities.UnitEntityData entity;
+        public UnityEngine.GameObject effect;
+        public bool spawneffect = false;
         public override string GetCaption()
         {
-            return "UNTESTED: Spawn a unit.";
+            return "Spawn a unit.";
         }
         public override void RunAction()
         {
             entity = Game.Instance.EntityCreator.SpawnUnit(unit, location.GetValue(), UnityEngine.Quaternion.identity, 
                                                            null);
+            
+            if (spawneffect)
+            {
+                Kingmaker.Visual.Particles.FxHelper.SpawnFxOnUnit(effect, entity.View);
+            }
         }
         public Kingmaker.EntitySystem.Entities.UnitEntityData GetEntity()
         {

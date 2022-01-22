@@ -1413,10 +1413,7 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.CueAddContinue(DefaultAeonCue, WRM_Aeon);
         }
 
-        // HERE BE DRAGONS. This part was cobbled together with the bare minimum of effort in order to not break games, without much regard for actual quality.
-        // Most of the animations and special effects don't work, and I can't be bothered to fix them right now.
-        // Honestly, I'm not even sure the mechanics fully work. All I tested for was that this sequence didn't immediately crash the game.
-        // YOU HAVE BEEN WARNED.
+        // HERE BE DRAGONS. I've tested this particular scene but now how it fits into the lich path as a whole.
         public static void AlterLichScene()
         {
             var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceActive");
@@ -1439,27 +1436,18 @@ namespace WOTR_WoljifRomanceMod
             var needSummonWJ = ConditionalTools.CreateLogicCondition("WRM_lich_NeedSummon", LoveAndSummons);
             ConditionalTools.CheckerAddCondition(((Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional)cue0048.OnShow.Actions[0]).ConditionsChecker, needSummonWJ);
             //   Add logic to cutscene
+            //   Steal special effects from Arueshalae
             var command = Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.CommandAction>("d9f06282ad7352641863159ee2c664be");
             var arutrue = ((Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional)command.Action.Actions[0]).IfTrue;
             var onspawn = ((Kingmaker.Designers.EventConditionActionSystem.Actions.Spawn)arutrue.Actions[0]).ActionsOnSpawn;
             var fxprefab = ((Kingmaker.Designers.EventConditionActionSystem.Actions.SpawnFx)onspawn.Actions[0]).FxPrefab;
             
-            var spawnaction = ActionTools.SpawnUnitAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnit>("766435873b1361c4287c351de194e5f9"), new FakeLocator(211.66f, 40.99f, -296.74f, 328f));
-            var eval = (GenericUnitEvaluator)Kingmaker.ElementsSystem.Element.CreateInstance(typeof(GenericUnitEvaluator));
-            eval.setEntity(spawnaction.GetEntity());
-            var transform = (Kingmaker.Designers.EventConditionActionSystem.Evaluators.UnitTransform)Kingmaker.ElementsSystem.Element.CreateInstance(typeof(Kingmaker.Designers.EventConditionActionSystem.Evaluators.UnitTransform));
-            transform.Unit = eval;
-            Kingmaker.ElementsSystem.GameAction[] spawnandeffects = 
-                {
-                    spawnaction,
-                    ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.SpawnFx>(bp =>
-                    {
-                       bp.Target = transform;
-                       bp.FxPrefab = fxprefab;
-                    })
-                };
+            var spawnaction = ActionTools.SpawnUnitAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnit>("766435873b1361c4287c351de194e5f9"), new FakeLocator(211.66f, 40.99f, -296.74f, 328f), fxprefab);
+            var eval = (ActionSpawnedUnitEvaluator)Kingmaker.ElementsSystem.Element.CreateInstance(typeof(ActionSpawnedUnitEvaluator));
+            eval.setAction(spawnaction);
+
             var woljifConditionalSpawn = ActionTools.ConditionalAction(ConditionalTools.CreateEtudeCondition("WRM_lich_WoljifRomance3", romanceactive, "playing"));
-            ActionTools.ConditionalActionOnTrue(woljifConditionalSpawn, ActionTools.MakeList(spawnandeffects));
+            ActionTools.ConditionalActionOnTrue(woljifConditionalSpawn, ActionTools.MakeList(spawnaction));
             var len = command.Action.Actions.Length;
             Array.Resize(ref command.Action.Actions, len+1);
             command.Action.Actions[len] = woljifConditionalSpawn;
@@ -1477,7 +1465,7 @@ namespace WOTR_WoljifRomanceMod
             var buff = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.AttachBuff>(bp =>
                 {
                     bp.m_Buff = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintBuffReference>(paralysis);
-                    bp.Target = /*CompanionTools.GetCompanionEvaluator(Companions.Woljif)*/ eval;
+                    bp.Target = eval;
                 });
             var buffifapplicable = ActionTools.ConditionalAction(ConditionalTools.CreateEtudeCondition("WRM_lich_WoljifRomance5", romanceactive, "playing"));
             ActionTools.ConditionalActionOnTrue(buffifapplicable, ActionTools.MakeList(buff));
@@ -1513,7 +1501,8 @@ namespace WOTR_WoljifRomanceMod
             WoljifCue4.Speaker.m_SpeakerPortrait = CompanionTools.GetCompanionReference(Companions.Woljif);
             var cutscene = Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.Cutscene>("442fb54c1eb24bd4cb6b991dfdc0179a");
             var playcutscene = ActionTools.PlayCutsceneAction(cutscene);
-            ActionTools.CutsceneActionAddParameter(playcutscene, "WRM_RomanceDeath_Woljif", "unit", /*CompanionTools.GetCompanionEvaluator(Companions.Woljif)*/ eval);
+            ActionTools.CutsceneActionAddParameter(playcutscene, "Unit", "Unit", eval);
+            // may have something to do with how the playcutscene action uses the evaluator?
             DialogTools.CueAddOnShowAction(WoljifCue4, playcutscene);
             var WoljifDeathFlag = EtudeTools.CreateFlag("WRM_KilledRomance_Woljif");
             DialogTools.CueAddOnShowAction(WoljifCue4, ActionTools.UnlockFlagAction(WoljifDeathFlag));

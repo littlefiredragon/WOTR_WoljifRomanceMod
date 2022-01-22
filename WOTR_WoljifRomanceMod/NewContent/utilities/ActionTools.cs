@@ -494,6 +494,19 @@ namespace WOTR_WoljifRomanceMod
             {
                 bp.unit = unit;
                 bp.location = location;
+                bp.spawneffect = false;
+            });
+            return action;
+        }
+        public static SpawnUnit SpawnUnitAction(Kingmaker.Blueprints.BlueprintUnit unit, FakeLocator location,
+                                                      UnityEngine.GameObject effect)
+        {
+            var action = GenericAction<SpawnUnit>(bp =>
+            {
+                bp.unit = unit;
+                bp.location = location;
+                bp.effect = effect;
+                bp.spawneffect = true;
             });
             return action;
         }
