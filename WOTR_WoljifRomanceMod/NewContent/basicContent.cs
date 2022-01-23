@@ -37,6 +37,7 @@ namespace WOTR_WoljifRomanceMod
             WRM_Act3.CreateTavernCommandRoomEvent();
             WRM_Act3.CreateTavernCutscene();
             WRM_Act3.CreateArgumentScene();
+            WRM_Act3.AlterPostQuestDialog();
             WRM_Act3.CreateReconciliation();
             WRM_Act3.MiscChanges();
             WRM_Act4.ModifyQuestTrigger();

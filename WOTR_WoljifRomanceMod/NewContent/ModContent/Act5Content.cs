@@ -9,33 +9,69 @@ using TabletopTweaks.Utilities;
 using UnityModManagerNet;
 using TabletopTweaks.Extensions;
 
+//##########################################################################################################################
+// ACT 5 & 6 CONTENT
+//  Adds Woljif to the existing Jealousy scene
+//  Adds Snow scene and the corresponding Command Room event
+//  Adds Confession scene and the corresponding Command Room event
+//  Adds Bedroom scene and barks for subsequent bedroom visits
+//  Alters Woljif's dialog while in a relationship
+//  Adds a conversation with Irabeth after establishing a relationship
+//  Alters Woljif's Threshold dialog when in a relationship
+//  Alters the scene in the Lich path where your romance is relevant.
+//  Alters the epilogue slides
+//  Makes some minor alterations to act 5 content.
+//##########################################################################################################################
+
 namespace WOTR_WoljifRomanceMod
 {
     public static class WRM_Act5
-    { 
+    {
+        /*******************************************************************************************************************
+         * MODIFY JEALOUSY SCENE
+         * Adds Woljif into the existing Jealousy scene. Also fixes some flags that were broken in the base game.
+         ******************************************************************************************************************/
         public static void AlterJealousyScene()
         {
-            var romance = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomance");
-            var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceActive");
-            var affectiongatesuccess = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceGatePassed");
+            var romance = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>
+                          ("WRM_WoljifRomance");
+            var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>
+                                ("WRM_WoljifRomanceActive");
+            var affectiongatesuccess = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>
+                                       ("WRM_WoljifRomanceGatePassed");
 
-            var teleportcommand = Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.CommandAction>("2ecec1045eb9d9b41a2a30a6bb477e99");
-            var jealousycutscene = Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.Cutscene>("c72670de688ed91478c673b9e451a84e");
-            var jealousygate2 = Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.Gate>("ce447620870b9fc4da3d611d7f68c316");
-            var deadex = Resources.GetBlueprint<Kingmaker.ElementsSystem.ActionsHolder>("f1d5126b188f47eea5f28763f27a45ca");
-            var recount = Resources.GetBlueprint<Kingmaker.ElementsSystem.ActionsHolder>("2660cbace62d42f38d543c822dbb660f");
-            var jealousyetude = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("4799a25da39295b43a6eefcd2cb2b4a7");
-            var woljifetudegroup = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>("97e2c4ec46765f143bf21bc9578b22f7");
+            var teleportcommand = Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.CommandAction>
+                                  ("2ecec1045eb9d9b41a2a30a6bb477e99");
+            var jealousycutscene = Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.Cutscene>
+                                   ("c72670de688ed91478c673b9e451a84e");
+            var jealousygate2 = Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.Gate>
+                                ("ce447620870b9fc4da3d611d7f68c316");
+            var deadex = Resources.GetBlueprint<Kingmaker.ElementsSystem.ActionsHolder>
+                         ("f1d5126b188f47eea5f28763f27a45ca");
+            var recount = Resources.GetBlueprint<Kingmaker.ElementsSystem.ActionsHolder>
+                          ("2660cbace62d42f38d543c822dbb660f");
+            var jealousyetude = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>
+                                ("4799a25da39295b43a6eefcd2cb2b4a7");
+            var woljifetudegroup = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>
+                                   ("97e2c4ec46765f143bf21bc9578b22f7");
+            var romancecounter = Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>
+                                 ("5db9ec615236f044083a5c6bd3292432");
 
-            Kingmaker.ElementsSystem.Condition[] RomanceIsActiveConds = {
-                ConditionalTools.CreateEtudeCondition("WRM_RomanceActiveJealousy", romanceactive, "playing"),
-                ConditionalTools.CreateEtudeCondition("WRM_AffectionGateJealousy", affectiongatesuccess, "playing")
+
+            Kingmaker.ElementsSystem.Condition[] RomanceIsActiveConds = 
+                {
+                    ConditionalTools.CreateEtudeCondition("WRM_RomanceActiveJealousy", romanceactive, "playing"),
+                    ConditionalTools.CreateEtudeCondition("WRM_AffectionGateJealousy", affectiongatesuccess, "playing")
                 };
             var WoljifRomanceIsActiveCond = ConditionalTools.CreateLogicCondition("WRM_RomanceConds", RomanceIsActiveConds);
 
             // Add Woljif to the jealousy scene support logic
+
             // Jealousy trigger logic
-            jealousyetude.m_ConflictingGroups.Add(Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintEtudeConflictingGroupReference>(woljifetudegroup));
+            jealousyetude.m_ConflictingGroups.Add(Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                                  <Kingmaker.Blueprints.BlueprintEtudeConflictingGroupReference>
+                                                  (woljifetudegroup));
+
             // DeadEx logic
             Kingmaker.ElementsSystem.Condition[] DeadExConds = {
                 ConditionalTools.CreateEtudeCondition("WRM_RomanceActiveJealousyDE", romanceactive, "playing"),
@@ -46,50 +82,64 @@ namespace WOTR_WoljifRomanceMod
             var Woljif_deadExLogic = ActionTools.ConditionalAction(deadexlogiccond);
             Kingmaker.ElementsSystem.GameAction[] DeadExActions = {
                 ActionTools.CompleteEtudeAction(romanceactive),
-                ActionTools.IncrementFlagAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("5db9ec615236f044083a5c6bd3292432"),-1)
+                ActionTools.IncrementFlagAction(romancecounter,-1)
                 };
             ActionTools.ConditionalActionOnTrue(Woljif_deadExLogic, DeadExActions);
             var deadexlen = deadex.Actions.Actions.Length;
             Array.Resize(ref deadex.Actions.Actions, deadexlen + 1);
             deadex.Actions.Actions[deadexlen] = Woljif_deadExLogic;
+
             // Recount logic
             var WoljifRecountLogic = ActionTools.ConditionalAction(WoljifRomanceIsActiveCond);
-            ActionTools.ConditionalActionOnTrue(WoljifRecountLogic, ActionTools.MakeList(ActionTools.IncrementFlagAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("5db9ec615236f044083a5c6bd3292432"), 1)));
+            ActionTools.ConditionalActionOnTrue(WoljifRecountLogic, ActionTools.MakeList
+                                                (ActionTools.IncrementFlagAction(romancecounter, 1)));
             var recountlen = recount.Actions.Actions.Length;
             Array.Resize(ref recount.Actions.Actions, recountlen + 1);
             recount.Actions.Actions[recountlen] = WoljifRecountLogic;
+
             // Move Woljif into place for jealousy scene
             // The existing mechanism for moving characters into position is absolutely insane.
             // Instead, I'm just going to have Woljif lean against the wall in the corner.
             var WoljifJealousyLocation = new FakeLocator(183.41f, 78.65f, -5.2f, 227.0f);
 
             var WoljifTeleport = ActionTools.ConditionalAction(WoljifRomanceIsActiveCond);
-            Kingmaker.ElementsSystem.GameAction[] TranslocateActions = {
-                ActionTools.HideUnitAction(jealousycutscene, Companions.Woljif,true),
-                ActionTools.TranslocateAction(jealousycutscene, Companions.Woljif, WoljifJealousyLocation)
+            Kingmaker.ElementsSystem.GameAction[] TranslocateActions = 
+                {
+                    ActionTools.HideUnitAction(jealousycutscene, Companions.Woljif,true),
+                    ActionTools.TranslocateAction(jealousycutscene, Companions.Woljif, WoljifJealousyLocation)
                 };
             ActionTools.ConditionalActionOnTrue(WoljifTeleport, TranslocateActions);
 
-            Kingmaker.Designers.EventConditionActionSystem.Actions.TeleportParty teleportaction = (Kingmaker.Designers.EventConditionActionSystem.Actions.TeleportParty) teleportcommand.Action.Actions[0];
+            Kingmaker.Designers.EventConditionActionSystem.Actions.TeleportParty teleportaction = 
+                (Kingmaker.Designers.EventConditionActionSystem.Actions.TeleportParty) teleportcommand.Action.Actions[0];
             var len = teleportaction.AfterTeleport.Actions.Length;
             Array.Resize(ref teleportaction.AfterTeleport.Actions, len + 1);
             teleportaction.AfterTeleport.Actions[len] = WoljifTeleport;
 
-            var WoljifAnimationTrack = CutsceneTools.CreateTrack(jealousygate2, CommandTools.GenericAnimationCommand("WRM_WallLean", "643323b9c4819734281718e563720d0f", Companions.Woljif, true));
+            var WoljifAnimationTrack = CutsceneTools.CreateTrack(jealousygate2, CommandTools.GenericAnimationCommand
+                                       ("WRM_WallLean", "643323b9c4819734281718e563720d0f", Companions.Woljif, true));
             var WoljifAnimationGate = CutsceneTools.CreateGate("WRM_WoljifJealousyAnimationGate",WoljifAnimationTrack);
-            jealousycutscene.m_Tracks[2].m_EndGate = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.GateReference>(WoljifAnimationGate);
+            jealousycutscene.m_Tracks[2].m_EndGate = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                                     <Kingmaker.Blueprints.GateReference>(WoljifAnimationGate);
 
             var Woljif_Exit = new FakeLocator(-8.844f, 56.02f, 0.325f, 275.0469f);
             var gate3 = CutsceneTools.CreateGate("WRM_JealousyEndGate");
-            var WoljifMoveBackTrack = CutsceneTools.CreateTrack(gate3, CommandTools.TranslocateCommand(Companions.Woljif, Woljif_Exit));
+            var WoljifMoveBackTrack = CutsceneTools.CreateTrack(gate3, CommandTools.TranslocateCommand
+                                      (Companions.Woljif, Woljif_Exit));
             jealousygate2.m_Tracks.Add(WoljifMoveBackTrack);
 
             // fetch dialog blueprints for altering or referencing
-            var jealousyDialog = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>("9ce7c9655f7d1e848a25f7eadaa9b48b");
-            var answerslist0013 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("22d6e1bd9be82ed4793e46b9257d2290");
-            var cuesequence0006 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCueSequence>("0664882547b6b714a921276a32cde387");
-            var cuesequence0015 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCueSequence>("33338fe2060ee2648887fb110743a166");
-            var cuesequence0038 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCueSequence>("de484d4db94e48540a993008eb726d11");
+            var jealousyDialog = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>
+                                 ("9ce7c9655f7d1e848a25f7eadaa9b48b");
+            var answerslist0013 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>
+                                  ("22d6e1bd9be82ed4793e46b9257d2290");
+            var cuesequence0006 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCueSequence>
+                                  ("0664882547b6b714a921276a32cde387");
+            var cuesequence0015 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCueSequence>
+                                  ("33338fe2060ee2648887fb110743a166");
+            var cuesequence0038 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCueSequence>
+                                  ("de484d4db94e48540a993008eb726d11");
+
             // Add new dialog
             var C_IcyStare = DialogTools.CreateCue("WRM_jealousy_c_IcyStare");
             DialogTools.CueSetSpeaker(C_IcyStare, Companions.Woljif, false);
@@ -105,19 +155,24 @@ namespace WOTR_WoljifRomanceMod
             var WoljifJealousyFlag = EtudeTools.CreateFlag("WRM_Jealousy_Woljif");
 
             DialogTools.CueAddCondition(C_IcyStare, WoljifRomanceIsActiveCond);
-            DialogTools.CueAddOnShowAction(C_IcyStare, ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.UnlockFlag>(bp =>
+            DialogTools.CueAddOnShowAction(C_IcyStare, ActionTools.GenericAction
+                                           <Kingmaker.Designers.EventConditionActionSystem.Actions.UnlockFlag>(bp =>
                 {
-                    bp.m_flag = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintUnlockableFlagReference>(WoljifJealousyFlag);
+                    bp.m_flag = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                <Kingmaker.Blueprints.BlueprintUnlockableFlagReference>(WoljifJealousyFlag);
                     bp.flagValue = 1;
                 }));
             DialogTools.CueAddAnswersList(C_IcyStare, answerslist0013);
             DialogTools.CueAddContinue(C_IcyStare, cuesequence0006);
 
             DialogTools.CueAddCondition(C_WhatGives, WoljifRomanceIsActiveCond);
-            DialogTools.CueAddCondition(C_WhatGives, ConditionalTools.CreateCueSeenCondition("WRM_DidNotSeeIcyStare", true, C_IcyStare));
-            DialogTools.CueAddOnShowAction(C_WhatGives, ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.UnlockFlag>(bp =>
+            DialogTools.CueAddCondition(C_WhatGives, ConditionalTools.CreateCueSeenCondition("WRM_DidNotSeeIcyStare", 
+                                        true, C_IcyStare));
+            DialogTools.CueAddOnShowAction(C_WhatGives, ActionTools.GenericAction
+                                           <Kingmaker.Designers.EventConditionActionSystem.Actions.UnlockFlag>(bp =>
             {
-                bp.m_flag = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintUnlockableFlagReference>(WoljifJealousyFlag);
+                bp.m_flag = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                            <Kingmaker.Blueprints.BlueprintUnlockableFlagReference>(WoljifJealousyFlag);
                 bp.flagValue = 1;
             }));
             DialogTools.CueSequenceInsertCue(cuesequence0006, C_WhatGives, 4);
@@ -126,39 +181,48 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.CueSequenceInsertCue(cuesequence0015, C_NoSharing, 5);
 
             DialogTools.AnswerAddShowCondition(A_ChooseWoljif, WoljifRomanceIsActiveCond);
+
             // Not gonna build the dump-everyone-else logic myself, just gonna steal from the reject-all option
-            var dumpall = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("49d46039853452b46bcc17798e23c42f");
+            var dumpall = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>
+                          ("49d46039853452b46bcc17798e23c42f");
             A_ChooseWoljif.OnSelect = Helpers.CreateCopy< Kingmaker.ElementsSystem.ActionList >(dumpall.OnSelect);
             DialogTools.AnswerAddNextCue(A_ChooseWoljif, C_WoljifChosen);
             DialogTools.ListAddAnswer(answerslist0013, A_ChooseWoljif, 7);
 
             DialogTools.CueAddContinue(C_WoljifChosen, cuesequence0038);
 
-            /*Kingmaker.ElementsSystem.Condition[] RejectedWoljif = {
-                ConditionalTools.CreateEtudeCondition("WRM_WoljifRomanceEnded",romanceactive,"completed"),
-                ConditionalTools.CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.FlagUnlocked>("WRM_WoljifJealousyUnlocked", bp =>
-                    {
-                        bp.m_ConditionFlag = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintUnlockableFlagReference>(WoljifJealousyFlag);
-                    })
-                };*/
-            DialogTools.CueAddCondition(C_Heartbroken, ConditionalTools.CreateLogicCondition("WRM_WoljifRejected1", ConditionalTools.CreateEtudeCondition("WRM_WoljifRomanceEnded", romanceactive, "completed")));
-            DialogTools.CueAddCondition(C_Heartbroken, ConditionalTools.CreateLogicCondition("WRM_WoljifRejected2", ConditionalTools.CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.FlagUnlocked>("WRM_WoljifJealousyUnlocked", bp =>
+            DialogTools.CueAddCondition(C_Heartbroken, ConditionalTools.CreateLogicCondition("WRM_WoljifRejected1", 
+                                        ConditionalTools.CreateEtudeCondition("WRM_WoljifRomanceEnded", romanceactive, 
+                                        "completed")));
+            DialogTools.CueAddCondition(C_Heartbroken, ConditionalTools.CreateLogicCondition("WRM_WoljifRejected2", 
+                                        ConditionalTools.CreateCondition
+                                        <Kingmaker.Designers.EventConditionActionSystem.Conditions.FlagUnlocked>
+                                        ("WRM_WoljifJealousyUnlocked", bp =>
                 {
-                    bp.m_ConditionFlag = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintUnlockableFlagReference>(WoljifJealousyFlag);
+                    bp.m_ConditionFlag = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                         <Kingmaker.Blueprints.BlueprintUnlockableFlagReference>(WoljifJealousyFlag);
                 })));
             DialogTools.CueSequenceInsertCue(cuesequence0038, C_Heartbroken, 5);
 
             // Add new logic to existing dialog
-            var choseSosiel = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("e2f8eca4d1413e94392d482057692c3b");
-            var choseWenduag = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("a4c7d27ec3117114683fbec7c5b7b413");
-            var choseLann = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("b18cf3ef54f5cff45a5553c8f158a65e");
-            var choseArue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("1953c294863805e48932c4d8a05429be");
-            var choseDaeran = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("3f2350fc8f4b04f4f91e7415a2121fce");
-            var choseCam = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("6ad9dce57025edc4f8ba38e9036739bc");
-            var choseQueen = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("ff1b7853e56bc22439fb48fa199b5ca8");
+            var choseSosiel = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>
+                              ("e2f8eca4d1413e94392d482057692c3b");
+            var choseWenduag = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>
+                               ("a4c7d27ec3117114683fbec7c5b7b413");
+            var choseLann = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>
+                            ("b18cf3ef54f5cff45a5553c8f158a65e");
+            var choseArue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>
+                            ("1953c294863805e48932c4d8a05429be");
+            var choseDaeran = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>
+                              ("3f2350fc8f4b04f4f91e7415a2121fce");
+            var choseCam = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>
+                           ("6ad9dce57025edc4f8ba38e9036739bc");
+            var choseQueen = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>
+                             ("ff1b7853e56bc22439fb48fa199b5ca8");
 
             var RejectWoljifAction = ActionTools.ConditionalAction(WoljifRomanceIsActiveCond);
-            ActionTools.ConditionalActionOnTrue(RejectWoljifAction, ActionTools.MakeList(ActionTools.CompleteEtudeAction(romanceactive)));
+            ActionTools.ConditionalActionOnTrue(RejectWoljifAction, ActionTools.MakeList(
+                                                ActionTools.CompleteEtudeAction(romanceactive)));
 
             DialogTools.AnswerAddOnSelectAction(choseSosiel, RejectWoljifAction);
             DialogTools.AnswerAddOnSelectAction(choseWenduag, RejectWoljifAction);
@@ -171,25 +235,47 @@ namespace WOTR_WoljifRomanceMod
 
             // Whoever starts the jealousy dialog, except Sosiel, does not get their jealousy flag set, and thus won't
             // have rejection dialog if not chosen. So let's fix that for Owlcat while we're in here.
-            var WenduagBrokenCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("570ec5939426bc4429347eed57184fd7");
-            var WenduagWorkingCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("3235af45abc085f45a8a37ac851ad790");
+            var WenduagBrokenCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                                   ("570ec5939426bc4429347eed57184fd7");
+            var WenduagWorkingCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                                    ("3235af45abc085f45a8a37ac851ad790");
             WenduagBrokenCue.OnShow = WenduagWorkingCue.OnShow;
-            var LannBrokenCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("7501c07ac346fbf419c61dbd6b042113");
-            var LannWorkingCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("8d1334089913d02479714b6c5b14d65a");
+            var LannBrokenCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                                ("7501c07ac346fbf419c61dbd6b042113");
+            var LannWorkingCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                                 ("8d1334089913d02479714b6c5b14d65a");
             LannBrokenCue.OnShow = LannWorkingCue.OnShow;
-            var ArueBrokenCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("f96061a260cf80b40b95bd4f88cb2f65");
-            var ArueWorkingCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("11548b1c9893b044d979b1f4974baa70");
+            var ArueBrokenCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                                ("f96061a260cf80b40b95bd4f88cb2f65");
+            var ArueWorkingCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                                 ("11548b1c9893b044d979b1f4974baa70");
             ArueBrokenCue.OnShow = ArueWorkingCue.OnShow;
-            var DaeranBrokenCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("6831849758f30c14d9acdf895cced267");
-            var DaeranWorkingCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("21550d8e72249ad4a8bfc2597dc940ce");
+            var DaeranBrokenCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                                  ("6831849758f30c14d9acdf895cced267");
+            var DaeranWorkingCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                                   ("21550d8e72249ad4a8bfc2597dc940ce");
             DaeranBrokenCue.OnShow = DaeranWorkingCue.OnShow;
         }
 
+        /*******************************************************************************************************************
+         * CREATE SNOW INVITE (COMMAND ROOM EVENT)
+         * Adds the crusade notification card and command room cutscene for Woljif's invitation to meet him in the alley.
+         ******************************************************************************************************************/
         public static void AddSnowSceneInvite()
         {
             var romancebase = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomance");
-            var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceActive");
-            var Act5 = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("faf70d5071e52d145bfb686244200452");
+            var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>
+                                ("WRM_WoljifRomanceActive");
+            var Act5 = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>
+                       ("faf70d5071e52d145bfb686244200452");
+            var Capital_KTC_group = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>
+                                    ("10d01be767521a340978c8e57ab536b6");
+            var Capital_WoljifCompanion_group = Resources.GetBlueprint
+                                                <Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>
+                                                ("97e2c4ec46765f143bf21bc9578b22f7");
+            var cutscenetemplate = Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.Cutscene>
+                                   ("e8d44f13de8b6154687a05f42f767eb5");
+
 
             // Create invitation dialog
             var C_MeetMeTonight = DialogTools.CreateCue("WRM_7a_c_MeetMeTonight");
@@ -207,66 +293,82 @@ namespace WOTR_WoljifRomanceMod
             var InviteDialog = DialogTools.CreateDialog("WRM_7a_InvitationDialog", C_MeetMeTonight);
 
 
-            // Create the mechanics of the scene
+            // Create the notification
             var NotificationEtude = EtudeTools.CreateEtude("WRM_SnowInvite_Notification", romancebase, false, false);
-            var EventEtude = EtudeTools.CreateEtude("WRM_SnowInvite_Event", NotificationEtude, true, true);
             var Notification = EventTools.CreateCommandRoomEvent("WRM_note_7a_Name", "WRM_note_7a_Desc");
             var NotificationCounter = EtudeTools.CreateFlag("WRM_SnowInviteFlag");
-            EventTools.AddResolution(Notification, Kingmaker.Kingdom.Blueprints.EventResult.MarginType.Fail, "WRM_note_7a_Ignored");
-            EventTools.AddResolution(Notification, Kingmaker.Kingdom.Blueprints.EventResult.MarginType.Success, "WRM_note_7a_Complete");
+            EventTools.AddResolution(Notification, Kingmaker.Kingdom.Blueprints.EventResult.MarginType.Fail, 
+                                     "WRM_note_7a_Ignored");
+            EventTools.AddResolution(Notification, Kingmaker.Kingdom.Blueprints.EventResult.MarginType.Success, 
+                                     "WRM_note_7a_Complete");
 
             Kingmaker.ElementsSystem.GameAction[] StartNotification =
                 {
                     ActionTools.IncrementFlagAction(NotificationCounter),
-                    ActionTools.ConditionalAction(ConditionalTools.CreateFlagCheck("WRM_DontDoubleSnow",NotificationCounter, 2, 1000000, true))
+                    ActionTools.ConditionalAction(ConditionalTools.CreateFlagCheck
+                                                  ("WRM_DontDoubleSnow",NotificationCounter, 2, 1000000, true))
                 };
-            ActionTools.ConditionalActionOnTrue((Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional)StartNotification[1], ActionTools.StartCommandRoomEventAction(Notification));
+            ActionTools.ConditionalActionOnTrue((Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional)
+                                               StartNotification[1], ActionTools.StartCommandRoomEventAction(Notification));
             EtudeTools.EtudeAddOnPlayTrigger(NotificationEtude, ActionTools.MakeList(StartNotification));
-            //EtudeTools.EtudeAddOnPlayTrigger(NotificationEtude, ActionTools.MakeList(ActionTools.StartCommandRoomEventAction(Notification)));
-            //EtudeTools.EtudeAddOnDeactivateTrigger(NotificationEtude, ActionTools.MakeList(ActionTools.EndCommandRoomEventAction(Notification)));
-            EtudeTools.EtudeAddOnCompleteTrigger(NotificationEtude, ActionTools.MakeList(ActionTools.EndCommandRoomEventAction(Notification)));
-            var Capital_KTC_group = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>("10d01be767521a340978c8e57ab536b6");
-            var Capital_WoljifCompanion_group = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>("97e2c4ec46765f143bf21bc9578b22f7");
+            EtudeTools.EtudeAddOnCompleteTrigger(NotificationEtude, ActionTools.MakeList
+                                                 (ActionTools.EndCommandRoomEventAction(Notification)));
+
+            // Create the event etude
+            var EventEtude = EtudeTools.CreateEtude("WRM_SnowInvite_Event", NotificationEtude, true, true);
             EtudeTools.EtudeAddConflictingGroups(EventEtude, Capital_KTC_group);
             EtudeTools.EtudeAddConflictingGroups(EventEtude, Capital_WoljifCompanion_group);
-            EtudeTools.EtudeAddActivationCondition(EventEtude, ConditionalTools.CreateEtudeGroupCondition("WRM_SnowTrigger", Capital_KTC_group, true));
-            EtudeTools.EtudeAddActivationCondition(EventEtude, ConditionalTools.CreateEtudeCondition("WRM_SnowMeansLove", romanceactive, "playing"));
+            EtudeTools.EtudeAddActivationCondition(EventEtude, ConditionalTools.CreateEtudeGroupCondition
+                                                   ("WRM_SnowTrigger", Capital_KTC_group, true));
+            EtudeTools.EtudeAddActivationCondition(EventEtude, ConditionalTools.CreateEtudeCondition
+                                                   ("WRM_SnowMeansLove", romanceactive, "playing"));
 
             // Parameterized cutscene stuff.
             var unhideaction = ActionTools.HideUnitAction(EventEtude, Companions.Woljif, true);
-            var playscene = ActionTools.PlayCutsceneAction(Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.Cutscene>("e8d44f13de8b6154687a05f42f767eb5"));
-            ActionTools.CutsceneActionAddParameter(playscene, "Unit", "unit", CompanionTools.GetCompanionEvaluator(Companions.Woljif, EventEtude));
-            Kingmaker.ElementsSystem.Dialog dialogeval = (Kingmaker.ElementsSystem.Dialog)Kingmaker.ElementsSystem.Element.CreateInstance(typeof(Kingmaker.ElementsSystem.Dialog));
-            dialogeval.m_Value = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintDialogReference>(InviteDialog);
+            var playscene = ActionTools.PlayCutsceneAction(cutscenetemplate);
+            ActionTools.CutsceneActionAddParameter(playscene, "Unit", "unit", 
+                                                   CompanionTools.GetCompanionEvaluator(Companions.Woljif, EventEtude));
+            Kingmaker.ElementsSystem.Dialog dialogeval = (Kingmaker.ElementsSystem.Dialog)
+                                                         Kingmaker.ElementsSystem.Element.CreateInstance
+                                                         (typeof(Kingmaker.ElementsSystem.Dialog));
+            dialogeval.m_Value = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                 <Kingmaker.Blueprints.BlueprintDialogReference>(InviteDialog);
             ActionTools.CutsceneActionAddParameter(playscene, "Dialog", "blueprint", dialogeval);
-            Kingmaker.ElementsSystem.EtudeBlueprint etudeeval = (Kingmaker.ElementsSystem.EtudeBlueprint)Kingmaker.ElementsSystem.Element.CreateInstance(typeof(Kingmaker.ElementsSystem.EtudeBlueprint));
-            etudeeval.m_Value = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintEtudeReference>(EventEtude);
+            Kingmaker.ElementsSystem.EtudeBlueprint etudeeval = (Kingmaker.ElementsSystem.EtudeBlueprint)
+                                                                Kingmaker.ElementsSystem.Element.CreateInstance
+                                                                (typeof(Kingmaker.ElementsSystem.EtudeBlueprint));
+            etudeeval.m_Value = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                <Kingmaker.Blueprints.BlueprintEtudeReference>(EventEtude);
             ActionTools.CutsceneActionAddParameter(playscene, "Etude", "blueprint", etudeeval);
 
             Kingmaker.ElementsSystem.GameAction[] actions = { unhideaction, playscene };
             EtudeTools.EtudeAddOnPlayTrigger(EventEtude, ActionTools.MakeList(actions));
 
-            EventEtude.m_LinkedAreaPart = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintAreaPartReference>(Resources.GetBlueprint<Kingmaker.Blueprints.Area.BlueprintAreaPart>("2570015799edf594daf2f076f2f975d8"));
+            EventEtude.m_LinkedAreaPart = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                          <Kingmaker.Blueprints.BlueprintAreaPartReference>
+                                          (Resources.GetBlueprint<Kingmaker.Blueprints.Area.BlueprintAreaPart>
+                                          ("2570015799edf594daf2f076f2f975d8"));
 
 
             // Timer
-            //var SnowTimer = EtudeTools.CreateEtude("WRM_TimerBeforeSnowScene", romanceactive, false, false);
-            //Kingmaker.ElementsSystem.GameAction[] delayedactions = { ActionTools.StartEtudeAction(EventEtude), ActionTools.CompleteEtudeAction(SnowTimer) };
-            //EtudeTools.EtudeAddDelayedAction(SnowTimer, 10, ActionTools.MakeList(delayedactions));
-            // DEBUG VERSION WITH SHORTER TIMER
-            //EtudeTools.EtudeAddDelayedAction(SnowTimer, 2, ActionTools.MakeList(delayedactions));
-            //Act5.m_StartsWith.Add(Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintEtudeReference>(SnowTimer));
-
-            
             var SnowTimer = WoljifRomanceMod.Clock.AddTimer("WRM_Timers_Snow");
             var SnowTimerEtude = EtudeTools.CreateEtude("WRM_Timers_SnowEtude", romancebase, false, false);
-            EtudeTools.EtudeAddActivationCondition(SnowTimerEtude, ConditionalTools.CreateFlagCheck("WRM_Timers_SnowTrigger", SnowTimer.time, 10, 1000000));
-            Kingmaker.ElementsSystem.GameAction[] delayedactions = { ActionTools.StartEtudeAction(EventEtude), ActionTools.CompleteEtudeAction(SnowTimerEtude) };
+            EtudeTools.EtudeAddActivationCondition(SnowTimerEtude, ConditionalTools.CreateFlagCheck
+                                                   ("WRM_Timers_SnowTrigger", SnowTimer.time, 10, 1000000));
+            Kingmaker.ElementsSystem.GameAction[] delayedactions = 
+                {
+                    ActionTools.StartEtudeAction(EventEtude), 
+                    ActionTools.CompleteEtudeAction(SnowTimerEtude) 
+                };
             EtudeTools.EtudeAddOnPlayTrigger(SnowTimerEtude, ActionTools.MakeList(delayedactions));
             EtudeTools.EtudeAddOnPlayTrigger(Act5, ActionTools.MakeList(ActionTools.IncrementFlagAction(SnowTimer.active)));
             EtudeTools.EtudeAddOnPlayTrigger(Act5, ActionTools.MakeList(ActionTools.StartEtudeAction(SnowTimerEtude)));
         }
 
+        /*******************************************************************************************************************
+         * CREATE SNOW SCENE
+         * Adds the snow scene, in which Woljif meets the player in a snowy alley and asks them to run away with him.
+         ******************************************************************************************************************/
         public static void AddSnowCutscene()
         {
             // Build dialog tree
@@ -339,7 +441,8 @@ namespace WOTR_WoljifRomanceMod
 
             DialogTools.ListAddAnswer(L_3, a_ThisIsntLikeYou);
             DialogTools.ListAddAnswer(L_3, a_IDontWannaLoseYou);
-            DialogTools.AnswerAddShowCondition(a_IDontWannaLoseYou, ConditionalTools.CreateCueSeenCondition("WRM_sawIDontWannaLoseYou", c_IDontWannaLoseYou, true));
+            DialogTools.AnswerAddShowCondition(a_IDontWannaLoseYou, ConditionalTools.CreateCueSeenCondition
+                                               ("WRM_sawIDontWannaLoseYou", c_IDontWannaLoseYou, true));
             DialogTools.ListAddAnswer(L_3, a_InTooDeep);
             DialogTools.ListAddAnswer(L_3, a_ImStaying);
             DialogTools.AnswerAddNextCue(a_ThisIsntLikeYou, c_IDontWannaLoseYou);
@@ -350,6 +453,11 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.AnswerAddNextCue(a_ImStaying, c_NoWay);
             DialogTools.CueAddContinue(c_AlrightFine, c_IShouldGo);
             DialogTools.CueAddContinue(c_NoWay, c_IShouldGo);
+
+            // Add animations
+            c_ThereYouAre.Animation = Kingmaker.DialogSystem.Blueprints.DialogAnimation.Wave;
+            c_IDidntMakeThem.Animation = Kingmaker.DialogSystem.Blueprints.DialogAnimation.HeadScratch;
+            c_NoWay.Animation = Kingmaker.DialogSystem.Blueprints.DialogAnimation.Angry;
 
             // Locators
             var Snow_CameraLoc = new FakeLocator(-1.0f, 60.23f, -70.36f, 1.34f);
@@ -363,6 +471,7 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.DialogAddStartAction(SnowDialog, ActionTools.StartMusic("RomanceTheme"));
             DialogTools.CueAddOnStopAction(c_IShouldGo, ActionTools.StopMusic());
 
+            //---------------------------------------------------------------------------------------------------------
             // Cutscene 1, to play immediately
             //   Track 0A
             //      Command: Lock Control
@@ -374,33 +483,45 @@ namespace WOTR_WoljifRomanceMod
             //   Track 1A 
             //      Command: Start Dialog
             //      EndGate: None
+            //---------------------------------------------------------------------------------------------------------
 
-            // Create Track 1A
+            // Gate1
+            //   Track 1A 
+            //      Command: Start Dialog
+            //      EndGate: None
             var Track1A = CutsceneTools.CreateTrack(null, CommandTools.StartDialogCommand(SnowDialog, Companions.Woljif));
-            // Create Gate 1
             var Gate1 = CutsceneTools.CreateGate("WRM_7_Gate1", Track1A);
-            // Create Track 0B
+
+            //   Track 0B
+            //      Command: Action(Translocate Player, Translocate Woljif), Move Camera, Delay
+            //      EndGate: Gate1
             Kingmaker.ElementsSystem.GameAction[] Actions0B = 
                 { 
                     ActionTools.TranslocateAction(null, Companions.Player, Snow_PlayerStart), 
                     ActionTools.TranslocateAction(null, Companions.Woljif, Snow_WoljifStart) 
                 };
             Kingmaker.AreaLogic.Cutscenes.CommandBase[] Commands0B =
-                { CommandTools.ActionCommand("WRM_7_Move0B", Actions0B),
-                  CommandTools.CamMoveCommand(Snow_CameraLoc),
-                  CommandTools.DelayCommand(0.5f) };
-            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)Actions0B[0]).Unit.Owner = Commands0B[0];
-            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)Actions0B[1]).Unit.Owner = Commands0B[0];
+                { 
+                    CommandTools.ActionCommand("WRM_7_Move0B", Actions0B),
+                    CommandTools.CamMoveCommand(Snow_CameraLoc, 0.6f),
+                    CommandTools.DelayCommand(0.5f) 
+                };
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)Actions0B[0]).Unit.Owner = 
+                Commands0B[0];
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)Actions0B[1]).Unit.Owner = 
+                Commands0B[0];
             var Track0B = CutsceneTools.CreateTrack(Gate1, Commands0B);
-            // Create Track 0A
+
+            //   Track 0A
+            //      Command: Lock Control
+            //      EndGate: Gate1
             var Track0A = CutsceneTools.CreateTrack(Gate1, CommandTools.LockControlCommand());
             // Create Cutscene 1
             Kingmaker.AreaLogic.Cutscenes.Track[] Tracks0 = { Track0A, Track0B };
             var SnowCutscene = CutsceneTools.CreateCutscene("WRM_7_SnowCutscene1", false, Tracks0);
 
-            // Add animation to C_ThereYouAre
-            c_ThereYouAre.Animation = Kingmaker.DialogSystem.Blueprints.DialogAnimation.Wave;
 
+            //---------------------------------------------------------------------------------------------------------
             // Cutscene 2, to play after C_ThereYouAre
             //   Track 2A
             //      Command: Action (Player walks over)
@@ -411,30 +532,31 @@ namespace WOTR_WoljifRomanceMod
             //   Track 2C
             //      Command: Camera follow
             //      EndGate: Gate2
+            //---------------------------------------------------------------------------------------------------------
+
             var Gate2 = CutsceneTools.CreateGate("WRM_7_Gate2");
-            var Track2A = CutsceneTools.CreateTrack(Gate2, CommandTools.WalkCommand("WRM_PlayerWalkToWoljif", Companions.Player, Snow_PlayerEnd));
+            var Track2A = CutsceneTools.CreateTrack(Gate2, CommandTools.WalkCommand("WRM_PlayerWalkToWoljif", 
+                                                    Companions.Player, Snow_PlayerEnd));
             var Track2B = CutsceneTools.CreateTrack(Gate2, CommandTools.LockControlCommand());
             var Track2C = CutsceneTools.CreateTrack(Gate2, CommandTools.CamFollowCommand(Companions.Player));
             Kingmaker.AreaLogic.Cutscenes.Track[] Tracks2 = { Track2A, Track2B, Track2C };
             var WalkCutscene = CutsceneTools.CreateCutscene("WRM_7_SnowWalk", false, Tracks2);
             DialogTools.CueAddOnStopAction(c_ThereYouAre, ActionTools.PlayCutsceneAction(WalkCutscene));
 
-            // Add headscratch to C_IDidntMakeThem
-            c_IDidntMakeThem.Animation = Kingmaker.DialogSystem.Blueprints.DialogAnimation.HeadScratch;
-
-            // Add intense reaction to c_NoWay
-            c_NoWay.Animation = Kingmaker.DialogSystem.Blueprints.DialogAnimation.Angry;
-
+            // Timeskip and weather alteration when starting cutscene
             Kingmaker.ElementsSystem.GameAction[] afterteleport =
                 {
                     ActionTools.SkipToTimeAction("Night"),
                     ActionTools.SetWeatherAction("moderate"),
                     ActionTools.PlayCutsceneAction(SnowCutscene)
                 };
-            var teleportparty = ActionTools.TeleportAction("51ec615b45183294bb9b065d9a913e99", ActionTools.MakeList(afterteleport));
-            DialogTools.CueAddOnStopAction(Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("WRM_7a_c_Nod"), teleportparty);
+            var teleportparty = ActionTools.TeleportAction("51ec615b45183294bb9b065d9a913e99", 
+                                ActionTools.MakeList(afterteleport));
+            DialogTools.CueAddOnStopAction(Resources.GetModBlueprint
+                                           <Kingmaker.DialogSystem.Blueprints.BlueprintCue>("WRM_7a_c_Nod"), teleportparty);
 
             // Move Woljif back where he belongs when done
+            //---------------------------------------------------------------------------------------------------------
             // Cutscene 3
             //   Track 3A:
             //      Command: Lock control
@@ -445,7 +567,7 @@ namespace WOTR_WoljifRomanceMod
             //   Track 3C:
             //      Command: Delay, Action (translocate Woljif)
             //      Endgate: Gate 3
-            // Gate 3: Empty.
+            //---------------------------------------------------------------------------------------------------------
 
             var gate3 = CutsceneTools.CreateGate("WRM_7_Gate3");
             var Track3A = CutsceneTools.CreateTrack(gate3, CommandTools.LockControlCommand());
@@ -453,20 +575,36 @@ namespace WOTR_WoljifRomanceMod
             Kingmaker.AreaLogic.Cutscenes.CommandBase[] Commands3C =
                 {
                     CommandTools.DelayCommand(0.5f),
-                    CommandTools.ActionCommand("WRM_7_MoveWJBack", ActionTools.TranslocateAction(null, Companions.Woljif, Woljif_Exit))
+                    CommandTools.ActionCommand("WRM_7_MoveWJBack", 
+                                               ActionTools.TranslocateAction(null, Companions.Woljif, Woljif_Exit))
                 };
-            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)((Kingmaker.AreaLogic.Cutscenes.CommandAction)Commands3C[1]).Action.Actions[0]).Unit.Owner = Commands3C[1];
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)
+                ((Kingmaker.AreaLogic.Cutscenes.CommandAction)Commands3C[1]).Action.Actions[0]).Unit.Owner = Commands3C[1];
             var Track3C = CutsceneTools.CreateTrack(gate3, Commands3C);
             Kingmaker.AreaLogic.Cutscenes.Track[] Tracks3 = { Track3A, Track3B, Track3C };
             var EndCutscene = CutsceneTools.CreateCutscene("WRM_7_SnowCutsceneEnd", false, Tracks3);
             DialogTools.CueAddOnStopAction(c_IShouldGo, ActionTools.PlayCutsceneAction(EndCutscene));
         }
 
+        /*******************************************************************************************************************
+         * CREATE CONFESSION INVITE (COMMAND ROOM EVENT)
+         * Adds the crusade notification card and command room cutscene for Woljif's confession scene.
+         ******************************************************************************************************************/
         public static void AddConfessionInvite()
         {
             var romancebase = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomance");
-            var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceActive");
-            var Act5 = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("faf70d5071e52d145bfb686244200452");
+            var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>
+                                ("WRM_WoljifRomanceActive");
+            var Capital_KTC_group = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>
+                                    ("10d01be767521a340978c8e57ab536b6");
+            var Capital_WoljifCompanion_group = Resources.GetBlueprint
+                                                <Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>
+                                                ("97e2c4ec46765f143bf21bc9578b22f7");
+            var cutscenetemplate = Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.Cutscene>
+                                   ("e8d44f13de8b6154687a05f42f767eb5");
+            var SnowDialog = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                             ("WRM_7b_c_IShouldGo");
+
 
             // Create invitation dialog
             var C_IGottaTellYou = DialogTools.CreateCue("WRM_8a_c_IGottaTellYou");
@@ -484,69 +622,90 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.AnswerAddNextCue(A_ComeBackLater, C_Right);
             DialogTools.AnswerAddNextCue(A_TellMeNow, C_Rejected);
 
-            // Create the mechanics of the scene
+            // Create the notification
             var NotificationEtude = EtudeTools.CreateEtude("WRM_ConfessionInvite_Notification", romancebase, false, false);
-            var EventEtude = EtudeTools.CreateEtude("WRM_ConfessionInvite_Event", NotificationEtude, true, true);
             var Notification = EventTools.CreateCommandRoomEvent("WRM_note_8a_Name", "WRM_note_8a_Desc");
             var NotificationCounter = EtudeTools.CreateFlag("WRM_ConfessionInviteFlag");
-            EventTools.AddResolution(Notification, Kingmaker.Kingdom.Blueprints.EventResult.MarginType.Fail, "WRM_note_8a_Ignored");
-            EventTools.AddResolution(Notification, Kingmaker.Kingdom.Blueprints.EventResult.MarginType.Success, "WRM_note_8a_Complete");
-
-            //EtudeTools.EtudeAddOnPlayTrigger(NotificationEtude, ActionTools.MakeList(ActionTools.StartCommandRoomEventAction(Notification)));
+            EventTools.AddResolution(Notification, Kingmaker.Kingdom.Blueprints.EventResult.MarginType.Fail, 
+                                     "WRM_note_8a_Ignored");
+            EventTools.AddResolution(Notification, Kingmaker.Kingdom.Blueprints.EventResult.MarginType.Success, 
+                                     "WRM_note_8a_Complete");
             Kingmaker.ElementsSystem.GameAction[] StartNotification = 
                 {
                     ActionTools.IncrementFlagAction(NotificationCounter),
-                    ActionTools.ConditionalAction(ConditionalTools.CreateFlagCheck("WRM_DontDoubleConfession",NotificationCounter, 2, 1000000, true))
+                    ActionTools.ConditionalAction(ConditionalTools.CreateFlagCheck
+                                                  ("WRM_DontDoubleConfession", NotificationCounter, 2, 1000000, true))
                 };
-            ActionTools.ConditionalActionOnTrue((Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional)StartNotification[1], ActionTools.StartCommandRoomEventAction(Notification));
+            ActionTools.ConditionalActionOnTrue((Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional)
+                                               StartNotification[1], ActionTools.StartCommandRoomEventAction(Notification));
             EtudeTools.EtudeAddOnPlayTrigger(NotificationEtude, ActionTools.MakeList(StartNotification));
-            //EtudeTools.EtudeAddOnDeactivateTrigger(NotificationEtude, ActionTools.MakeList(ActionTools.EndCommandRoomEventAction(Notification)));
-            EtudeTools.EtudeAddOnCompleteTrigger(NotificationEtude, ActionTools.MakeList(ActionTools.EndCommandRoomEventAction(Notification)));
-            var Capital_KTC_group = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>("10d01be767521a340978c8e57ab536b6");
-            var Capital_WoljifCompanion_group = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>("97e2c4ec46765f143bf21bc9578b22f7");
+            EtudeTools.EtudeAddOnCompleteTrigger(NotificationEtude, ActionTools.MakeList
+                                                 (ActionTools.EndCommandRoomEventAction(Notification)));
+            
+            // create event
+            var EventEtude = EtudeTools.CreateEtude("WRM_ConfessionInvite_Event", NotificationEtude, true, true);
             EtudeTools.EtudeAddConflictingGroups(EventEtude, Capital_KTC_group);
             EtudeTools.EtudeAddConflictingGroups(EventEtude, Capital_WoljifCompanion_group);
-            EtudeTools.EtudeAddActivationCondition(EventEtude, ConditionalTools.CreateEtudeGroupCondition("WRM_ConfessionTrigger", Capital_KTC_group, true));
-            EtudeTools.EtudeAddActivationCondition(EventEtude, ConditionalTools.CreateEtudeCondition("WRM_ConfessionRomance", romanceactive, "playing"));
+            EtudeTools.EtudeAddActivationCondition(EventEtude, ConditionalTools.CreateEtudeGroupCondition
+                                                   ("WRM_ConfessionTrigger", Capital_KTC_group, true));
+            EtudeTools.EtudeAddActivationCondition(EventEtude, ConditionalTools.CreateEtudeCondition
+                                                   ("WRM_ConfessionRomance", romanceactive, "playing"));
 
             // Parameterized cutscene stuff.
             var unhideaction = ActionTools.HideUnitAction(EventEtude, Companions.Woljif, true);
-            var playscene = ActionTools.PlayCutsceneAction(Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.Cutscene>("e8d44f13de8b6154687a05f42f767eb5"));
-            ActionTools.CutsceneActionAddParameter(playscene, "Unit", "unit", CompanionTools.GetCompanionEvaluator(Companions.Woljif, EventEtude));
-            Kingmaker.ElementsSystem.Dialog dialogeval = (Kingmaker.ElementsSystem.Dialog)Kingmaker.ElementsSystem.Element.CreateInstance(typeof(Kingmaker.ElementsSystem.Dialog));
-            dialogeval.m_Value = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintDialogReference>(InviteDialog);
+            var playscene = ActionTools.PlayCutsceneAction(cutscenetemplate);
+            ActionTools.CutsceneActionAddParameter(playscene, "Unit", "unit", 
+                                                   CompanionTools.GetCompanionEvaluator(Companions.Woljif, EventEtude));
+            Kingmaker.ElementsSystem.Dialog dialogeval = (Kingmaker.ElementsSystem.Dialog)
+                                                         Kingmaker.ElementsSystem.Element.CreateInstance
+                                                         (typeof(Kingmaker.ElementsSystem.Dialog));
+            dialogeval.m_Value = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                 <Kingmaker.Blueprints.BlueprintDialogReference>(InviteDialog);
             ActionTools.CutsceneActionAddParameter(playscene, "Dialog", "blueprint", dialogeval);
-            Kingmaker.ElementsSystem.EtudeBlueprint etudeeval = (Kingmaker.ElementsSystem.EtudeBlueprint)Kingmaker.ElementsSystem.Element.CreateInstance(typeof(Kingmaker.ElementsSystem.EtudeBlueprint));
-            etudeeval.m_Value = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintEtudeReference>(EventEtude);
+            Kingmaker.ElementsSystem.EtudeBlueprint etudeeval = (Kingmaker.ElementsSystem.EtudeBlueprint)
+                                                                Kingmaker.ElementsSystem.Element.CreateInstance
+                                                                (typeof(Kingmaker.ElementsSystem.EtudeBlueprint));
+            etudeeval.m_Value = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                <Kingmaker.Blueprints.BlueprintEtudeReference>(EventEtude);
             ActionTools.CutsceneActionAddParameter(playscene, "Etude", "blueprint", etudeeval);
 
 
             Kingmaker.ElementsSystem.GameAction[] actions = { unhideaction, playscene };
             EtudeTools.EtudeAddOnPlayTrigger(EventEtude, ActionTools.MakeList(actions));
 
-            EventEtude.m_LinkedAreaPart = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintAreaPartReference>(Resources.GetBlueprint<Kingmaker.Blueprints.Area.BlueprintAreaPart>("2570015799edf594daf2f076f2f975d8"));
+            EventEtude.m_LinkedAreaPart = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                          <Kingmaker.Blueprints.BlueprintAreaPartReference>(Resources.GetBlueprint
+                                          <Kingmaker.Blueprints.Area.BlueprintAreaPart>
+                                          ("2570015799edf594daf2f076f2f975d8"));
 
 
 
             // Timer
-            var SnowDialog = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("WRM_7b_c_IShouldGo");
-            /*var ConfessionTimer = EtudeTools.CreateEtude("WRM_TimerBeforeConfession", romanceactive, false, false);
-            Kingmaker.ElementsSystem.GameAction[] delayedactions = { ActionTools.StartEtudeAction(EventEtude), ActionTools.CompleteEtudeAction(ConfessionTimer) };
-            EtudeTools.EtudeAddDelayedAction(ConfessionTimer, 10, ActionTools.MakeList(delayedactions));
-            DialogTools.CueAddOnStopAction(SnowDialog, ActionTools.StartEtudeAction(ConfessionTimer));*/
-
             var ConfessionTimer = WoljifRomanceMod.Clock.AddTimer("WRM_Timers_Confession");
             var ConfessionTimerEtude = EtudeTools.CreateEtude("WRM_Timers_ConfessionEtude", romancebase, false, false);
-            EtudeTools.EtudeAddActivationCondition(ConfessionTimerEtude, ConditionalTools.CreateFlagCheck("WRM_Timers_ConfessionTrigger", ConfessionTimer.time, 10, 1000000));
-            Kingmaker.ElementsSystem.GameAction[] delayedactions = { ActionTools.StartEtudeAction(EventEtude), ActionTools.CompleteEtudeAction(ConfessionTimerEtude) };
+            EtudeTools.EtudeAddActivationCondition(ConfessionTimerEtude, ConditionalTools.CreateFlagCheck
+                                                   ("WRM_Timers_ConfessionTrigger", ConfessionTimer.time, 10, 1000000));
+            Kingmaker.ElementsSystem.GameAction[] delayedactions = 
+                { 
+                    ActionTools.StartEtudeAction(EventEtude), 
+                    ActionTools.CompleteEtudeAction(ConfessionTimerEtude) 
+                };
             EtudeTools.EtudeAddOnPlayTrigger(ConfessionTimerEtude, ActionTools.MakeList(delayedactions));
             DialogTools.CueAddOnStopAction(SnowDialog, ActionTools.IncrementFlagAction(ConfessionTimer.active));
             DialogTools.CueAddOnStopAction(SnowDialog, ActionTools.StartEtudeAction(ConfessionTimerEtude));
         }
 
+        /*******************************************************************************************************************
+         * CREATE CONFESSION SCENE
+         * Adds the scene where Woljif finally confesses his feelings to the player.
+         ******************************************************************************************************************/
         public static void AddConfessionScene()
         {
-            var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceActive");
+            var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>
+                                ("WRM_WoljifRomanceActive");
+            var CompanionEtude = (Kingmaker.AreaLogic.Etudes.BlueprintEtude)
+                                 Kingmaker.Blueprints.ResourcesLibrary.TryGetBlueprint
+                                 (Kingmaker.Blueprints.BlueprintGuid.Parse("14a80c048c8ceed4a9c856d85bbf10da"));
 
             // Build Dialog Tree
             var C_Waiting = DialogTools.CreateCue("WRM_8b_c_Waiting");
@@ -615,8 +774,10 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.AnswerAddNextCue(A_Friendzone, C_Friendzoned);
             DialogTools.AnswerAddNextCue(A_JustALittle, C_Balcony);
             DialogTools.CueAddAnswersList(C_Balcony, L_InitialResponse);
-            DialogTools.AnswerAddShowCondition(A_Crush, ConditionalTools.CreateCueSeenCondition("WRM_HaventAdmittedLove", true, C_Balcony));
-            DialogTools.AnswerAddShowCondition(A_FeelTheSame, ConditionalTools.CreateCueSeenCondition("WRM_HaveAdmittedLove", C_Balcony));
+            DialogTools.AnswerAddShowCondition(A_Crush, ConditionalTools.CreateCueSeenCondition
+                                               ("WRM_HaventAdmittedLove", true, C_Balcony));
+            DialogTools.AnswerAddShowCondition(A_FeelTheSame, ConditionalTools.CreateCueSeenCondition
+                                               ("WRM_HaveAdmittedLove", C_Balcony));
             DialogTools.AnswerAddNextCue(A_Crush, C_Really);
             DialogTools.AnswerAddNextCue(A_FeelTheSame, C_Really);
             DialogTools.CueAddAnswersList(C_Really, L_Romance);
@@ -626,12 +787,15 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.ListAddAnswer(L_Romance, A_StayWithMe);
             DialogTools.AnswerAddNextCue(A_ILoveYou, C_LoveAfterKiss);
             DialogTools.AnswerAddNextCue(A_ILoveYou, C_LoveBeforeKiss);
-            DialogTools.CueAddCondition(C_LoveAfterKiss, ConditionalTools.CreateAnswerSelectedCondition("WRM_AlreadyKissed", A_Kiss));
+            DialogTools.CueAddCondition(C_LoveAfterKiss, ConditionalTools.CreateAnswerSelectedCondition
+                                        ("WRM_AlreadyKissed", A_Kiss));
             DialogTools.CueAddAnswersList(C_LoveAfterKiss, L_Romance);
             DialogTools.CueAddAnswersList(C_LoveBeforeKiss, L_Romance);
             DialogTools.AnswerAddNextCue(A_Kiss, C_TieflingKiss1);
             DialogTools.AnswerAddNextCue(A_Kiss, C_Kiss1);
-            DialogTools.CueAddCondition(C_TieflingKiss1, ConditionalTools.CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.PcRace>("isplayertiefling", bp => { bp.Race = Kingmaker.Blueprints.Race.Tiefling; }));
+            DialogTools.CueAddCondition(C_TieflingKiss1, ConditionalTools.CreateCondition
+                                        <Kingmaker.Designers.EventConditionActionSystem.Conditions.PcRace>
+                                        ("isplayertiefling", bp => { bp.Race = Kingmaker.Blueprints.Race.Tiefling; }));
             DialogTools.CueAddContinue(C_TieflingKiss1, C_TieflingKiss2);
             DialogTools.CueAddContinue(C_Kiss1, C_Kiss2);
             DialogTools.CueAddAnswersList(C_TieflingKiss2, L_Romance);
@@ -669,7 +833,8 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.CueAddAnswersList(C_Relief, L_Sexuality);
             DialogTools.ListAddAnswer(L_Incompatible, A_YouBastard);
             DialogTools.AnswerAddNextCue(A_YouBastard, C_YouBrokeHisHeart);
-            DialogTools.AnswerAddOnSelectAction(A_YouBastard, ActionTools.CompleteEtudeAction(romanceactive)); // You heartless monster.
+            DialogTools.AnswerAddOnSelectAction(A_YouBastard, ActionTools.CompleteEtudeAction
+                                                (romanceactive)); // You heartless monster.
 
             DialogTools.CueAddAnswersList(C_ImSure, L_HesSure);
             DialogTools.ListAddAnswer(L_HesSure, A_IfYouSaySo);
@@ -679,21 +844,31 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.AnswerAddNextCue(A_WaitForNow, C_JustAsk);
             DialogTools.AnswerAddNextCue(A_ThatsOkay, C_JustAsk);
 
-            // Set up the etude that will hide everyone in the command room and interrupt the etude that prevents Woljif from moving.
-            var CompanionEtude = (Kingmaker.AreaLogic.Etudes.BlueprintEtude)Kingmaker.Blueprints.ResourcesLibrary.TryGetBlueprint(Kingmaker.Blueprints.BlueprintGuid.Parse("14a80c048c8ceed4a9c856d85bbf10da"));
+            // Set up the etude that hides everyone and allows Woljif to move from his normal location.
             var ConfessionScenePlaying = EtudeTools.CreateEtude("WRM_ConfessionSceneToggle", CompanionEtude, false, false);
-            EtudeTools.EtudeAddConflictingGroups(ConfessionScenePlaying, Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>("97e2c4ec46765f143bf21bc9578b22f7"));
-            EtudeTools.EtudeAddConflictingGroups(ConfessionScenePlaying, Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>("10d01be767521a340978c8e57ab536b6"));
+            EtudeTools.EtudeAddConflictingGroups(ConfessionScenePlaying, Resources.GetBlueprint
+                                                 <Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>
+                                                 ("97e2c4ec46765f143bf21bc9578b22f7"));
+            EtudeTools.EtudeAddConflictingGroups(ConfessionScenePlaying, Resources.GetBlueprint
+                                                 <Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>
+                                                 ("10d01be767521a340978c8e57ab536b6"));
             ConfessionScenePlaying.Priority = -99;
 
-            // Could not for the life of me figure out how to get hold of Spawner references, so I couldn't build my own Hide Unit From Spawner.
-            // Instead I'm just going to steal the relevant hiders from existing blueprints. Surely this cannot possibly go wrong.
-            var IrabethHiderSource = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("48967c3ec4330294ab1f5d24d9b45052");
-            var AneviaHiderSource = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("4b441ac2bc063f6439795edc9d98b8a1");
-            var GuardHiderSource = Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.CommandAction>("61b837b9998bbcf4cba89f1824fd7974");
-            var IrabethHider = Helpers.CreateCopy<Kingmaker.ElementsSystem.GameAction>(((Kingmaker.Designers.EventConditionActionSystem.Events.EtudePlayTrigger)IrabethHiderSource.Components[0]).Actions.Actions[0]);
+            // Could not for the life of me figure out how to get hold of Spawner references, so I couldn't build my own 
+            // Hide Unit From Spawner. Instead I'm just going to steal the relevant hiders from existing blueprints.
+            var IrabethHiderSource = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>
+                                     ("48967c3ec4330294ab1f5d24d9b45052");
+            var AneviaHiderSource = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>
+                                    ("4b441ac2bc063f6439795edc9d98b8a1");
+            var GuardHiderSource = Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.CommandAction>
+                                   ("61b837b9998bbcf4cba89f1824fd7974");
+            var IrabethHider = Helpers.CreateCopy<Kingmaker.ElementsSystem.GameAction>(
+                               ((Kingmaker.Designers.EventConditionActionSystem.Events.EtudePlayTrigger)
+                               IrabethHiderSource.Components[0]).Actions.Actions[0]);
             ((Kingmaker.Designers.EventConditionActionSystem.Actions.HideUnit)IrabethHider).Unhide = false;
-            var AneviaHider = Helpers.CreateCopy<Kingmaker.ElementsSystem.GameAction>(((Kingmaker.Designers.EventConditionActionSystem.Events.EtudePlayTrigger)AneviaHiderSource.Components[0]).Actions.Actions[0]);
+            var AneviaHider = Helpers.CreateCopy<Kingmaker.ElementsSystem.GameAction>(
+                              ((Kingmaker.Designers.EventConditionActionSystem.Events.EtudePlayTrigger)
+                              AneviaHiderSource.Components[0]).Actions.Actions[0]);
             ((Kingmaker.Designers.EventConditionActionSystem.Actions.HideUnit)AneviaHider).Unhide = false;
             var GuardHider1 = Helpers.CreateCopy<Kingmaker.ElementsSystem.GameAction>(GuardHiderSource.Action.Actions[4]);
             var GuardHider2 = Helpers.CreateCopy<Kingmaker.ElementsSystem.GameAction>(GuardHiderSource.Action.Actions[4]);
@@ -706,8 +881,8 @@ namespace WOTR_WoljifRomanceMod
             var GuardUnhider2 = Helpers.CreateCopy<Kingmaker.ElementsSystem.GameAction>(GuardHider2);
             ((Kingmaker.Designers.EventConditionActionSystem.Actions.HideUnit)GuardUnhider2).Unhide = true;
 
-            Kingmaker.ElementsSystem.GameAction[] Hiders = { IrabethHider, AneviaHider, GuardHider1, GuardHider2};
-            Kingmaker.ElementsSystem.GameAction[] Unhiders = { IrabethUnhider, AneviaUnhider, GuardUnhider1, GuardUnhider2 };
+            Kingmaker.ElementsSystem.GameAction[] Hiders = {IrabethHider, AneviaHider, GuardHider1, GuardHider2};
+            Kingmaker.ElementsSystem.GameAction[] Unhiders = {IrabethUnhider, AneviaUnhider, GuardUnhider1, GuardUnhider2};
             // Set the etude to use the hiders on start and unhiders on complete.
             EtudeTools.EtudeAddOnPlayTrigger(ConfessionScenePlaying, ActionTools.MakeList(Hiders));
             EtudeTools.EtudeAddOnCompleteTrigger(ConfessionScenePlaying, ActionTools.MakeList(Unhiders));
@@ -722,9 +897,10 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.DialogAddStartAction(ConfessionDialog, ActionTools.StartMusic("RomanceTheme"));
             DialogTools.DialogAddFinishAction(ConfessionDialog, ActionTools.StopMusic());
 
+            //---------------------------------------------------------------------------------------------------------
             // Cutscene
             //   Track0
-            //      Command: Action(Skip time, set confession scene etude)
+            //      Command: Action(Skip time)
             //      EndGate: Gate0
             // Gate0
             //   Track 0A
@@ -741,16 +917,27 @@ namespace WOTR_WoljifRomanceMod
             //   Track 2A 
             //      Command: Start Dialog
             //      EndGate: None
+            //---------------------------------------------------------------------------------------------------------
 
-            // Create Track 2A
-            var Track2A = CutsceneTools.CreateTrack(null, CommandTools.StartDialogCommand(ConfessionDialog, Companions.Woljif));
-            // Create Gate 2
+            // Gate2
+            //   Track 2A 
+            //      Command: Start Dialog
+            //      EndGate: None
+            var Track2A = CutsceneTools.CreateTrack(null, CommandTools.StartDialogCommand(ConfessionDialog, 
+                                                    Companions.Woljif));
             var Gate2 = CutsceneTools.CreateGate("WRM_8_Gate2", Track2A);
-            // Create Track 1A
-            var Track1A = CutsceneTools.CreateTrack(Gate2, CommandTools.WalkCommand("WRM_8_Walk", Companions.Woljif, WoljifBalconyPosition));
-            // Create Gate 1
+
+            // Gate1
+            //   Track 1A
+            //      Command: Woljif walks to player
+            //      Endgate: Gate2
+            var Track1A = CutsceneTools.CreateTrack(Gate2, CommandTools.WalkCommand("WRM_8_Walk", Companions.Woljif, 
+                                                    WoljifBalconyPosition));
             var Gate1 = CutsceneTools.CreateGate("WRM_8_Gate1", Track1A);
-            // Create Track 0B
+
+            //   Track 0B
+            //      Command: Action(Translocate Player, Translocate Woljif, unhide Woljif), Move Camera, Delay
+            //      EndGate: Gate1
             Kingmaker.ElementsSystem.GameAction[] Actions0B =
                 {
                     ActionTools.TranslocateAction(null, Companions.Player, PlayerBalconyPosition),
@@ -763,37 +950,48 @@ namespace WOTR_WoljifRomanceMod
                     CommandTools.CamMoveCommand(BalconyCameraPosition),
                     CommandTools.DelayCommand(0.5f) 
                 };
-            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)Actions0B[0]).Unit.Owner = Commands0B[0];
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)Actions0B[0]).Unit.Owner = 
+                Commands0B[0];
             ((Kingmaker.Designers.EventConditionActionSystem.Actions.HideUnit)Actions0B[1]).Target.Owner = Commands0B[0];
-            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)Actions0B[2]).Unit.Owner = Commands0B[0];
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)Actions0B[2]).Unit.Owner = 
+                Commands0B[0];
             var Track0B = CutsceneTools.CreateTrack(Gate1, Commands0B);
-            // Create Track 0A
+
+            // Gate0
+            //   Track 0A
+            //      Command: Lock Control
+            //      EndGate: Gate2
             var Track0A = CutsceneTools.CreateTrack(Gate2, CommandTools.LockControlCommand());
-            // Create Gate 0
             Kingmaker.AreaLogic.Cutscenes.Track[] Tracks0 = { Track0A, Track0B };
             var Gate0 = CutsceneTools.CreateGate("WRM_8_Gate0", Tracks0);
-            // Create Base Track
-            Kingmaker.ElementsSystem.GameAction[] BaseActions = { ActionTools.SkipToTimeAction("evening")/*, ActionTools.StartEtudeAction(ConfessionScenePlaying)*/};
-            var BaseTrack = CutsceneTools.CreateTrack(Gate0, CommandTools.ActionCommand("WRM_8_SkipTime", BaseActions));
+
+            //   Track0
+            //      Command: Action(Skip time)
+            //      EndGate: Gate0
+            var BaseTrack = CutsceneTools.CreateTrack(Gate0, CommandTools.ActionCommand("WRM_8_SkipTime", 
+                            ActionTools.SkipToTimeAction("evening")));
             // Create Cutscene 
             var ConfessionCutscene = CutsceneTools.CreateCutscene("WRM_8_ConfessionCutscene", false, BaseTrack);
 
             // Make it fade out and end the etude on dialog complete
+            //---------------------------------------------------------------------------------------------------------
             //End_Cutscene
-            //  End_Track1
+            //   End_Track1
             //      Command: Lock controls
             //      EndGate: End_Gate1
-            //  End_Track2
+            //   End_Track2
             //      Command: Fadeout
             //      EndGate: End_Gate1
-            //  End_Track3
+            //   End_Track3
             //      Command: Delay
             //      EndGate: End_Gate1
-            //End_Gate1
-            //  End_Track4
+            // End_Gate1
+            //   End_Track4
             //      Command Action: End Etude
             //      EndGate: none
-            var End_Track4 = CutsceneTools.CreateTrack(null, CommandTools.ActionCommand("WRM_8_EndEtude", ActionTools.CompleteEtudeAction(ConfessionScenePlaying)));
+            //---------------------------------------------------------------------------------------------------------
+            var End_Track4 = CutsceneTools.CreateTrack(null, CommandTools.ActionCommand("WRM_8_EndEtude", 
+                             ActionTools.CompleteEtudeAction(ConfessionScenePlaying)));
             var End_Gate1 = CutsceneTools.CreateGate("WRM_8_EndGate1",End_Track4);
             var End_Track3 = CutsceneTools.CreateTrack(End_Gate1, CommandTools.DelayCommand(0.5f));
             var End_Track2 = CutsceneTools.CreateTrack(End_Gate1, CommandTools.FadeoutCommand());
@@ -803,21 +1001,30 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.DialogAddFinishAction(ConfessionDialog, ActionTools.PlayCutsceneAction(End_Cutscene));
 
             // Link to invitation
-            EtudeTools.EtudeAddOnPlayTrigger(ConfessionScenePlaying, ActionTools.MakeList(ActionTools.PlayCutsceneAction(ConfessionCutscene)));
-            //DialogTools.CueAddOnStopAction(Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("WRM_8a_c_Right"), ActionTools.PlayCutsceneAction(ConfessionCutscene));
-            DialogTools.CueAddOnStopAction(Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("WRM_8a_c_Right"), ActionTools.StartEtudeAction(ConfessionScenePlaying));
+            EtudeTools.EtudeAddOnPlayTrigger(ConfessionScenePlaying, ActionTools.MakeList(
+                                             ActionTools.PlayCutsceneAction(ConfessionCutscene)));
+            DialogTools.CueAddOnStopAction(Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                                           ("WRM_8a_c_Right"), ActionTools.StartEtudeAction(ConfessionScenePlaying));
         }
 
+        /*******************************************************************************************************************
+         * CREATE BEDROOM SCENE
+         * Adds a scene where Woljif and the player cuddle after spending the night together for the first time.
+         ******************************************************************************************************************/
         public static void AddBedroomScene()
         {
-            var romancecomplete = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceFinished");
+            var romancecomplete = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>
+                                  ("WRM_WoljifRomanceFinished");
             var romancebase = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomance");
             var BarksFlag = EtudeTools.CreateFlag("WRM_BedroomBarksFlag");
             var BarksEtude = EtudeTools.CreateEtude("WRM_BedroomBarksEtude", romancebase, false, false);
             var BedroomSceneEtude = EtudeTools.CreateEtude("WRM_FirstBedroomScenePlaying", romancebase, false, false);
-            EtudeTools.EtudeAddConflictingGroups(BedroomSceneEtude, Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>("97e2c4ec46765f143bf21bc9578b22f7"));
-            EtudeTools.EtudeAddConflictingGroups(BedroomSceneEtude, Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>("10d01be767521a340978c8e57ab536b6"));
-
+            EtudeTools.EtudeAddConflictingGroups(BedroomSceneEtude, Resources.GetBlueprint
+                                                 <Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>
+                                                 ("97e2c4ec46765f143bf21bc9578b22f7"));
+            EtudeTools.EtudeAddConflictingGroups(BedroomSceneEtude, Resources.GetBlueprint
+                                                 <Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>
+                                                 ("10d01be767521a340978c8e57ab536b6"));
 
             // Build Dialog Tree
             var C_Cuddles = DialogTools.CreateCue("WRM_9_c_Cuddles");
@@ -850,20 +1057,40 @@ namespace WOTR_WoljifRomanceMod
             C_Forever.TurnSpeaker = false;
             C_HoldYouToThat.TurnSpeaker = false;
 
-            DialogTools.CueAddCondition(C_GetOuttaHerePaladin, ConditionalTools.CreateClassCheck("WRM_9_PlayerPaladin", Resources.GetBlueprint<Kingmaker.Blueprints.Classes.BlueprintCharacterClass>("bfa11238e7ae3544bbeb4d0b92e897ec")));
-            DialogTools.CueAddCondition(C_GetOuttaHereInquisitor, ConditionalTools.CreateClassCheck("WRM_9_PlayerInquisitor", Resources.GetBlueprint<Kingmaker.Blueprints.Classes.BlueprintCharacterClass>("f1a70d9e1b0b41e49874e1fa9052a1ce")));
+            // get classes
+            var paladin = Resources.GetBlueprint<Kingmaker.Blueprints.Classes.BlueprintCharacterClass>
+                          ("bfa11238e7ae3544bbeb4d0b92e897ec");
+            var inquisitor = Resources.GetBlueprint<Kingmaker.Blueprints.Classes.BlueprintCharacterClass>
+                             ("f1a70d9e1b0b41e49874e1fa9052a1ce");
+            var hellknight = Resources.GetBlueprint<Kingmaker.Blueprints.Classes.BlueprintCharacterClass>
+                             ("ed246f1680e667b47b7427d51e651059");
+            var signifier = Resources.GetBlueprint<Kingmaker.Blueprints.Classes.BlueprintCharacterClass>
+                            ("ee6425d6392101843af35f756ce7fefd");
+            var cleric = Resources.GetBlueprint<Kingmaker.Blueprints.Classes.BlueprintCharacterClass>
+                         ("67819271767a9dd4fbfd4ae700befea0");
+            var warpriest = Resources.GetBlueprint<Kingmaker.Blueprints.Classes.BlueprintCharacterClass>
+                            ("30b5e47d47a0e37438cc5a80c96cfb99");
+
+            DialogTools.CueAddCondition(C_GetOuttaHerePaladin, ConditionalTools.CreateClassCheck
+                                        ("WRM_9_PlayerPaladin", paladin));
+            DialogTools.CueAddCondition(C_GetOuttaHereInquisitor, ConditionalTools.CreateClassCheck
+                                        ("WRM_9_PlayerInquisitor", inquisitor));
             Kingmaker.ElementsSystem.Condition[] HellknightConditions = 
                 {
-                    ConditionalTools.CreateClassCheck("WRM_9_PlayerHellknight", Resources.GetBlueprint<Kingmaker.Blueprints.Classes.BlueprintCharacterClass>("ed246f1680e667b47b7427d51e651059")),
-                    ConditionalTools.CreateClassCheck("WRM_9_PlayerHellknightSignifier", Resources.GetBlueprint<Kingmaker.Blueprints.Classes.BlueprintCharacterClass>("ee6425d6392101843af35f756ce7fefd"))
+                    ConditionalTools.CreateClassCheck("WRM_9_PlayerHellknight", hellknight),
+                    ConditionalTools.CreateClassCheck("WRM_9_PlayerHellknightSignifier", signifier)
                 };
-            DialogTools.CueAddCondition(C_GetOuttaHereHellknight, ConditionalTools.CreateLogicCondition("WRM_9_PlayerHellknightLogic", Kingmaker.ElementsSystem.Operation.Or, HellknightConditions));
+            DialogTools.CueAddCondition(C_GetOuttaHereHellknight, ConditionalTools.CreateLogicCondition
+                                        ("WRM_9_PlayerHellknightLogic", Kingmaker.ElementsSystem.Operation.Or, 
+                                        HellknightConditions));
             Kingmaker.ElementsSystem.Condition[] ClericConditions =
                 {
-                    ConditionalTools.CreateClassCheck("WRM_9_PlayerCleric", Resources.GetBlueprint<Kingmaker.Blueprints.Classes.BlueprintCharacterClass>("67819271767a9dd4fbfd4ae700befea0")),
-                    ConditionalTools.CreateClassCheck("WRM_9_PlayerWarpriest", Resources.GetBlueprint<Kingmaker.Blueprints.Classes.BlueprintCharacterClass>("30b5e47d47a0e37438cc5a80c96cfb99"))
+                    ConditionalTools.CreateClassCheck("WRM_9_PlayerCleric", cleric),
+                    ConditionalTools.CreateClassCheck("WRM_9_PlayerWarpriest", warpriest)
                 };
-            DialogTools.CueAddCondition(C_GetOuttaHereCleric, ConditionalTools.CreateLogicCondition("WRM_9_PlayerClericLogic", Kingmaker.ElementsSystem.Operation.Or, ClericConditions));
+            DialogTools.CueAddCondition(C_GetOuttaHereCleric, ConditionalTools.CreateLogicCondition
+                                        ("WRM_9_PlayerClericLogic", Kingmaker.ElementsSystem.Operation.Or, 
+                                        ClericConditions));
 
             DialogTools.CueAddContinue(C_Cuddles, C_GetOuttaHerePaladin);
             DialogTools.CueAddContinue(C_Cuddles, C_GetOuttaHereInquisitor);
@@ -890,26 +1117,13 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.CueAddOnShowAction(C_Forever, ActionTools.StartEtudeAction(romancecomplete));
             DialogTools.CueAddOnShowAction(C_HoldYouToThat, ActionTools.StartEtudeAction(romancecomplete));
 
-            // Locators
-            var WoljifLocation = new FakeLocator(185.46f, 79.7f, -15.36f, 184.29f);
-            var PlayerLocation = new FakeLocator(186f, 79.7f, -15.55f, 184.29f);
-            var BedroomCameraPosition = new FakeLocator(184.44f, 79.07f, -14.646f, 159.45f);
-
-            // Not sure how to get hold of a reference to the Rest Icon, so I'm gonna steal the appropriate action from Lann's romance.
-            /*var LannSource = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("b2fdd13c27e90f542b03ce7b4343cc50");
-            var HideButton = ((Kingmaker.Designers.EventConditionActionSystem.Events.EtudePlayTrigger)LannSource.Components[0]).Actions.Actions[1];
-            var UnhideButton = ((Kingmaker.Designers.EventConditionActionSystem.Events.DeactivateTrigger)LannSource.Components[1]).Actions.Actions[1];*/
-
-            // Build cutscene
-            DialogTools.DialogAddStartAction(BedroomDialog, ActionTools.StartMusic("RomanceTheme"));
-            DialogTools.DialogAddFinishAction(BedroomDialog, ActionTools.StopMusic());
-
+            //---------------------------------------------------------------------------------------------------------
             // Cutscene
             //   Track 0A
             //      Command: Lock Control
             //      EndGate: Gate1
             //   Track 0B
-            //      Command: Action(Translocate Player, Translocate Woljif), Move Camera, Delay
+            //      Command: Action(Translocate, Hide weapons, Hover), Move Camera, Delay
             //      EndGate: Gate1
             //   Track 0C
             //      Command: Animate Player
@@ -921,10 +1135,38 @@ namespace WOTR_WoljifRomanceMod
             //   Track 1A
             //      Command: Start Dialog
             //      EndGate: none
-            var Track1A = CutsceneTools.CreateTrack(null, CommandTools.StartDialogCommand(BedroomDialog, Companions.Woljif));
+            //---------------------------------------------------------------------------------------------------------
+            // Locators
+            var WoljifLocation = new FakeLocator(185.46f, 79.7f, -15.36f, 184.29f);
+            var PlayerLocation = new FakeLocator(186f, 79.7f, -15.55f, 184.29f);
+            var BedroomCameraPosition = new FakeLocator(184.44f, 79.07f, -14.646f, 159.45f);
+
+            // Build cutscene
+            DialogTools.DialogAddStartAction(BedroomDialog, ActionTools.StartMusic("RomanceTheme"));
+            DialogTools.DialogAddFinishAction(BedroomDialog, ActionTools.StopMusic());
+
+            // Gate1
+            //   Track 1A
+            //      Command: Start Dialog
+            //      EndGate: none
+            var Track1A = CutsceneTools.CreateTrack(null, CommandTools.StartDialogCommand(BedroomDialog, 
+                                                    Companions.Woljif));
             var Gate1 = CutsceneTools.CreateGate("WRM_9_Gate1", Track1A);
-            var Track0D = CutsceneTools.CreateTrack(null, CommandTools.GenericAnimationCommand("WRM_9_AnimateWoljif", "4b58b2de5f04ddf4f9012d4bc342b968", Companions.Woljif));
-            var Track0C = CutsceneTools.CreateTrack(null, CommandTools.GenericAnimationCommand("WRM_9_AnimatePlayer", "4b58b2de5f04ddf4f9012d4bc342b968", Companions.Player));
+
+            //   Track 0D
+            //      Command: Animate Woljif
+            //      EndGate: none
+            var Track0D = CutsceneTools.CreateTrack(null, CommandTools.GenericAnimationCommand("WRM_9_AnimateWoljif", 
+                                                    "4b58b2de5f04ddf4f9012d4bc342b968", Companions.Woljif));
+            //   Track 0C
+            //      Command: Animate Player
+            //      EndGate: none
+            var Track0C = CutsceneTools.CreateTrack(null, CommandTools.GenericAnimationCommand("WRM_9_AnimatePlayer", 
+                                                    "4b58b2de5f04ddf4f9012d4bc342b968", Companions.Player));
+
+            //   Track 0B
+            //      Command: Action(Translocate, Hide weapons, Hover), Move Camera, Delay
+            //      EndGate: Gate1
             Kingmaker.ElementsSystem.GameAction[] Actions0B =
                 {
                     ActionTools.SetFlyHeightAction(null, Companions.Player, 0.85f),
@@ -935,28 +1177,39 @@ namespace WOTR_WoljifRomanceMod
                     ActionTools.HideWeaponsAction(null, Companions.Woljif)
                 };
             Kingmaker.AreaLogic.Cutscenes.CommandBase[] Commands0B =
-                { CommandTools.ActionCommand("WRM_9_Move0B", Actions0B),
-                  CommandTools.CamMoveCommand(BedroomCameraPosition),
-                  CommandTools.DelayCommand(0.5f) };
+                { 
+                    CommandTools.ActionCommand("WRM_9_Move0B", Actions0B),
+                    CommandTools.CamMoveCommand(BedroomCameraPosition),
+                    CommandTools.DelayCommand(0.5f) 
+                };
             ((SetFlyHeight)Actions0B[0]).Unit.Owner = Commands0B[0];
             ((SetFlyHeight)Actions0B[1]).Unit.Owner = Commands0B[0];
-            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)Actions0B[2]).Unit.Owner = Commands0B[0];
-            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)Actions0B[3]).Unit.Owner = Commands0B[0];
-            ((Kingmaker.Designers.EventConditionActionSystem.Actions.HideWeapons)Actions0B[4]).Target.Owner = Commands0B[0];
-            ((Kingmaker.Designers.EventConditionActionSystem.Actions.HideWeapons)Actions0B[5]).Target.Owner = Commands0B[0];
-
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)Actions0B[2]).Unit.Owner = 
+                Commands0B[0];
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)Actions0B[3]).Unit.Owner = 
+                Commands0B[0];
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.HideWeapons)Actions0B[4]).Target.Owner = 
+                Commands0B[0];
+            ((Kingmaker.Designers.EventConditionActionSystem.Actions.HideWeapons)Actions0B[5]).Target.Owner = 
+                Commands0B[0];
             var Track0B = CutsceneTools.CreateTrack(Gate1, Commands0B);
+
+            //   Track 0A
+            //      Command: Lock Control
+            //      EndGate: Gate1
             var Track0A = CutsceneTools.CreateTrack(Gate1, CommandTools.LockControlCommand());
             Kingmaker.AreaLogic.Cutscenes.Track[] Tracks = { Track0A, Track0B, Track0C, Track0D };
             var BedroomCutscene = CutsceneTools.CreateCutscene("WRM_9_BedroomScene", false, Tracks);
 
-            DialogTools.DialogAddFinishAction(BedroomDialog, ActionTools.SetFlyHeightAction(BedroomDialog, Companions.Player, 0f));
-            DialogTools.DialogAddFinishAction(BedroomDialog, ActionTools.SetFlyHeightAction(BedroomDialog, Companions.Woljif, 0f));
+            // Stop hovering when scene ends, and start the barks up.
+            DialogTools.DialogAddFinishAction(BedroomDialog, ActionTools.SetFlyHeightAction(BedroomDialog, 
+                                              Companions.Player, 0f));
+            DialogTools.DialogAddFinishAction(BedroomDialog, ActionTools.SetFlyHeightAction(BedroomDialog, 
+                                              Companions.Woljif, 0f));
             DialogTools.DialogAddFinishAction(BedroomDialog, ActionTools.StopCutsceneAction(BedroomCutscene));
             DialogTools.DialogAddFinishAction(BedroomDialog, ActionTools.UnlockFlagAction(BarksFlag));
             DialogTools.DialogAddFinishAction(BedroomDialog, ActionTools.CompleteEtudeAction(BedroomSceneEtude));
             DialogTools.DialogAddFinishAction(BedroomDialog, ActionTools.StartEtudeAction(BarksEtude));
-            // Unhide Rest Icon
 
             // Trigger Bedroom scene after confession
             var Cue1 = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("WRM_8b_c_ChangeMyMind");
@@ -973,17 +1226,27 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.CueAddOnStopAction(Cue4, ActionTools.PlayCutsceneAction(BedroomCutscene));
         }
 
+        /*******************************************************************************************************************
+         * ADD BEDROOM BARKS
+         * Adds the mechanism by which Woljif is moved to the player's room and says cute one-liners when clicked after
+         * spending quality time together.
+         ******************************************************************************************************************/
         public static void AddBedroomBarks()
         {
-            var romancebase = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomance");
-            var WoljifDialog = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>("8a38eeddc0215a84ca441439bb96b8f4");
-            var irabethdead = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("b14e13f9359585e498fcd81ab95d4d7e");
+            var WoljifDialog = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>
+                               ("8a38eeddc0215a84ca441439bb96b8f4");
+            var irabethdead = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>
+                              ("b14e13f9359585e498fcd81ab95d4d7e");
 
             var BarksFlag = Resources.GetModBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("WRM_BedroomBarksFlag");
             var BarksEtude = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_BedroomBarksEtude");
-            EtudeTools.EtudeAddConflictingGroups(BarksEtude, Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>("97e2c4ec46765f143bf21bc9578b22f7"));
-            EtudeTools.EtudeAddActivationCondition(BarksEtude, ConditionalTools.CreateFlagLockCheck("WRM_TurnOnBarksCond", BarksFlag, false));
+            EtudeTools.EtudeAddConflictingGroups(BarksEtude, Resources.GetBlueprint
+                                                 <Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup>
+                                                 ("97e2c4ec46765f143bf21bc9578b22f7"));
+            EtudeTools.EtudeAddActivationCondition(BarksEtude, ConditionalTools.CreateFlagLockCheck("WRM_TurnOnBarksCond", 
+                                                   BarksFlag, false));
 
+            // Locators
             var PlayerBedroomLocation = new FakeLocator(183.91f, 78.691f, -15.50f, 274.26f);
             var WoljifBedroomLocation = new FakeLocator(183.76f, 78.691f, -14.49f, 274.26f);
             var BedroomCameraPosition = new FakeLocator(184.44f, 79.07f, -14.646f, 159.45f);
@@ -994,7 +1257,8 @@ namespace WOTR_WoljifRomanceMod
             var moveWoljif = ActionTools.TranslocateAction(BarksEtude, Companions.Woljif, WoljifBedroomLocation);
             var movecamtrack = CutsceneTools.CreateTrack(null, CommandTools.CamMoveCommand(BedroomCameraPosition));
             var movecamcutscene = CutsceneTools.CreateCutscene("WRM_MoveCameraToBedroom", false, movecamtrack);
-            var fadecutscene = Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.Cutscene>("4d0821789698d264bad86ac40bf785d2");
+            var fadecutscene = Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.Cutscene>
+                               ("4d0821789698d264bad86ac40bf785d2");
             Kingmaker.ElementsSystem.GameAction[] OnPlay =
                 {
                     ActionTools.SkipTimeAction(120),
@@ -1005,11 +1269,9 @@ namespace WOTR_WoljifRomanceMod
                     ActionTools.PlayCutsceneAction(movecamcutscene),
                     ActionTools.PlayCutsceneAction(fadecutscene)
                 };
-            //EtudeTools.EtudeAddOnPlayTrigger(BarksEtude, ActionTools.MakeList(ActionTools.TeleportAction("ab3b5c105893562488ae5bb6e7b0cba7", ActionTools.MakeList(OnPlay))));
             EtudeTools.EtudeAddOnPlayTrigger(BarksEtude, ActionTools.MakeList(OnPlay));
 
-
-            //On Etude deactivate, move WJ back to normal location, lock the Flag.
+            //On Etude deactivate or rest, move WJ back to normal location, lock the Flag.
             Kingmaker.ElementsSystem.GameAction[] OnDeactivate =
                 {
                     ActionTools.HideWeaponsAction(BarksEtude, Companions.Player, false),
@@ -1018,14 +1280,17 @@ namespace WOTR_WoljifRomanceMod
                     ActionTools.LockFlagAction(BarksFlag)
                 };
             EtudeTools.EtudeAddOnDeactivateTrigger(BarksEtude, ActionTools.MakeList(OnDeactivate));
-            //On rest, move WJ back to normal location, lock the Flag.
             EtudeTools.EtudeAddOnRestTrigger(BarksEtude, ActionTools.MakeList(OnDeactivate));
 
             // Alter Woljif's main Dialog tree when Flag is unlocked.
-            var BarkConditional = ActionTools.ConditionalAction(ConditionalTools.CreateFlagLockCheck("WRM_EnableBedroomBarks", BarksFlag, false));
+            // Default to "I love you" instead of "Irabeth cleared your schedule" if Irabeth is dead.
+            var BarkConditional = ActionTools.ConditionalAction(ConditionalTools.CreateFlagLockCheck
+                                  ("WRM_EnableBedroomBarks", BarksFlag, false));
             var bark5 = ActionTools.BarkAction("WRM_Barks_5", BarksEtude, Companions.Woljif);
-            var conditionalbark = ActionTools.ConditionalAction(ConditionalTools.CreateEtudeCondition("WRM_IrabethDead", irabethdead, "playing"));
-            ActionTools.ConditionalActionOnFalse(conditionalbark, ActionTools.MakeList(ActionTools.BarkAction("WRM_Barks_4", BarksEtude, Companions.Woljif)));
+            var conditionalbark = ActionTools.ConditionalAction(ConditionalTools.CreateEtudeCondition
+                                  ("WRM_IrabethDead", irabethdead, "playing"));
+            ActionTools.ConditionalActionOnFalse(conditionalbark, ActionTools.MakeList(ActionTools.BarkAction
+                                                 ("WRM_Barks_4", BarksEtude, Companions.Woljif)));
             ActionTools.ConditionalActionOnTrue(conditionalbark, bark5);
             Kingmaker.ElementsSystem.GameAction[] BarkActions = 
                 {
@@ -1035,28 +1300,47 @@ namespace WOTR_WoljifRomanceMod
                     conditionalbark,
                     bark5
                 };
-            ActionTools.ConditionalActionOnTrue(BarkConditional, ActionTools.MakeList(ActionTools.RandomAction(BarkActions)));
+            ActionTools.ConditionalActionOnTrue(BarkConditional, ActionTools.MakeList
+                                                (ActionTools.RandomAction(BarkActions)));
             DialogTools.DialogAddReplaceAction(WoljifDialog, BarkConditional);
-            DialogTools.DialogAddCondition(WoljifDialog, ConditionalTools.CreateFlagLockCheck("WRM_SwitchToBarks", BarksFlag, true));
+            DialogTools.DialogAddCondition(WoljifDialog, ConditionalTools.CreateFlagLockCheck
+                                           ("WRM_SwitchToBarks", BarksFlag, true));
         }
 
+        /*******************************************************************************************************************
+         * CHANGE DIALOG WHEN ROMANCED
+         * Alters some of Woljif's normal dialog when he's in a relationship with the player.
+         ******************************************************************************************************************/
         public static void ChangeDialogWhenRomanced()
         {
-            var successfulromance = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceFinished");
-            var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceActive");
-            var BarksFlag = Resources.GetModBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("WRM_BedroomBarksFlag");
-            var BarksEtude = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_BedroomBarksEtude");
+            var successfulromance = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>
+                                    ("WRM_WoljifRomanceFinished");
+            var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>
+                                ("WRM_WoljifRomanceActive");
+            var BarksFlag = Resources.GetModBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>
+                            ("WRM_BedroomBarksFlag");
             // Pull existing parts
-            var MainDialog = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>("8a38eeddc0215a84ca441439bb96b8f4");
-            var AnswerList0003 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("e41585da330233143b34ef64d7d62d69");
-            var AnswerList0010 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("aa9ab2093f0209949997379208cfbf41");
-            var Answer0005 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("c08e22b2fa03b934aa888d16f22c083e");
-            var Answer0007 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("848846faac181d34bbaf9a26766df8b9");
-            var Answer0009 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("b9c26621aff1d8243b5f43bb2efeff80");
-            var Answer0011 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("0249aec9ddf1b1f4a9dacbd7b870c58b");
-            var Answer0012 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("104e5d75cd7ef9c48a107cf5ecd23d94");
-            var Cue0006 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("ac10d2c0d42be624dab89e4531e87e64");
-            var Cue0014 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("03052f736f889cd4c9c240fdeca11e51");
+            var MainDialog = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>
+                             ("8a38eeddc0215a84ca441439bb96b8f4");
+            var AnswerList0003 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>
+                                 ("e41585da330233143b34ef64d7d62d69");
+            var AnswerList0010 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>
+                                 ("aa9ab2093f0209949997379208cfbf41");
+            var Answer0005 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>
+                             ("c08e22b2fa03b934aa888d16f22c083e");
+            var Answer0007 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>
+                             ("848846faac181d34bbaf9a26766df8b9");
+            var Answer0009 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>
+                             ("b9c26621aff1d8243b5f43bb2efeff80");
+            var Answer0011 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>
+                             ("0249aec9ddf1b1f4a9dacbd7b870c58b");
+            var Answer0012 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>
+                             ("104e5d75cd7ef9c48a107cf5ecd23d94");
+            var Cue0006 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                          ("ac10d2c0d42be624dab89e4531e87e64");
+            var Cue0014 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                          ("03052f736f889cd4c9c240fdeca11e51");
+
             // Make new parts
             var c_Greeting = DialogTools.CreateCue("WRM_Main_c_Greeting");
             var a_Breakup = DialogTools.CreateAnswer("WRM_Main_a_Breakup");
@@ -1074,30 +1358,37 @@ namespace WOTR_WoljifRomanceMod
             var c_DismissConfirm = DialogTools.CreateCue("WRM_Main_c_DismissConfirm");
             var L_Breakup = DialogTools.CreateAnswersList("WRM_Main_L_Breakup");
             // Splice them together
-            DialogTools.CueAddCondition(c_Greeting, ConditionalTools.CreateEtudeCondition("WRM_GreetingIfRomanced", successfulromance, "playing"));
+            DialogTools.CueAddCondition(c_Greeting, ConditionalTools.CreateEtudeCondition("WRM_GreetingIfRomanced", 
+                                        successfulromance, "playing"));
             DialogTools.DialogInsertCue(MainDialog, c_Greeting, 0);
             DialogTools.CueAddAnswersList(c_Greeting, AnswerList0003);
 
-            DialogTools.CueAddCondition(c_Goodbye, ConditionalTools.CreateEtudeCondition("WRM_GoodbyeIfRomanced", successfulromance, "playing"));
+            DialogTools.CueAddCondition(c_Goodbye, ConditionalTools.CreateEtudeCondition("WRM_GoodbyeIfRomanced", 
+                                        successfulromance, "playing"));
             DialogTools.AnswerAddNextCue(Answer0009, c_Goodbye, 0);
 
-            DialogTools.CueAddCondition(c_Vendor, ConditionalTools.CreateEtudeCondition("WRM_VendorIfRomanced", successfulromance, "playing"));
+            DialogTools.CueAddCondition(c_Vendor, ConditionalTools.CreateEtudeCondition("WRM_VendorIfRomanced", 
+                                        successfulromance, "playing"));
             DialogTools.AnswerAddNextCue(Answer0005, c_Vendor, 0);
             c_Vendor.OnStop = Cue0006.OnStop;
 
-            DialogTools.CueAddCondition(c_Dismiss, ConditionalTools.CreateEtudeCondition("WRM_DismissBaseIfRomanced", successfulromance, "playing"));
+            DialogTools.CueAddCondition(c_Dismiss, ConditionalTools.CreateEtudeCondition("WRM_DismissBaseIfRomanced", 
+                                        successfulromance, "playing"));
             DialogTools.AnswerAddNextCue(Answer0007, c_Dismiss, 0);
             DialogTools.CueAddAnswersList(c_Dismiss, AnswerList0010);
 
-            DialogTools.CueAddCondition(c_DismissCancel, ConditionalTools.CreateEtudeCondition("WRM_DismissCancelIfRomanced", successfulromance, "playing"));
+            DialogTools.CueAddCondition(c_DismissCancel, ConditionalTools.CreateEtudeCondition
+                                        ("WRM_DismissCancelIfRomanced", successfulromance, "playing"));
             DialogTools.AnswerAddNextCue(Answer0011, c_DismissCancel, 0);
             DialogTools.CueAddAnswersList(c_DismissCancel, AnswerList0003);
 
-            DialogTools.CueAddCondition(c_DismissConfirm, ConditionalTools.CreateEtudeCondition("WRM_DismissConfirmIfRomanced", successfulromance, "playing"));
+            DialogTools.CueAddCondition(c_DismissConfirm, ConditionalTools.CreateEtudeCondition
+                                        ("WRM_DismissConfirmIfRomanced", successfulromance, "playing"));
             DialogTools.AnswerAddNextCue(Answer0012, c_DismissConfirm, 0);
             c_DismissConfirm.OnStop = Cue0014.OnStop;
 
-            DialogTools.AnswerAddShowCondition(a_Breakup, ConditionalTools.CreateEtudeCondition("WRM_ShowBreakupIfRomanced", successfulromance, "playing"));
+            DialogTools.AnswerAddShowCondition(a_Breakup, ConditionalTools.CreateEtudeCondition
+                                               ("WRM_ShowBreakupIfRomanced", successfulromance, "playing"));
             DialogTools.ListAddAnswer(AnswerList0003, a_Breakup, 10);
             DialogTools.AnswerAddNextCue(a_Breakup, c_Breakup);
             DialogTools.CueAddAnswersList(c_Breakup, L_Breakup);
@@ -1108,24 +1399,38 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.AnswerAddNextCue(a_BreakupConfirm, c_BreakupConfirm);
             DialogTools.AnswerAddOnSelectAction(a_BreakupConfirm, ActionTools.CompleteEtudeAction(romanceactive));
 
-            DialogTools.AnswerAddShowCondition(a_TogetherTime, ConditionalTools.CreateEtudeCondition("WRM_ShowTogetherTimeIfRomanced", successfulromance, "playing"));
+            DialogTools.AnswerAddShowCondition(a_TogetherTime, ConditionalTools.CreateEtudeCondition
+                                               ("WRM_ShowTogetherTimeIfRomanced", successfulromance, "playing"));
             DialogTools.ListAddAnswer(AnswerList0003, a_TogetherTime, 11);
             DialogTools.AnswerAddNextCue(a_TogetherTime, c_TogetherTime);
             DialogTools.CueAddOnStopAction(c_TogetherTime, ActionTools.UnlockFlagAction(BarksFlag));
-            // I don't know why, but even though the translocate/teleport is handled in the etude, it doesn't work properly unless I put it here too.
+            // I don't know why, but even though the translocate/teleport is handled in the etude, it doesn't work
+            // properly unless I put it here too.
             var WoljifBedroomLocation = new FakeLocator(183.76f, 78.691f, -14.49f, 274.26f);
-            DialogTools.CueAddOnStopAction(c_TogetherTime, ActionTools.TeleportAction("ab3b5c105893562488ae5bb6e7b0cba7", ActionTools.MakeList(ActionTools.TranslocateAction(c_TogetherTime, Companions.Woljif, WoljifBedroomLocation))));
+            DialogTools.CueAddOnStopAction(c_TogetherTime, ActionTools.TeleportAction("ab3b5c105893562488ae5bb6e7b0cba7", 
+                                           ActionTools.MakeList(ActionTools.TranslocateAction(c_TogetherTime, 
+                                           Companions.Woljif, WoljifBedroomLocation))));
         }
 
+        /*******************************************************************************************************************
+         * ADD IRABETH CONVERSATION
+         * Adds a conversation with Irabeth, in which she questions your taste in men and gives you your first chance to
+         * state whether you wish to marry Woljif or not.
+         ******************************************************************************************************************/
         public static void AddIrabethConversation()
         {
-            var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceActive");
-            var romancecomplete = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceFinished");
-
-            var IrabethDialog = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>("20e94a828d4016d45a6b723765306522");
-            var AneviaThiefCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("48e8e8f9452870a4a8ecbd00cc22354c");
-            var AneviaCultCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("3983e48d9a100ed4a862345b926e684e");
-            var IrabethCultCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("a80df3f6b39f9f147bca3191eb6efef5");
+            var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>
+                                ("WRM_WoljifRomanceActive");
+            var romancecomplete = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>
+                                  ("WRM_WoljifRomanceFinished");
+            var IrabethDialog = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>
+                                ("20e94a828d4016d45a6b723765306522");
+            var AneviaThiefCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                                 ("48e8e8f9452870a4a8ecbd00cc22354c");
+            var AneviaCultCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                                ("3983e48d9a100ed4a862345b926e684e");
+            var IrabethCultCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                                 ("a80df3f6b39f9f147bca3191eb6efef5");
 
             var MarriageFlag = EtudeTools.CreateEtude("WRM_WantToMarry", romanceactive, false, false);
 
@@ -1164,9 +1469,12 @@ namespace WOTR_WoljifRomanceMod
             var c_WeWillHelp = DialogTools.CreateCue("WRM_Ira_c_WeWillHelp", IrabethCultCue.Speaker);
 
 
-            DialogTools.CueAddCondition(c_SpeakFreely, ConditionalTools.CreateEtudeCondition("WRM_Ira_RomanceActive", romanceactive, "playing"));
-            DialogTools.CueAddCondition(c_SpeakFreely, ConditionalTools.CreateEtudeCondition("WRM_Ira_InRelationship", romancecomplete, "playing"));
-            DialogTools.CueAddCondition(c_SpeakFreely, ConditionalTools.CreateCueSeenCondition("WRM_Ira_NotDiscussedBefore", true, c_SpeakFreely));
+            DialogTools.CueAddCondition(c_SpeakFreely, ConditionalTools.CreateEtudeCondition("WRM_Ira_RomanceActive", 
+                                        romanceactive, "playing"));
+            DialogTools.CueAddCondition(c_SpeakFreely, ConditionalTools.CreateEtudeCondition("WRM_Ira_InRelationship", 
+                                        romancecomplete, "playing"));
+            DialogTools.CueAddCondition(c_SpeakFreely, ConditionalTools.CreateCueSeenCondition
+                                        ("WRM_Ira_NotDiscussedBefore", true, c_SpeakFreely));
             DialogTools.DialogInsertCue(IrabethDialog, c_SpeakFreely, 0);
 
             DialogTools.CueAddAnswersList(c_SpeakFreely, L_SpeakFreely);
@@ -1182,19 +1490,28 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.ListAddAnswer(L_Response, a_YouKnowAboutUs);
             DialogTools.AnswerAddNextCue(a_YouKnowAboutUs, c_EverybodyKnows);
             DialogTools.CueAddAnswersList(c_EverybodyKnows, L_Response);
-            DialogTools.AnswerAddShowCondition(a_YouKnowAboutUs, ConditionalTools.CreateCueSeenCondition("WRM_IrabethClarified", c_YouAndWoljif));
+            DialogTools.AnswerAddShowCondition(a_YouKnowAboutUs, ConditionalTools.CreateCueSeenCondition
+                                               ("WRM_IrabethClarified", c_YouAndWoljif));
             DialogTools.ListAddAnswer(L_Response, a_CultSacrifice);
-            var KnowHowTheyMet = ConditionalTools.CreateLogicCondition("WRM_KnowHowNevibethMet", Kingmaker.ElementsSystem.Operation.Or);
-            ConditionalTools.LogicAddCondition(KnowHowTheyMet, ConditionalTools.CreateCueSeenCondition("WRM_SawAneviaCultCue",AneviaCultCue));
-            ConditionalTools.LogicAddCondition(KnowHowTheyMet, ConditionalTools.CreateCueSeenCondition("WRM_SawIrabethCultCue", IrabethCultCue));
+            var KnowHowTheyMet = ConditionalTools.CreateLogicCondition("WRM_KnowHowNevibethMet", 
+                                                                       Kingmaker.ElementsSystem.Operation.Or);
+            ConditionalTools.LogicAddCondition(KnowHowTheyMet, ConditionalTools.CreateCueSeenCondition
+                                               ("WRM_SawAneviaCultCue",AneviaCultCue));
+            ConditionalTools.LogicAddCondition(KnowHowTheyMet, ConditionalTools.CreateCueSeenCondition
+                                               ("WRM_SawIrabethCultCue", IrabethCultCue));
             DialogTools.AnswerAddShowCondition(a_CultSacrifice, KnowHowTheyMet);
             DialogTools.AnswerAddNextCue(a_CultSacrifice, c_NotTheSame);
             DialogTools.CueAddAnswersList(c_NotTheSame, L_Response);
-            var sawNewDialogs = ConditionalTools.CreateLogicCondition("WRM_Ira_C3orC6", Kingmaker.ElementsSystem.Operation.Or);
-            ConditionalTools.LogicAddCondition(sawNewDialogs, ConditionalTools.CreateCueSeenCondition("WRM_Ira_SeenC3", c_YouAndWoljif));
-            ConditionalTools.LogicAddCondition(sawNewDialogs, ConditionalTools.CreateCueSeenCondition("WRM_Ira_SeenC6", c_NotTheSame));
-            var sawAneviaDialog = ConditionalTools.CreateLogicCondition("WRM_Ira_AneviaThiefCond", Kingmaker.ElementsSystem.Operation.And);
-            ConditionalTools.LogicAddCondition(sawAneviaDialog, ConditionalTools.CreateCueSeenCondition("WRM_SawAneviaThiefCue", AneviaThiefCue));
+            var sawNewDialogs = ConditionalTools.CreateLogicCondition("WRM_Ira_C3orC6", 
+                                                                      Kingmaker.ElementsSystem.Operation.Or);
+            ConditionalTools.LogicAddCondition(sawNewDialogs, ConditionalTools.CreateCueSeenCondition
+                                               ("WRM_Ira_SeenC3", c_YouAndWoljif));
+            ConditionalTools.LogicAddCondition(sawNewDialogs, ConditionalTools.CreateCueSeenCondition
+                                               ("WRM_Ira_SeenC6", c_NotTheSame));
+            var sawAneviaDialog = ConditionalTools.CreateLogicCondition("WRM_Ira_AneviaThiefCond", 
+                                  Kingmaker.ElementsSystem.Operation.And);
+            ConditionalTools.LogicAddCondition(sawAneviaDialog, ConditionalTools.CreateCueSeenCondition
+                                               ("WRM_SawAneviaThiefCue", AneviaThiefCue));
             ConditionalTools.LogicAddCondition(sawAneviaDialog, sawNewDialogs);
             DialogTools.ListAddAnswer(L_Response, a_AneviaThief);
             DialogTools.AnswerAddShowCondition(a_AneviaThief, sawAneviaDialog);
@@ -1240,15 +1557,27 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.AnswerAddNextCue(a_HellComeAround2, c_WeWillHelp);
         }
 
+        /*******************************************************************************************************************
+         * ALTER THRESHOLD SCENE
+         * Changes the farewell conversation with Woljif at Threshold if romanced, and if the first opportunity was missed,
+         * gives you a second chance to state that you want to marry him.
+         ******************************************************************************************************************/
         public static void AlterThresholdScene()
         {
-            var successfulromance = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceFinished");
-            var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceActive");
-            var marriageflag = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WantToMarry");
-            var ThresholdDialog = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>("0e94cfa04d06db1438eb565f60c0012c");
-            var ThresholdCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("bbcf85bfeb8e25c409ce45bbb95f234c");
-            var irabethCue = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("WRM_Ira_c_SpeakFreely");
-            var irabethShoveOff = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("WRM_Ira_c_BackingOff");
+            var successfulromance = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>
+                                    ("WRM_WoljifRomanceFinished");
+            var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>
+                                ("WRM_WoljifRomanceActive");
+            var marriageflag = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>
+                               ("WRM_WantToMarry");
+            var ThresholdDialog = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>
+                                  ("0e94cfa04d06db1438eb565f60c0012c");
+            var ThresholdCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                               ("bbcf85bfeb8e25c409ce45bbb95f234c");
+            var irabethCue = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                             ("WRM_Ira_c_SpeakFreely");
+            var irabethShoveOff = Resources.GetModBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                                  ("WRM_Ira_c_BackingOff");
 
             var c_Start = DialogTools.CreateCue("WRM_TH_c_Start");
             var L_WhyNow = DialogTools.CreateAnswersList("WRM_TH_L_WhyNow");
@@ -1311,8 +1640,10 @@ namespace WOTR_WoljifRomanceMod
                 };
 
             DialogTools.CueAddContinue(c_Kiss, c_FussyBoyfriend);
-            DialogTools.CueAddCondition(c_FussyBoyfriend, ConditionalTools.CreateLogicCondition("WRM_DidDiscussFuture", discussedfuture));
-            DialogTools.ListAddCondition(L_Marriage, ConditionalTools.CreateLogicCondition("WRM_DidNotDiscussFuture", true, discussedfuture));
+            DialogTools.CueAddCondition(c_FussyBoyfriend, ConditionalTools.CreateLogicCondition("WRM_DidDiscussFuture", 
+                                        discussedfuture));
+            DialogTools.ListAddCondition(L_Marriage, ConditionalTools.CreateLogicCondition("WRM_DidNotDiscussFuture", 
+                                         true, discussedfuture));
             DialogTools.CueAddAnswersList(c_Kiss, L_Marriage);
             DialogTools.ListAddAnswer(L_Marriage, a_MarryMe);
             DialogTools.ListAddAnswer(L_Marriage, a_WarToWin);
@@ -1322,21 +1653,36 @@ namespace WOTR_WoljifRomanceMod
             DialogTools.CueAddContinue(c_Marriage, c_ChangeTopic);
         }
 
+        /*******************************************************************************************************************
+         * ALTER EPILOGUE
+         * Changes Woljif's epilogue slide to account for the romance, your fate, and whether you wanted to marry him.
+         ******************************************************************************************************************/
         public static void AlterEpilogue()
         {
             // Normal ending
-            var successfulromance = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceFinished");
-            var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceActive");
+            var successfulromance = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>
+                                    ("WRM_WoljifRomanceFinished");
+            var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>
+                                ("WRM_WoljifRomanceActive");
             var marriageflag = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WantToMarry");
-            var daeranHappyEnd = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("1f6d48909c0343b4e9640b57e7afdb64");
-            var daeranGoodEnd = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("ff3c5925e17d5f7468328419d2a54b57");
-            var playerSacrifice = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("381a296094804761af0893d2e70dc2df");
-            var normalPage = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintBookPage>("48f344caa8963c0429dd147b6ad00bee"); 
-            var DefaultAscendedCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("3794b0f4f9a3b3244a90889ed120e78d");
-            var DefaultGoodEndCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("fc31902e081372f4a89f479616b9c51b");
-            var irabethdead = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("b14e13f9359585e498fcd81ab95d4d7e");
-            var TricksterFinalJoke = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("10e6b2a8c754dae4b81e55ad6d0918b2");
-            var TricksterFixIt = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("fff2f6e49d4c7bb438ffe7a8f256d252");
+            var daeranHappyEnd = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>
+                                 ("1f6d48909c0343b4e9640b57e7afdb64");
+            var daeranGoodEnd = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>
+                                ("ff3c5925e17d5f7468328419d2a54b57");
+            var playerSacrifice = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>
+                                  ("381a296094804761af0893d2e70dc2df");
+            var normalPage = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintBookPage>
+                             ("48f344caa8963c0429dd147b6ad00bee"); 
+            var DefaultAscendedCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                                     ("3794b0f4f9a3b3244a90889ed120e78d");
+            var DefaultGoodEndCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                                    ("fc31902e081372f4a89f479616b9c51b");
+            var irabethdead = Resources.GetBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>
+                              ("b14e13f9359585e498fcd81ab95d4d7e");
+            var TricksterFinalJoke = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>
+                                     ("10e6b2a8c754dae4b81e55ad6d0918b2");
+            var TricksterFixIt = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>
+                                 ("fff2f6e49d4c7bb438ffe7a8f256d252");
 
             var WRM_Ascended = DialogTools.CreateCue("WRM_Epilogue_Ascended", DefaultAscendedCue.Speaker);
             var WRM_Trickster = DialogTools.CreateCue("WRM_Epilogue_Trickster", DefaultAscendedCue.Speaker);
@@ -1347,8 +1693,10 @@ namespace WOTR_WoljifRomanceMod
             var WRM_Daeran = DialogTools.CreateCue("WRM_Epilogue_Daeran", DefaultAscendedCue.Speaker);
 
             var DaeranEnding = ConditionalTools.CreateLogicCondition("WRM_DaeranEnding", Kingmaker.ElementsSystem.Operation.Or);
-            ConditionalTools.LogicAddCondition(DaeranEnding, ConditionalTools.CreateEtudeCondition("WRM_DaeranGoodEnd", daeranGoodEnd, "playing"));
-            ConditionalTools.LogicAddCondition(DaeranEnding, ConditionalTools.CreateEtudeCondition("WRM_DaeranHappyEnd", daeranHappyEnd, "playing"));
+            ConditionalTools.LogicAddCondition(DaeranEnding, ConditionalTools.CreateEtudeCondition("WRM_DaeranGoodEnd", 
+                                               daeranGoodEnd, "playing"));
+            ConditionalTools.LogicAddCondition(DaeranEnding, ConditionalTools.CreateEtudeCondition("WRM_DaeranHappyEnd", 
+                                               daeranHappyEnd, "playing"));
             Kingmaker.ElementsSystem.Condition[] romanceconds =
                 {
                     ConditionalTools.CreateEtudeCondition("WRM_TH_Romance", romanceactive, "playing"),
@@ -1356,72 +1704,107 @@ namespace WOTR_WoljifRomanceMod
                 };
             var RomanceIsActive = ConditionalTools.CreateLogicCondition("WRM_TH_RomanceIsActive", romanceconds);
 
+            // Ascended ending
             DialogTools.CueAddCondition(WRM_Ascended, RomanceIsActive);
             DialogTools.CueAddContinue(DefaultAscendedCue, WRM_Ascended);
 
+            // Trickster ending if you didn't overwrite it
             DialogTools.CueAddCondition(WRM_Trickster, RomanceIsActive);
-            DialogTools.CueAddCondition(WRM_Trickster, ConditionalTools.CreateEtudeCondition("WRM_PlayerDead", playerSacrifice, "playing"));
-            DialogTools.CueAddCondition(WRM_Trickster, ConditionalTools.CreateAnswerSelectedCondition("WRM_TricksterJoke", TricksterFinalJoke));
-            DialogTools.CueAddCondition(WRM_Trickster, ConditionalTools.CreateAnswerSelectedCondition("WRM_PlayerDidntOverwrite", true, TricksterFixIt));
-            normalPage.Cues.Insert(2, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintCueBaseReference>(WRM_Trickster));
+            DialogTools.CueAddCondition(WRM_Trickster, ConditionalTools.CreateEtudeCondition("WRM_PlayerDead", 
+                                        playerSacrifice, "playing"));
+            DialogTools.CueAddCondition(WRM_Trickster, ConditionalTools.CreateAnswerSelectedCondition("WRM_TricksterJoke", 
+                                        TricksterFinalJoke));
+            DialogTools.CueAddCondition(WRM_Trickster, ConditionalTools.CreateAnswerSelectedCondition
+                                        ("WRM_PlayerDidntOverwrite", true, TricksterFixIt));
+            normalPage.Cues.Insert(2, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                   <Kingmaker.Blueprints.BlueprintCueBaseReference>(WRM_Trickster));
 
+            // Player sacrificed themselves without trickster-overwriting the ending or playing the final joke
             DialogTools.CueAddCondition(WRM_Heartbroken, RomanceIsActive);
-            DialogTools.CueAddCondition(WRM_Heartbroken, ConditionalTools.CreateEtudeCondition("WRM_PlayerDead", playerSacrifice, "playing"));
-            DialogTools.CueAddCondition(WRM_Heartbroken, ConditionalTools.CreateAnswerSelectedCondition("WRM_PlayerDidntOverwrite", true, TricksterFixIt));
-            DialogTools.CueAddCondition(WRM_Heartbroken, ConditionalTools.CreateAnswerSelectedCondition("WRM_NoTricksterJoke", true, TricksterFinalJoke));
-            normalPage.Cues.Insert(2, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintCueBaseReference>(WRM_Heartbroken));
+            DialogTools.CueAddCondition(WRM_Heartbroken, ConditionalTools.CreateEtudeCondition("WRM_PlayerDead", 
+                                        playerSacrifice, "playing"));
+            DialogTools.CueAddCondition(WRM_Heartbroken, ConditionalTools.CreateAnswerSelectedCondition
+                                        ("WRM_PlayerDidntOverwrite", true, TricksterFixIt));
+            DialogTools.CueAddCondition(WRM_Heartbroken, ConditionalTools.CreateAnswerSelectedCondition
+                                        ("WRM_NoTricksterJoke", true, TricksterFinalJoke));
+            normalPage.Cues.Insert(2, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                   <Kingmaker.Blueprints.BlueprintCueBaseReference>(WRM_Heartbroken));
 
-            DialogTools.CueAddCondition(DefaultGoodEndCue, ConditionalTools.CreateCueSeenCondition("WRM_NotHeartbroken", true, WRM_Heartbroken));
-            DialogTools.CueAddCondition(DefaultGoodEndCue, ConditionalTools.CreateCueSeenCondition("WRM_NotTrickstered", true, WRM_Trickster));
+            // Prevent normal epilogue from showing if Woljif is heartbroken or obsessed with bringing the player back.
+            DialogTools.CueAddCondition(DefaultGoodEndCue, ConditionalTools.CreateCueSeenCondition("WRM_NotHeartbroken", 
+                                        true, WRM_Heartbroken));
+            DialogTools.CueAddCondition(DefaultGoodEndCue, ConditionalTools.CreateCueSeenCondition("WRM_NotTrickstered", 
+                                        true, WRM_Trickster));
 
+            // Player is alive or used trickster powers to overwrite their own death.
             Kingmaker.ElementsSystem.Condition[] aliveconds = 
                 {
                     ConditionalTools.CreateEtudeCondition("WRM_PlayerNotDead", playerSacrifice, "playing", true),
                     ConditionalTools.CreateAnswerSelectedCondition("WRM_PlayerDidOverwrite", TricksterFixIt)
                 };
-            var NotDeadOrIgnored = ConditionalTools.CreateLogicCondition("WRM_AliveOrIgnoredDeath", Kingmaker.ElementsSystem.Operation.Or, aliveconds);
+            var NotDeadOrIgnored = ConditionalTools.CreateLogicCondition("WRM_AliveOrIgnoredDeath", 
+                                   Kingmaker.ElementsSystem.Operation.Or, aliveconds);
+
+            // Player does not marry Woljif, but still lives happily ever after with him.
             DialogTools.CueAddCondition(WRM_Unmarried, RomanceIsActive);
-            //DialogTools.CueAddCondition(WRM_Unmarried, ConditionalTools.CreateEtudeCondition("WRM_PlayerNotDead", playerSacrifice, "playing", true));
             DialogTools.CueAddCondition(WRM_Unmarried, NotDeadOrIgnored);
-            DialogTools.CueAddCondition(WRM_Unmarried, ConditionalTools.CreateEtudeCondition("WRM_Epilogue_NoMarriage", marriageflag, "playing", true));
+            DialogTools.CueAddCondition(WRM_Unmarried, ConditionalTools.CreateEtudeCondition("WRM_Epilogue_NoMarriage", 
+                                        marriageflag, "playing", true));
             DialogTools.CueAddContinue(DefaultGoodEndCue, WRM_Unmarried, 0);
 
+            // Player marries Woljif, Irabeth is around to participate in the festivities
             DialogTools.CueAddCondition(WRM_Married, RomanceIsActive);
-            //DialogTools.CueAddCondition(WRM_Married, ConditionalTools.CreateEtudeCondition("WRM_PlayerNotDead", playerSacrifice, "playing", true));
             DialogTools.CueAddCondition(WRM_Married, NotDeadOrIgnored);
-            DialogTools.CueAddCondition(WRM_Married, ConditionalTools.CreateEtudeCondition("WRM_Epilogue_Marriage", marriageflag, "playing"));
-            DialogTools.CueAddCondition(WRM_Married, ConditionalTools.CreateEtudeCondition("WRM_IrabethAlive", irabethdead, "playing", true));
+            DialogTools.CueAddCondition(WRM_Married, ConditionalTools.CreateEtudeCondition("WRM_Epilogue_Marriage", 
+                                        marriageflag, "playing"));
+            DialogTools.CueAddCondition(WRM_Married, ConditionalTools.CreateEtudeCondition("WRM_IrabethAlive", 
+                                        irabethdead, "playing", true));
             DialogTools.CueAddContinue(DefaultGoodEndCue, WRM_Married, 0);
 
+            // Player marries Woljif, Irabeth isn't around
             DialogTools.CueAddCondition(WRM_MarriedNoIrabeth, RomanceIsActive);
             DialogTools.CueAddCondition(WRM_MarriedNoIrabeth, NotDeadOrIgnored);
-            DialogTools.CueAddCondition(WRM_MarriedNoIrabeth, ConditionalTools.CreateEtudeCondition("WRM_Epilogue_Marriage", marriageflag, "playing"));
-            DialogTools.CueAddCondition(WRM_MarriedNoIrabeth, ConditionalTools.CreateEtudeCondition("WRM_IrabethDead", irabethdead, "playing"));
+            DialogTools.CueAddCondition(WRM_MarriedNoIrabeth, ConditionalTools.CreateEtudeCondition
+                                        ("WRM_Epilogue_Marriage", marriageflag, "playing"));
+            DialogTools.CueAddCondition(WRM_MarriedNoIrabeth, ConditionalTools.CreateEtudeCondition
+                                        ("WRM_IrabethDead", irabethdead, "playing"));
             DialogTools.CueAddContinue(DefaultGoodEndCue, WRM_MarriedNoIrabeth, 0);
 
+            // Add mention of Daeran if applicable
             DialogTools.CueAddCondition(WRM_Daeran, DaeranEnding);
             DialogTools.CueAddContinue(WRM_Unmarried, WRM_Daeran);
             DialogTools.CueAddContinue(WRM_Married, WRM_Daeran);
             DialogTools.CueAddContinue(WRM_MarriedNoIrabeth, WRM_Daeran);
 
             // Aeon ending
-            var AeonMemories = Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>("a8b030ebca6c9744bac633cff609b698");
-            var DefaultAeonCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("e5d95ad08224fb74b895babaf846597d");
+            var AeonMemories = Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnlockableFlag>
+                               ("a8b030ebca6c9744bac633cff609b698");
+            var DefaultAeonCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                                 ("e5d95ad08224fb74b895babaf846597d");
             var WRM_Aeon = DialogTools.CreateCue("WRM_Epilogue_Aeon", DefaultAeonCue.Speaker);
             DialogTools.CueAddCondition(WRM_Aeon, RomanceIsActive);
-            DialogTools.CueAddCondition(WRM_Aeon, ConditionalTools.CreateFlagLockCheck("WRM_Memories", AeonMemories, false));
+            DialogTools.CueAddCondition(WRM_Aeon, ConditionalTools.CreateFlagLockCheck
+                                        ("WRM_Memories", AeonMemories, false));
             DialogTools.CueAddContinue(DefaultAeonCue, WRM_Aeon);
         }
 
-        // HERE BE DRAGONS. I've tested this particular scene but now how it fits into the lich path as a whole.
+        /*******************************************************************************************************************
+         * ALTER LICH SCENE     !!! HERE BE DRAGONS
+         * Implements Woljif as a possible romantic interest for That One Scene on the Lich path.
+         * I've tested this particular scene's functionality but not how it fits into the Lich path as a whole. It is 
+         * generally less tested than the rest of the mod.
+         ******************************************************************************************************************/
         public static void AlterLichScene()
         {
-            var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>("WRM_WoljifRomanceActive");
+            var romanceactive = Resources.GetModBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>
+                                ("WRM_WoljifRomanceActive");
 
             // Alter Cue 0048
-            var cue0048 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("2ebd861e55143014c8067c6832cdf21c");
+            var cue0048 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                          ("2ebd861e55143014c8067c6832cdf21c");
             //   Add conditional to Cue 0048
-            DialogTools.CueAddCondition(cue0048, ConditionalTools.CreateEtudeCondition("WRM_lich_WoljifRomance1", romanceactive, "playing"));
+            DialogTools.CueAddCondition(cue0048, ConditionalTools.CreateEtudeCondition("WRM_lich_WoljifRomance1", 
+                                        romanceactive, "playing"));
             //   Add logic to OnShow
             Kingmaker.ElementsSystem.Condition[] Summons =
                 {
@@ -1431,87 +1814,112 @@ namespace WOTR_WoljifRomanceMod
             Kingmaker.ElementsSystem.Condition[] LoveAndSummons =
                 {
                     ConditionalTools.CreateEtudeCondition("WRM_lich_WoljifRomance2", romanceactive, "playing"),
-                    ConditionalTools.CreateLogicCondition("WRM_lich_NotAvailable", Kingmaker.ElementsSystem.Operation.Or, Summons)
+                    ConditionalTools.CreateLogicCondition("WRM_lich_NotAvailable", Kingmaker.ElementsSystem.Operation.Or, 
+                                                          Summons)
                 };
             var needSummonWJ = ConditionalTools.CreateLogicCondition("WRM_lich_NeedSummon", LoveAndSummons);
-            ConditionalTools.CheckerAddCondition(((Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional)cue0048.OnShow.Actions[0]).ConditionsChecker, needSummonWJ);
+            ConditionalTools.CheckerAddCondition(((Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional)
+                                                 cue0048.OnShow.Actions[0]).ConditionsChecker, needSummonWJ);
             //   Add logic to cutscene
             //   Steal special effects from Arueshalae
-            var command = Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.CommandAction>("d9f06282ad7352641863159ee2c664be");
-            var arutrue = ((Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional)command.Action.Actions[0]).IfTrue;
-            var onspawn = ((Kingmaker.Designers.EventConditionActionSystem.Actions.Spawn)arutrue.Actions[0]).ActionsOnSpawn;
+            var command = Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.CommandAction>
+                          ("d9f06282ad7352641863159ee2c664be");
+            var arutrue = ((Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional)
+                          command.Action.Actions[0]).IfTrue;
+            var onspawn = ((Kingmaker.Designers.EventConditionActionSystem.Actions.Spawn)
+                          arutrue.Actions[0]).ActionsOnSpawn;
             var fxprefab = ((Kingmaker.Designers.EventConditionActionSystem.Actions.SpawnFx)onspawn.Actions[0]).FxPrefab;
             
-            var spawnaction = ActionTools.SpawnUnitAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnit>("766435873b1361c4287c351de194e5f9"), new FakeLocator(211.66f, 40.99f, -296.74f, 328f), fxprefab);
-            var eval = (ActionSpawnedUnitEvaluator)Kingmaker.ElementsSystem.Element.CreateInstance(typeof(ActionSpawnedUnitEvaluator));
+            var spawnaction = ActionTools.SpawnUnitAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnit>
+                              ("766435873b1361c4287c351de194e5f9"), new FakeLocator(211.66f, 40.99f, -296.74f, 328f), 
+                              fxprefab);
+            var eval = (ActionSpawnedUnitEvaluator)Kingmaker.ElementsSystem.Element.CreateInstance
+                       (typeof(ActionSpawnedUnitEvaluator));
             eval.setAction(spawnaction);
 
-            var woljifConditionalSpawn = ActionTools.ConditionalAction(ConditionalTools.CreateEtudeCondition("WRM_lich_WoljifRomance3", romanceactive, "playing"));
+            var woljifConditionalSpawn = ActionTools.ConditionalAction(ConditionalTools.CreateEtudeCondition
+                                         ("WRM_lich_WoljifRomance3", romanceactive, "playing"));
             ActionTools.ConditionalActionOnTrue(woljifConditionalSpawn, ActionTools.MakeList(spawnaction));
             var len = command.Action.Actions.Length;
             Array.Resize(ref command.Action.Actions, len+1);
             command.Action.Actions[len] = woljifConditionalSpawn;
+
             // Add to Cuesequence 0047
             var WoljifCue1 = DialogTools.CreateCue("WRM_lich_c_1");
             WoljifCue1.Speaker.m_SpeakerPortrait = CompanionTools.GetCompanionReference(Companions.Woljif);
-            DialogTools.CueAddCondition(WoljifCue1, ConditionalTools.CreateEtudeCondition("WRM_lich_WoljifRomance4", romanceactive, "playing"));
-            var cuesequence0047 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCueSequence>("0409cff795b3a04479f657f55aded190");
+            DialogTools.CueAddCondition(WoljifCue1, ConditionalTools.CreateEtudeCondition("WRM_lich_WoljifRomance4", 
+                                        romanceactive, "playing"));
+            var cuesequence0047 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCueSequence>
+                                  ("0409cff795b3a04479f657f55aded190");
             DialogTools.CueSequenceInsertCue(cuesequence0047, WoljifCue1);
 
             //Alter Cue 0050
-            var cue0050 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("81a9fa5cc4df55d45abe754bffd53563");
+            var cue0050 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                          ("81a9fa5cc4df55d45abe754bffd53563");
             //   Add logic to OnShow
-            var paralysis = Resources.GetBlueprint<Kingmaker.UnitLogic.Buffs.Blueprints.BlueprintBuff>("d77b4982cc0d8eb4f9210d1350199e91");
+            var paralysis = Resources.GetBlueprint<Kingmaker.UnitLogic.Buffs.Blueprints.BlueprintBuff>
+                            ("d77b4982cc0d8eb4f9210d1350199e91");
             var buff = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.AttachBuff>(bp =>
                 {
-                    bp.m_Buff = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintBuffReference>(paralysis);
+                    bp.m_Buff = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                <Kingmaker.Blueprints.BlueprintBuffReference>(paralysis);
                     bp.Target = eval;
                 });
-            var buffifapplicable = ActionTools.ConditionalAction(ConditionalTools.CreateEtudeCondition("WRM_lich_WoljifRomance5", romanceactive, "playing"));
+            var buffifapplicable = ActionTools.ConditionalAction(ConditionalTools.CreateEtudeCondition
+                                   ("WRM_lich_WoljifRomance5", romanceactive, "playing"));
             ActionTools.ConditionalActionOnTrue(buffifapplicable, ActionTools.MakeList(buff));
             DialogTools.CueAddOnShowAction(cue0050, buffifapplicable);
 
             //Alter Talk sequence
             //   Add conditional to Answer 0030
-            var answer0030 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>("b8000d4a1c30b4b47923bda916919f66");
-            DialogTools.AnswerAddShowCondition(answer0030, ConditionalTools.CreateCueSeenCondition("WRM_SawWoljifDialog1", WoljifCue1));
+            var answer0030 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>
+                             ("b8000d4a1c30b4b47923bda916919f66");
+            DialogTools.AnswerAddShowCondition(answer0030, ConditionalTools.CreateCueSeenCondition
+                                               ("WRM_SawWoljifDialog1", WoljifCue1));
             //   Add dialog sequence
             var WoljifCue2 = DialogTools.CreateCue("WRM_lich_c_2");
             var WoljifCue3 = DialogTools.CreateCue("WRM_lich_c_3");
             WoljifCue2.Speaker.m_SpeakerPortrait = CompanionTools.GetCompanionReference(Companions.Woljif);
             WoljifCue3.Speaker.m_SpeakerPortrait = CompanionTools.GetCompanionReference(Companions.Woljif);
-            DialogTools.CueAddCondition(WoljifCue2, ConditionalTools.CreateEtudeCondition("WRM_lich_WoljifRomance6", romanceactive, "playing"));
+            DialogTools.CueAddCondition(WoljifCue2, ConditionalTools.CreateEtudeCondition("WRM_lich_WoljifRomance6", 
+                                        romanceactive, "playing"));
             DialogTools.CueAddContinue(WoljifCue2, WoljifCue3);
-            var cue0085 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("ce7ce1c176d0a7344a1cd935357c7757");
+            var cue0085 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                          ("ce7ce1c176d0a7344a1cd935357c7757");
             DialogTools.CueAddContinue(WoljifCue3, cue0085);
             DialogTools.AnswerAddNextCue(answer0030, WoljifCue2);
 
             //Alter Cue 0041
-            var cue0041 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("7f532b681d64f3741a7aa0aebba7c4db");
+            var cue0041 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                          ("7f532b681d64f3741a7aa0aebba7c4db");
             //   Add logic for breakup
-            var breakupAction = ActionTools.ConditionalAction(ConditionalTools.CreateEtudeCondition("WRM_lich_WoljifRomance8", romanceactive, "playing"));
+            var breakupAction = ActionTools.ConditionalAction(ConditionalTools.CreateEtudeCondition
+                                ("WRM_lich_WoljifRomance8", romanceactive, "playing"));
             ActionTools.ConditionalActionOnTrue(breakupAction, ActionTools.CompleteEtudeAction(romanceactive));
             var breakupflag = EtudeTools.CreateFlag("WRM_WoljifRomance_LichRomanceEnd_flag");
             ActionTools.ConditionalActionOnTrue(breakupAction, ActionTools.UnlockFlagAction(breakupflag));
             DialogTools.CueAddOnShowAction(cue0041, breakupAction);
 
             //Alter Cuesequence 0036
-            var cuesequence0036 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCueSequence>("2ef9dde3f19d49444a51f38156da8846");
+            var cuesequence0036 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCueSequence>
+                                  ("2ef9dde3f19d49444a51f38156da8846");
             var WoljifCue4 = DialogTools.CreateCue("WRM_lich_c_4");
             WoljifCue4.Speaker.m_SpeakerPortrait = CompanionTools.GetCompanionReference(Companions.Woljif);
-            var cutscene = Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.Cutscene>("442fb54c1eb24bd4cb6b991dfdc0179a");
+            var cutscene = Resources.GetBlueprint<Kingmaker.AreaLogic.Cutscenes.Cutscene>
+                           ("442fb54c1eb24bd4cb6b991dfdc0179a");
             var playcutscene = ActionTools.PlayCutsceneAction(cutscene);
             ActionTools.CutsceneActionAddParameter(playcutscene, "Unit", "Unit", eval);
-            // may have something to do with how the playcutscene action uses the evaluator?
             DialogTools.CueAddOnShowAction(WoljifCue4, playcutscene);
             var WoljifDeathFlag = EtudeTools.CreateFlag("WRM_KilledRomance_Woljif");
             DialogTools.CueAddOnShowAction(WoljifCue4, ActionTools.UnlockFlagAction(WoljifDeathFlag));
-            DialogTools.CueAddCondition(WoljifCue4, ConditionalTools.CreateEtudeCondition("WRM_lich_WoljifRomance7", romanceactive, "playing"));
+            DialogTools.CueAddCondition(WoljifCue4, ConditionalTools.CreateEtudeCondition("WRM_lich_WoljifRomance7", 
+                                        romanceactive, "playing"));
             DialogTools.CueSequenceInsertCue(cuesequence0036, WoljifCue4);
 
             //Alter Cue 0039
-            var cue0039 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("9e2f7f03c939fa04b9acefa3375b6b9f");
-            //   Unsummoning/actionholder stuff
+            var cue0039 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                          ("9e2f7f03c939fa04b9acefa3375b6b9f");
+            // Unsummoning/actionholder stuff
             var cue0039cond = (Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional)cue0039.OnShow.Actions[1];
 
             Kingmaker.ElementsSystem.Condition[] unsummonconds = 
@@ -1521,43 +1929,57 @@ namespace WOTR_WoljifRomanceMod
                 };
             var woljifcond1 = ConditionalTools.CreateLogicCondition("WRM_lich_unsummoncond", unsummonconds);
             ConditionalTools.CheckerAddCondition(cue0039cond.ConditionsChecker, woljifcond1);
-            var cue0039iffalse = (Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional)cue0039cond.IfFalse.Actions[0];
-            ConditionalTools.CheckerAddCondition(cue0039iffalse.ConditionsChecker, ConditionalTools.CreateEtudeCondition("WRM_lich_WoljifRomance10", romanceactive, "playing"));
+            var cue0039iffalse = (Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional)
+                                 cue0039cond.IfFalse.Actions[0];
+            ConditionalTools.CheckerAddCondition(cue0039iffalse.ConditionsChecker, ConditionalTools.CreateEtudeCondition
+                                                 ("WRM_lich_WoljifRomance10", romanceactive, "playing"));
             //Create actionholder for Woljif
-            var innerConditional = ActionTools.ConditionalAction(ConditionalTools.CreateCompanionInPartyCondition("WRM_lich_WJnotpresent3", Companions.Woljif, true));
+            var innerConditional = ActionTools.ConditionalAction(ConditionalTools.CreateCompanionInPartyCondition
+                                   ("WRM_lich_WJnotpresent3", Companions.Woljif, true));
             Kingmaker.ElementsSystem.GameAction[] detachandhide =
                 {
                     ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.DetachBuff>(bp =>
                         {
-                            bp.m_Buff = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintBuffReference>(paralysis);
-                            bp.Target = /*CompanionTools.GetCompanionEvaluator(Companions.Woljif)*/ eval;
+                            bp.m_Buff = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                        <Kingmaker.Blueprints.BlueprintBuffReference>(paralysis);
+                            bp.Target = eval;
                         }),
                     ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.HideUnit>(bp =>
                         {
-                            bp.Target = /*CompanionTools.GetCompanionEvaluator(Companions.Woljif)*/ eval;
+                            bp.Target = eval;
                             bp.Fade = true;
                         })
                 };
 
-            var WoljifActionHolder = Helpers.CreateBlueprint<Kingmaker.ElementsSystem.ActionsHolder>("WRM_lich_WoljifActionHolder");
+            var WoljifActionHolder = Helpers.CreateBlueprint<Kingmaker.ElementsSystem.ActionsHolder>
+                                     ("WRM_lich_WoljifActionHolder");
             ActionTools.ConditionalActionOnTrue(innerConditional, detachandhide);
             ActionTools.ConditionalActionOnFalse(innerConditional, ActionTools.MakeList(
                 ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.DetachBuff>(bp =>
                     {
-                        bp.m_Buff = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.Blueprints.BlueprintBuffReference>(paralysis);
+                        bp.m_Buff = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                    <Kingmaker.Blueprints.BlueprintBuffReference>(paralysis);
                         bp.Target = CompanionTools.GetCompanionEvaluator(Companions.Woljif, WoljifActionHolder);
                     })));
-            var outerconditional = ActionTools.ConditionalAction(ConditionalTools.CreateEtudeCondition("WRM_lich_WoljifRomance11", romanceactive, "playing"));
+            var outerconditional = ActionTools.ConditionalAction(ConditionalTools.CreateEtudeCondition
+                                   ("WRM_lich_WoljifRomance11", romanceactive, "playing"));
             ActionTools.ConditionalActionOnTrue(outerconditional, ActionTools.MakeList(innerConditional));
             WoljifActionHolder.Actions = ActionTools.MakeList(outerconditional);
+
             //Finish setting up unsummon
-            var runholder = ActionTools.GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.RunActionHolder>(bp => 
+            var runholder = ActionTools.GenericAction
+                            <Kingmaker.Designers.EventConditionActionSystem.Actions.RunActionHolder>(bp => 
                 {
-                    bp.Holder = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<Kingmaker.ElementsSystem.ActionsReference>(WoljifActionHolder);
+                    bp.Holder = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                <Kingmaker.ElementsSystem.ActionsReference>(WoljifActionHolder);
                 });
             ActionTools.ConditionalActionOnTrue(cue0039iffalse, ActionTools.MakeList(runholder));
         }
 
+        /*******************************************************************************************************************
+         * MINOR CHANGES
+         * Small changes during the trigger for Ember's act 5 quest, giving you the chance to call out Toil's bullshit.
+         ******************************************************************************************************************/
         public static void MiscChanges()
         {
             // Calling out Toil in the trigger for Ember's act 5 quest
@@ -1571,15 +1993,20 @@ namespace WOTR_WoljifRomanceMod
             var C_Poverty = DialogTools.CreateCue("WRM_Ember_c_Poverty");
             var C_Sputter = DialogTools.CreateCue("WRM_Ember_c_Sputter");
 
-            var answerlist0008 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>("7fa1450413d74e84f80291fce4fab14a");
-            var cue0026 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("84f33fd16b9e8e64b8b3cfcd084bf2f5");
-            var cue3 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>("a3d3b556212a430d95f57353a3a8d500");
+            var answerlist0008 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswersList>
+                                 ("7fa1450413d74e84f80291fce4fab14a");
+            var cue0026 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                          ("84f33fd16b9e8e64b8b3cfcd084bf2f5");
+            var cue3 = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
+                       ("a3d3b556212a430d95f57353a3a8d500");
 
-            var cond_didntseeLoveYourself = ConditionalTools.CreateCueSeenCondition("WRM_DidntSeeLoveYourself", C_LoveYourself, true);
+            var cond_didntseeLoveYourself = ConditionalTools.CreateCueSeenCondition("WRM_DidntSeeLoveYourself", 
+                                            C_LoveYourself, true);
             var cond_sawcue3 = ConditionalTools.CreateCueSeenCondition("WRM_sawcue3", cue3);
             var cond_sawcue0026 = ConditionalTools.CreateCueSeenCondition("WRM_sawcue0026", cue0026);
-            var cond_tiefling = ConditionalTools.CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.PcRace>("WRM_playertiefling", bp =>
-                { bp.Race = Kingmaker.Blueprints.Race.Tiefling; });
+            var cond_tiefling = ConditionalTools.CreateCondition
+                                <Kingmaker.Designers.EventConditionActionSystem.Conditions.PcRace>
+                                ("WRM_playertiefling", bp => { bp.Race = Kingmaker.Blueprints.Race.Tiefling; });
 
             DialogTools.AnswerAddShowCondition(A_DefendWoljif, cond_sawcue3);
             DialogTools.AnswerAddShowCondition(A_DefendWoljif, cond_didntseeLoveYourself);
