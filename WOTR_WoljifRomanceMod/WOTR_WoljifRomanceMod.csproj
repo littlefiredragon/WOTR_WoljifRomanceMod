@@ -65,6 +65,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+<Reference Include="Owlcat.Runtime.Validation.dll">
+	<HintPath>$([System.IO.Path]::Combine($(WrathInstallDir), 'Wrath_Data\Managed\Owlcat.Runtime.Validation.dll'))</HintPath>
+	<Private>false</Private>
+</Reference>		
 <Reference Include="Owlcat.Runtime.Core.dll">
 	<HintPath>$([System.IO.Path]::Combine($(WrathInstallDir), 'Wrath_Data\Managed\Owlcat.Runtime.Core.dll'))</HintPath>
 	<Private>false</Private>

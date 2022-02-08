@@ -9,13 +9,13 @@ Be aware that like official owlcat romances, this romance path contains wilderne
 1. Download and install [Unity Mod Manager](https://github.com/newman55/unity-mod-manager), make sure it is at least version 0.23.0
 2. Run Unity Mod Manger and set it up to find Wrath of the Righteous
 3. Download the Woljif Romance Mod
-4. Install the mod by dragging the zip file from step 5 into the Unity Mod Manager window under the Mods tab
+4. Install the mod by dragging the zip file from step 3 into the Unity Mod Manager window under the Mods tab
 
 ## Known Issues/Conflicts
 
 - **WARNING**: This mod does create save dependencies!
+- Version 1.0.0 requires WOTR patch 1.2.
 - As of release, this mod can be broken by enabling the "Make Previously Chosen Answers More Clear," "Disable Dialog Restrictions," "Preview Dialog Results," and "Expand Answers for Conditional Responses" features in Toybox. Please turn these off while using Woljif Romance Mod.
-- I have not confirmed whether Toybox's functionality to allow romance as a Lich works with this mod.
 
 ## Special Thanks
 
@@ -48,4 +48,5 @@ For providing quality assurance for launch.
 - Tulay M
 - jedi7000nathan
 - Listeczek
+- AscendantGays
 - And of course, Ronin

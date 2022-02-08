@@ -35,10 +35,12 @@ namespace WOTR_WoljifRomanceMod
         }
         public void LoadDialogIntoGame(string locale)
         {
-            var locText = Kingmaker.Localization.LocalizationManager.CurrentPack.Strings;
+            //var locText = Kingmaker.Localization.LocalizationManager.CurrentPack.Strings;
+            var locText = Kingmaker.Localization.LocalizationManager.CurrentPack;
             foreach (KeyValuePair<string, string> pair in NewDialogStrings)
             {
-                locText[pair.Key] = pair.Value;
+                //locText[pair.Key] = pair.Value;
+                locText.PutString(pair.Key, pair.Value);
             }
         }
     }

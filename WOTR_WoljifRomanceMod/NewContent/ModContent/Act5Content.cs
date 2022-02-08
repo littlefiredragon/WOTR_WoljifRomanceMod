@@ -1832,7 +1832,7 @@ namespace WOTR_WoljifRomanceMod
             
             var spawnaction = ActionTools.SpawnUnitAction(Resources.GetBlueprint<Kingmaker.Blueprints.BlueprintUnit>
                               ("766435873b1361c4287c351de194e5f9"), new FakeLocator(211.66f, 40.99f, -296.74f, 328f), 
-                              fxprefab);
+                              fxprefab.Load());
             var eval = (ActionSpawnedUnitEvaluator)Kingmaker.ElementsSystem.Element.CreateInstance
                        (typeof(ActionSpawnedUnitEvaluator));
             eval.setAction(spawnaction);
