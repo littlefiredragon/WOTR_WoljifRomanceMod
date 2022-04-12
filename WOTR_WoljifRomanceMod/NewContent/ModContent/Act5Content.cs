@@ -971,7 +971,7 @@ namespace WOTR_WoljifRomanceMod
             var BaseTrack = CutsceneTools.CreateTrack(Gate0, CommandTools.ActionCommand("WRM_8_SkipTime", 
                             ActionTools.SkipToTimeAction("evening")));
             // Create Cutscene 
-            var ConfessionCutscene = CutsceneTools.CreateCutscene("WRM_8_ConfessionCutscene", false, BaseTrack);
+            var ConfessionCutscene = CutsceneTools.CreateCutscene("WRM_8_ConfessionCutscene", true, BaseTrack);
 
             // Make it fade out and end the etude on dialog complete
             //---------------------------------------------------------------------------------------------------------

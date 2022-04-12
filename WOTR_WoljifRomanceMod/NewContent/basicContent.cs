@@ -21,7 +21,19 @@ namespace WOTR_WoljifRomanceMod
         static public AreaWatcher LoadWatcher;
         static void Postfix()
         {
-            DialogTools.NewDialogs.LoadDialogIntoGame("enGB");
+            var Locale = Kingmaker.Localization.LocalizationManager.CurrentLocale;
+            switch (Locale)
+            {
+                case Kingmaker.Localization.Shared.Locale.ruRU:
+                    DialogTools.NewDialogs_ruRU.LoadDialogIntoGame();
+                    break;
+                case Kingmaker.Localization.Shared.Locale.zhCN:
+                    DialogTools.NewDialogs_zhCN.LoadDialogIntoGame();
+                    break;
+                default:
+                    DialogTools.NewDialogs_enGB.LoadDialogIntoGame();
+                    break;
+            }
 
             Clock = new TimeKeeper();
             Kingmaker.PubSubSystem.EventBus.Subscribe(Clock);

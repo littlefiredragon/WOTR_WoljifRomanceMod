@@ -57,10 +57,17 @@
 
 	<ItemGroup>
 	  <None Remove="NewContent\Blueprints.json" />
+	  <None Remove="NewContent\ruRU.json" />
+	  <None Remove="NewContent\zhCN.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="NewContent\zhCN.json" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <EmbeddedResource Include="NewContent\Blueprints.json" />
+	  <EmbeddedResource Include="NewContent\ruRU.json" />
 	  <EmbeddedResource Include="NewContent\enGB.json" />
 	</ItemGroup>
 

@@ -33,13 +33,12 @@ namespace WOTR_WoljifRomanceMod
                 }
             });
         }
-        public void LoadDialogIntoGame(string locale)
+        public void LoadDialogIntoGame()
         {
-            //var locText = Kingmaker.Localization.LocalizationManager.CurrentPack.Strings;
             var locText = Kingmaker.Localization.LocalizationManager.CurrentPack;
+
             foreach (KeyValuePair<string, string> pair in NewDialogStrings)
             {
-                //locText[pair.Key] = pair.Value;
                 locText.PutString(pair.Key, pair.Value);
             }
         }
@@ -58,7 +57,9 @@ namespace WOTR_WoljifRomanceMod
     //######################################################################################################################
     public static class DialogTools
     {
-        public static NewDialog NewDialogs;
+        public static NewDialog NewDialogs_ruRU;
+        public static NewDialog NewDialogs_zhCN;
+        public static NewDialog NewDialogs_enGB;
         // Shared empty objects that are required for dialog parts.
         public static readonly Kingmaker.ElementsSystem.ActionList EmptyActionList = 
                                     new Kingmaker.ElementsSystem.ActionList();

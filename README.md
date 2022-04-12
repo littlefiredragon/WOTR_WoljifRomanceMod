@@ -14,8 +14,7 @@ Be aware that like official owlcat romances, this romance path contains wilderne
 ## Known Issues/Conflicts
 
 - **WARNING**: This mod does create save dependencies!
-- Version 1.0.0 requires WOTR patch 1.2.
-- As of release, this mod can be broken by enabling the "Make Previously Chosen Answers More Clear," "Disable Dialog Restrictions," "Preview Dialog Results," and "Expand Answers for Conditional Responses" features in Toybox. Please turn these off while using Woljif Romance Mod.
+- This mod can be broken by enabling the "Make Previously Chosen Answers More Clear," "Disable Dialog Restrictions," "Preview Dialog Results," and "Expand Answers for Conditional Responses" features in Toybox. Please turn these off while using Woljif Romance Mod.
 
 ## Special Thanks
 
@@ -24,6 +23,11 @@ Be aware that like official owlcat romances, this romance path contains wilderne
 Extra special thanks for your feedback and brainstorming help with every dialog tree in the mod, and for all your help debugging the issues we found!
 
 - Ronin
+
+**Translation**
+
+- Adella Gar (Russian)
+- Neala23 (Chinese)
 
 **Technical Assistance**
 

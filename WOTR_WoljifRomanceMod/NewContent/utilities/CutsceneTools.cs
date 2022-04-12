@@ -50,8 +50,8 @@ namespace WOTR_WoljifRomanceMod
          * Builds a cutscene. The tracks should all be prepared beforehand, so this is actually the last step of making a
          * cutscene.
          *   name:      The cutscene's name.
-         *   sleepless: Honestly, I'm not sure. I think this may have something to do with those cutscenes that trigger
-         *              when you walk close enough to a certain place.
+         *   sleepless: The tooltip for sleeplessness says "If not set, cutscene is paused when all anchors are in fog of 
+         *              war or away enough from party". If sleepless is true, it'll force the cutscene to play anyway.
          *   onstop:    Optional, an ActionList to run when the cutscene ends.
          *   tracks:    The tracks that should run immediately when the cutscene starts. Do not include tracks that trigger
          *              later via gates here; this is only the first round of tracks.

@@ -8,17 +8,14 @@ namespace TabletopTweaks.Config
     static class ModSettings
     {
         public static ModEntry ModEntry;
-        //public static Fixes Fixes;
-        //public static AddedContent AddedContent;
         public static Blueprints Blueprints;
 
         public static void LoadAllSettings()
         {
-            //LoadSettings("Fixes.json", ref Fixes);
-            //LoadSettings("AddedContent.json", ref AddedContent);
             LoadSettings("Blueprints.json", ref Blueprints);
-            LoadSettings("enGB.json", ref WOTR_WoljifRomanceMod.DialogTools.NewDialogs);
-            //LoadSettings("Locators.json", ref WOTR_WoljifRomanceMod.LocatorTools.LocatorIDs);
+            LoadSettings("enGB.json", ref WOTR_WoljifRomanceMod.DialogTools.NewDialogs_enGB);
+            LoadSettings("ruRU.json", ref WOTR_WoljifRomanceMod.DialogTools.NewDialogs_ruRU);
+            LoadSettings("zhCN.json", ref WOTR_WoljifRomanceMod.DialogTools.NewDialogs_zhCN);
         }
         private static void LoadSettings<T>(string fileName, ref T setting) where T : IUpdatableSettings
         {
