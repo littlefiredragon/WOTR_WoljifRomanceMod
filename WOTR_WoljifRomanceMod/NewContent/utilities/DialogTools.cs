@@ -117,6 +117,7 @@ namespace WOTR_WoljifRomanceMod
             {//Make a brand new checker
                 dialog.Conditions = ConditionalTools.CreateChecker();
             }
+            condition.Owner = dialog;
             ConditionalTools.CheckerAddCondition(dialog.Conditions, condition);
         }
 
@@ -277,6 +278,7 @@ namespace WOTR_WoljifRomanceMod
             {//Make a brand new checker
                 cue.Conditions = ConditionalTools.CreateChecker();
             }
+            condition.Owner = cue;
             ConditionalTools.CheckerAddCondition(cue.Conditions, condition);
         }
 
@@ -488,6 +490,7 @@ namespace WOTR_WoljifRomanceMod
             {//Make a brand new checker
                 answerlist.Conditions = ConditionalTools.CreateChecker();
             }
+            condition.Owner = answerlist;
             ConditionalTools.CheckerAddCondition(answerlist.Conditions, condition);
         }
 
@@ -573,6 +576,7 @@ namespace WOTR_WoljifRomanceMod
             {//Make a brand new checker
                 answer.ShowConditions = ConditionalTools.CreateChecker();
             }
+            condition.Owner = answer;
             ConditionalTools.CheckerAddCondition(answer.ShowConditions, condition);
         }
 
@@ -613,6 +617,7 @@ namespace WOTR_WoljifRomanceMod
             {//Make a brand new checker
                 answer.SelectConditions = ConditionalTools.CreateChecker();
             }
+            condition.Owner = answer;
             ConditionalTools.CheckerAddCondition(answer.SelectConditions, condition);
         }
 
