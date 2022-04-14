@@ -269,6 +269,10 @@ namespace WOTR_WoljifRomanceMod
         public static void CueSetConditionChecker(Kingmaker.DialogSystem.Blueprints.BlueprintCue cue, 
                                                   Kingmaker.ElementsSystem.ConditionsChecker checker)
         {
+            foreach (Kingmaker.ElementsSystem.Condition condition in checker.Conditions)
+            {
+                condition.Owner = cue;
+            }
             cue.Conditions = checker;
         }
         public static void CueAddCondition(Kingmaker.DialogSystem.Blueprints.BlueprintCue cue, 
@@ -567,6 +571,10 @@ namespace WOTR_WoljifRomanceMod
         public static void AnswerSetShowConditionChecker(Kingmaker.DialogSystem.Blueprints.BlueprintAnswer answer, 
                                                          Kingmaker.ElementsSystem.ConditionsChecker checker)
         {
+            foreach (Kingmaker.ElementsSystem.Condition condition in checker.Conditions)
+            {
+                condition.Owner = answer;
+            }
             answer.ShowConditions = checker;
         }
         public static void AnswerAddShowCondition(Kingmaker.DialogSystem.Blueprints.BlueprintAnswer answer, 
@@ -608,6 +616,10 @@ namespace WOTR_WoljifRomanceMod
         public static void AnswerSetSelectConditionChecker(Kingmaker.DialogSystem.Blueprints.BlueprintAnswer answer, 
                                                            Kingmaker.ElementsSystem.ConditionsChecker checker)
         {
+            foreach (Kingmaker.ElementsSystem.Condition condition in checker.Conditions)
+            {
+                condition.Owner = answer;
+            }
             answer.SelectConditions = checker;
         }
         public static void AnswerAddSelectCondition(Kingmaker.DialogSystem.Blueprints.BlueprintAnswer answer, 
