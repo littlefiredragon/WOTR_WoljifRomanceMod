@@ -547,7 +547,7 @@ namespace WOTR_WoljifRomanceMod
             Kingmaker.ElementsSystem.GameAction[] afterteleport =
                 {
                     ActionTools.SkipToTimeAction("Night"),
-                    ActionTools.SetWeatherAction("moderate"),
+                    ActionTools.SetWeatherAction("moderate", SnowCutscene),
                     ActionTools.PlayCutsceneAction(SnowCutscene)
                 };
             var teleportparty = ActionTools.TeleportAction("51ec615b45183294bb9b065d9a913e99", 

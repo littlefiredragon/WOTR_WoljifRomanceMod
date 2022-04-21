@@ -283,7 +283,7 @@ namespace WOTR_WoljifRomanceMod
                             <Kingmaker.Visual.Animation.AnimationClipWrapper>.Request(commandid);
             var newwrapperlink = new Kingmaker.ResourceLinks.AnimationClipWrapperLink 
                 { 
-                    Handle = newhandle, 
+                    m_Handle = newhandle, 
                     AssetId = newhandle.m_AssetId 
                 };
 

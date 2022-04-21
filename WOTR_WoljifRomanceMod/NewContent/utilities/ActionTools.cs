@@ -349,7 +349,7 @@ namespace WOTR_WoljifRomanceMod
          *   intensity: accepts either an integer or a string with the following valid values:
          *              0/Clear, 1/Light, 2/Moderate, 3/Heavy, 4/Storm. Heavy and Storm have mechanical effects.
          ******************************************************************************************************************/
-        public static ControlWeather SetWeatherAction(string intensity)
+        public static ControlWeather SetWeatherAction(string intensity, Kingmaker.AreaLogic.Cutscenes.Cutscene owner)
         {
             Owlcat.Runtime.Visual.Effects.WeatherSystem.InclemencyType level = 
                 Owlcat.Runtime.Visual.Effects.WeatherSystem.InclemencyType.Clear;
@@ -379,12 +379,13 @@ namespace WOTR_WoljifRomanceMod
 
             var action = GenericAction<ControlWeather>(bp =>
             {
+                bp.owner = owner;
                 bp.start = true;
                 bp.inclemency = level;
             });
             return action;
         }
-        public static ControlWeather SetWeatherAction(int intensity)
+        public static ControlWeather SetWeatherAction(int intensity, Kingmaker.AreaLogic.Cutscenes.Cutscene owner)
         {
             Owlcat.Runtime.Visual.Effects.WeatherSystem.InclemencyType level = 
                 Owlcat.Runtime.Visual.Effects.WeatherSystem.InclemencyType.Clear;
@@ -409,15 +410,17 @@ namespace WOTR_WoljifRomanceMod
 
             var action = GenericAction<ControlWeather>(bp =>
             {
+                bp.owner = owner;
                 bp.start = true;
                 bp.inclemency = level;
             });
             return action;
         }
-        public static ControlWeather EndWeatherAction()
+        public static ControlWeather EndWeatherAction(Kingmaker.AreaLogic.Cutscenes.Cutscene owner)
         {
             var action = GenericAction<ControlWeather>(bp =>
             {
+                bp.owner = owner;
                 bp.start = false;
                 bp.inclemency = Owlcat.Runtime.Visual.Effects.WeatherSystem.InclemencyType.Clear;
             });

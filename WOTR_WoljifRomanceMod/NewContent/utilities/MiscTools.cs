@@ -215,6 +215,7 @@ namespace WOTR_WoljifRomanceMod
         public Owlcat.Runtime.Visual.Effects.WeatherSystem.InclemencyType inclemency;
         public bool start;
         public Kingmaker.Controllers.WeatherController control;
+        public Kingmaker.AreaLogic.Cutscenes.Cutscene owner;
         public override string GetCaption()
         {
             return "Overrides weather conditions.";
@@ -224,11 +225,11 @@ namespace WOTR_WoljifRomanceMod
             control = Kingmaker.Controllers.WeatherController.Instance;
             if (start)
             {
-                control.StartOverrideInclemency(inclemency);
+                control.StartOverrideInclemency(owner, inclemency, true);
             }
             else
             {
-                control.StopOverrideInclemency();
+                control.StopOverrideInclemency(owner, true);
             }
         }
     }
