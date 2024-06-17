@@ -164,11 +164,11 @@ namespace WOTR_WoljifRomanceMod
          * FADEOUT COMMAND
          * Fades camera to black and back again.
          ******************************************************************************************************************/
-        public static Kingmaker.AreaLogic.Cutscenes.Commands.CommandFadeout FadeoutCommand()
+        public static Kingmaker.AreaLogic.Cutscenes.Commands.CutsceneCommandFadeout FadeoutCommand()
         {
             numfadeouts++;
             string name = "fadeout_" + numfadeouts.ToString();
-            var result = GenericCommand<Kingmaker.AreaLogic.Cutscenes.Commands.CommandFadeout>(name);
+            var result = GenericCommand<Kingmaker.AreaLogic.Cutscenes.Commands.CutsceneCommandFadeout>(name);
             result.m_Continuous = true;
             result.m_Lifetime = 1.0f;
             result.m_OnFaded = new Kingmaker.AreaLogic.Cutscenes.CommandBase.CommandSignalData();

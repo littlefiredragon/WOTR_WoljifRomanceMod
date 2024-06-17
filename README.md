@@ -14,7 +14,7 @@ Be aware that like official owlcat romances, this romance path contains wilderne
 ## Known Issues/Conflicts
 
 - **WARNING**: This mod does create save dependencies!
-- This mod can be broken by enabling the "Make Previously Chosen Answers More Clear," "Disable Dialog Restrictions," "Preview Dialog Results," and "Expand Answers for Conditional Responses" features in Toybox. Please turn these off while using Woljif Romance Mod.
+- This mod can be broken by enabling certain features of Toybox that interact with dialog trees, such as the "Make Previously Chosen Answers More Clear," "Disable Dialog Restrictions," "Preview Dialog Results," and "Expand Answers for Conditional Responses" features. Please turn these off while using Woljif Romance Mod.
 
 ## Special Thanks
 
